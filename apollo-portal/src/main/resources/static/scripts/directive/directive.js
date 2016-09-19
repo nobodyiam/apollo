@@ -43,14 +43,11 @@ directive_module.directive('apollonav', function ($compile, $window, toastr, App
 
             scope.jumpToConfigPage = function () {
                 if (selectedApp.appId) {
-                    var needReloadPage = false;
                     if ($window.location.href.indexOf("config.html") > -1) {
-                        needReloadPage = true;
-                    }
-                    $window.location.href = '/config.html?#appid=' + selectedApp.appId;
-
-                    if (needReloadPage) {
+                        $window.location.hash = "appid=" + selectedApp.appId;
                         $window.location.reload();
+                    }else {
+                        $window.location.href = '/config.html?#appid=' + selectedApp.appId;
                     }
                 }
             };

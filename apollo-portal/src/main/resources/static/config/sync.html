@@ -2,6 +2,7 @@
 <html ng-app="sync_item">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="icon" href="../img/config.png">
     <!-- styles -->
     <link rel="stylesheet" type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../vendor/angular/angular-toastr-1.4.1.min.css">
@@ -70,30 +71,48 @@
                         <label class="control-label">需要同步的配置</label>
                     </div>
                     <div class="col-sm-10">
+                        <div class="row text-right" style="margin-bottom: 5px; margin-right: 0px;">
+                            按最后更新时间过滤
+                            开始时间:<input type="date" ng-model="filterBeginTime"> 结束时间:  <input type="date" ng-model="filterEndTime">
+                            <button class="btn btn-sm btn-primary" ng-click="filter()">过滤</button>
+                            <button class="btn btn-sm btn-default" ng-click="resetFilter()">重置</button>
+                        </div>
                         <table class="table table-bordered table-striped table-hover">
                             <thead>
                             <tr>
                                 <td><input type="checkbox" ng-click="toggleItemsCheckedStatus()"></td>
-                                <td>key</td>
-                                <td>value</td>
-                                <td>comment</td>
+                                <td class="hover" ng-click="col='key';desc=!desc;">
+                                    Key
+                                    <span class="glyphicon glyphicon-sort"></span>
+                                </td>
+                                <td>Value</td>
+                                <td class="hover" ng-click="col='dataChangeCreatedTime';desc=!desc;">
+                                    Create Time
+                                    <span class="glyphicon glyphicon-sort"></span>
+                                </td>
+                                <td class="hover" ng-click="col='dataChangeLastModifiedTime';desc=!desc;">
+                                    Update Time
+                                    <span class="glyphicon glyphicon-sort"></span>
+                                </td>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="item in sourceItems">
+                            <tr ng-repeat="item in viewItems|orderBy:col:desc">
                                 <td width="10%"><input type="checkbox" ng-checked="item.checked"
                                                        ng-click="switchSelect(item)"></td>
                                 <td width="20%">
                                     <span ng-bind="item.key | limitTo: 250"></span>
                                     <span ng-bind="item.key.length > 250 ? '...' : ''"></span>
                                 </td>
-                                <td width="50%">
+                                <td width="40%">
                                     <span ng-bind="item.value | limitTo: 250"></span>
                                     <span ng-bind="item.value.length > 250 ? '...' : ''"></span>
                                 </td>
-                                <td width="20%">
-                                    <span ng-bind="item.comment | limitTo: 250"></span>
-                                    <span ng-bind="item.comment.length > 250 ? '...' :''"></span>
+                                <td width="15%">
+                                    <span ng-bind="item.dataChangeCreatedTime  | date: 'yyyy-MM-dd HH:mm:ss'"></span>
+                                </td>
+                                <td width="15%">
+                                    <span ng-bind="item.dataChangeLastModifiedTime  | date: 'yyyy-MM-dd HH:mm:ss'"></span>
                                 </td>
                             </tr>
                             </tbody>

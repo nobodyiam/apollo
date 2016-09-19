@@ -15,6 +15,7 @@ before_install:
   - pip install --user codecov
 
 after_success:
+  - mvn clean test jacoco:report coveralls:report
   - codecov
 
 branches:

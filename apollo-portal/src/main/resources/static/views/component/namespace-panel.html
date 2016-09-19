@@ -31,7 +31,7 @@
 
                 </button>
                 <button type="button" class="btn btn-default btn-sm J_tableview_btn"
-                        data-tooltip="tooltip" data-placement="bottom" title="回滚配置"
+                        data-tooltip="tooltip" data-placement="bottom" title="回滚已发布配置"
                         ng-show="namespace.hasReleasePermission"
                         ng-click="preRollback(namespace)">
                     <img src="img/rollback.png">
@@ -94,6 +94,13 @@
                 </ul>
             </div>
             <div class="col-md-4 text-right">
+                <a class="clipboard"
+                   data-clipboard-text="{{namespace.text}}"
+                   data-tooltip="tooltip" data-placement="bottom" title="复制文本"
+                   ng-show="!namespace.isTextEditing && namespace.viewType == 'text' && namespace.hasModifyPermission">
+                    <img src="img/copy.png" class="ns_btn">
+                </a>
+                &nbsp;
                 <a data-tooltip="tooltip" data-placement="bottom" title="取消修改"
                    ng-show="namespace.isTextEditing && namespace.viewType == 'text'"
                    ng-click="toggleTextEditStatus(namespace)">
@@ -148,14 +155,19 @@
     <!--table view-->
     <div class="namespace-view-table" ng-show="namespace.viewType == 'table'">
 
-        <div class="col-md-8 col-lg-offset-2" style="padding-top: 15px; padding-bottom: 10px" ng-show="namespace.showSearchInput">
-            <input type="text" class="form-control" placeholder="输入key过滤" ng-model="namespace.searchKey" ng-change="searchItems(namespace)">
+        <div class="col-md-8 col-lg-offset-2" style="padding-top: 15px; padding-bottom: 10px"
+             ng-show="namespace.showSearchInput">
+            <input type="text" class="form-control" placeholder="输入key过滤" ng-model="namespace.searchKey"
+                   ng-change="searchItems(namespace)">
         </div>
-        <table class="table table-bordered table-striped text-center table-hover">
+        <table class="table table-bordered table-striped table-hover">
             <thead>
             <tr>
-                <th>
-                    Key
+                <th class="hover" title="排序"
+                    ng-click="col='item.key';desc=!desc;">
+                    Key&nbsp;
+                    <span class="glyphicon glyphicon-sort"></span>
+
                 </th>
                 <th>
                     Value
@@ -163,11 +175,16 @@
                 <th>
                     备注
                 </th>
-                <th>
+                <th class="hover" title="排序"
+                    ng-click="col='item.dataChangeLastModifiedBy';desc=!desc;">
                     最后修改人
+                    <span class="glyphicon glyphicon-sort"></span>
+
                 </th>
-                <th>
+                <th class="hover" title="排序"
+                    ng-click="col='item.dataChangeLastModifiedTime';desc=!desc;">
                     最后修改时间
+                    <span class="glyphicon glyphicon-sort"></span>
                 </th>
                 <th>
                     操作
@@ -176,17 +193,17 @@
             </thead>
             <tbody>
 
-            <tr ng-repeat="config in namespace.viewItems" ng-class="{warning:config.isModified}"
+            <tr ng-repeat="config in namespace.viewItems |orderBy:col:desc" ng-class="{warning:config.isModified}"
                 ng-if="config.item.key && !config.isDeleted">
-                <td width="20%" title="{{config.item.key}}">
+                <td width="20%">
                     <span ng-bind="config.item.key | limitTo: 250"></span>
                     <span ng-bind="config.item.key.length > 250 ? '...' :''"></span>
                 </td>
-                <td width="25%" title="{{config.item.value}}">
+                <td width="30%" class="cursor-pointer" title="点击查看" ng-click="showText(config.item.value)">
                     <span ng-bind="config.item.value | limitTo: 250"></span>
                     <span ng-bind="config.item.value.length > 250 ? '...': ''"></span>
                 </td>
-                <td width="20%" title="{{config.item.comment}}">
+                <td width="15%" title="{{config.item.comment}}">
                     <span ng-bind="config.item.comment | limitTo: 250"></span>
                     <span ng-bind="config.item.comment.length > 250 ?'...' : ''"></span>
                 </td>
@@ -196,7 +213,7 @@
                     ng-bind="config.item.dataChangeLastModifiedTime | date: 'yyyy-MM-dd HH:mm:ss'">
                 </td>
 
-                <td width="10%">
+                <td width="10%" class="text-center">
                     <img src="img/edit.png" data-tooltip="tooltip" data-placement="bottom" title="修改"
                          ng-click="editItem(namespace, config.item)"
                          ng-show="namespace.hasModifyPermission">
@@ -259,7 +276,7 @@
                         </td>
                         <td width="30%">
                         </td>
-                        <td width="30%" title="{{item.value}}">
+                        <td width="30%" class="cursor-pointer" title="{{item.value}}" ng-click="showText(item.value)">
                             <span ng-bind="item.value | limitTo: 250"></span>
                             <span ng-bind="item.value.length > 250 ? '...': ''"></span>
                         </td>
@@ -276,11 +293,11 @@
                             <span ng-bind="item.newItem.key | limitTo: 250"></span>
                             <span ng-bind="item.newItem.key.length > 250 ? '...' :''"></span>
                         </td>
-                        <td width="30%" title="{{item.oldItem.value}}">
+                        <td width="30%" class="cursor-pointer" title="{{item.oldItem.value}}" ng-click="showText(item.oldItem.value)">
                             <span ng-bind="item.oldItem.value | limitTo: 250"></span>
                             <span ng-bind="item.oldItem.value.length > 250 ? '...': ''"></span>
                         </td>
-                        <td width="30%" title="{{item.newItem.value}}">
+                        <td width="30%" class="cursor-pointer" title="{{item.newItem.value}}" ng-click="showText(item.newItem.value)">
                             <span ng-bind="item.newItem.value | limitTo: 250"></span>
                             <span ng-bind="item.newItem.value.length > 250 ? '...': ''"></span>
                         </td>
@@ -397,7 +414,8 @@
                     </tr>
                     </tbody>
                 </table>
-                <div class="row text-center" ng-show="namespace.latestReleaseInstances.content.length < namespace.latestReleaseInstances.total">
+                <div class="row text-center"
+                     ng-show="namespace.latestReleaseInstances.content.length < namespace.latestReleaseInstances.total">
                     <button class="btn btn-default" ng-click="loadInstanceInfo(namespace)">加载更多</button>
 
                 </div>
@@ -443,7 +461,7 @@
             </div>
         </div>
 
-         <!--all instances-->
+        <!--all instances-->
         <div class="panel-body" ng-show="namespace.instanceViewType == 'all'">
             <div class="panel-default" ng-if="namespace.instancesCount > 0">
                 <table class="table table-bordered table-striped" ng-if="namespace.allInstances">
@@ -472,7 +490,6 @@
                 无实例信息
             </div>
         </div>
-
 
 
     </div>

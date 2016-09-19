@@ -42,26 +42,37 @@ application_module.controller("ConfigNamespaceController",
                                    $scope.createItem = createItem;
 
                                    $scope.doItem = doItem;
+                                   
+                                   $scope.closeTip = closeTip;
+                                   
+                                   $scope.showText = showText;
 
                                    $scope.releaseBtnDisabled = false;
                                    $scope.rollbackBtnDisabled = false;
                                    $scope.addItemBtnDisabled = false;
                                    $scope.commitChangeBtnDisabled = false;
+                                   
+                                   init();
+                                   
+                                   function init() {
+                                       PermissionService.get_app_role_users($rootScope.pageContext.appId)
+                                           .then(function (result) {
+                                               var masterUsers = '';
+                                               result.masterUsers.forEach(function (user) {
+                                                   masterUsers += user.userId + ',';
+                                               });
+                                               $scope.masterUsers = masterUsers.substring(0, masterUsers.length - 1);
+                                           }, function (result) {
 
-                                   PermissionService.get_app_role_users($rootScope.pageContext.appId)
-                                       .then(function (result) {
-                                           var masterUsers = '';
-                                           result.masterUsers.forEach(function (user) {
-                                               masterUsers += user.userId + ',';
                                            });
-                                           $scope.masterUsers = masterUsers.substring(0, masterUsers.length - 1);
-                                       }, function (result) {
 
+                                       UserService.load_user().then(function (result) {
+                                           $scope.currentUser = result.userId;
                                        });
+                                       
+                                   }
 
-                                   UserService.load_user().then(function (result) {
-                                       $scope.currentUser = result.userId;
-                                   });
+                                   
 
                                    function refreshNamespaces(viewType) {
                                        if ($rootScope.pageContext.env == '') {
@@ -349,6 +360,32 @@ application_module.controller("ConfigNamespaceController",
                                        return true;
                                    }
 
+                                   function closeTip(clusterName) {
+                                       var hideTip = JSON.parse(localStorage.getItem("hideTip"));
+                                       if (!hideTip){
+                                           hideTip = {};
+                                           hideTip[$rootScope.pageContext.appId] = {};
+                                       }
+                                       
+                                       if (!hideTip[$rootScope.pageContext.appId]){
+                                           hideTip[$rootScope.pageContext.appId] = {};
+                                       }
+
+                                       hideTip[$rootScope.pageContext.appId][clusterName] = true;
+                                       
+                                       $rootScope.hideTip = hideTip;
+                                       
+                                       localStorage.setItem("hideTip", JSON.stringify(hideTip));
+                                       
+                                   }
+                                   
+                                   function showText(text) {
+                                       $scope.text = text;
+                                       $('#showText').modal('show');
+                                   }
+                                   
                                    $('.config-item-container').removeClass('hide');
+
+                                   new Clipboard('.clipboard');
                                }]);
 

@@ -5,8 +5,8 @@ html, body {
 body {
     min-width: 960px;
     color: #797979;
-    padding: 0px !important;
-    margin: 0px !important;
+    padding: 0 !important;
+    margin: 0 !important;
     font-size: 13px;
     background: #f1f2f7;
     font-family: 'Open Sans', sans-serif;
@@ -25,12 +25,25 @@ p, td, span {
     word-break: break-all;
 }
 
-table {
-    text-align: center;
-}
 
 .no-radius {
-    border-radius: 0px;
+    border-radius: 0;
+}
+
+.cursor-pointer{
+    cursor: pointer;
+}
+pre {
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+.hover:hover{
+    background: #f5f5f5;
+    cursor: pointer
 }
 
 .highlight {
@@ -38,7 +51,7 @@ table {
 }
 
 .hide-border-top {
-    border-top: 0px;
+    border-top: 0;
 }
 
 .logo {
@@ -242,7 +255,7 @@ table th {
 }
 
 .config-item-container .panel {
-    border-radius: 0px;
+    border-radius: 0;
 }
 
 .config-item-container .panel-heading b {
@@ -251,7 +264,7 @@ table th {
 
 .config-item-container .form-control[disabled] {
     background: #ffffff;
-    border: 0px;
+    border: 0;
 }
 
 .config-item-container .second-panel-heading .ns_btn {
@@ -297,9 +310,9 @@ table th {
 }
 
 .namespace-attribute-panel {
-    margin-left: 0px;
+    margin-left: 0;
     color: #fff;
-    border-top: 0px;
+    border-top: 0;
     background: #f1f2f7;
 }
 
@@ -310,7 +323,7 @@ table th {
 }
 
 .second-panel-heading .nav-tabs {
-    border-bottom: 0px;
+    border-bottom: 0;
 }
 
 .namespace-view-table td img {
@@ -419,7 +432,7 @@ table th {
     width: 350px;
     height: 200px;
     position: absolute;
-    margin-left: 0px;
+    margin-left: 0;
     cursor: pointer;
     background: #ffffff;
     border: 1px solid #ddd;

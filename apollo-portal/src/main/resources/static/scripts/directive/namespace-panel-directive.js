@@ -16,7 +16,8 @@ directive_module.directive('apollonspanel',
                                        createItem: '=',
                                        editItem: '=',
                                        preDeleteItem: '=',
-                                       commitChange: '='
+                                       commitChange: '=',
+                                       showText: '='
                                    },
                                    link: function (scope, element, attrs) {
 
@@ -41,7 +42,7 @@ directive_module.directive('apollonspanel',
                                        scope.toggleItemSearchInput = toggleItemSearchInput;
 
                                        scope.searchItems = searchItems;
-                                       
+
                                        scope.loadCommitHistory = loadCommitHistory;
 
                                        scope.toggleTextEditStatus = toggleTextEditStatus;
@@ -65,7 +66,7 @@ directive_module.directive('apollonspanel',
                                        function initNamespace(namespace, viewType) {
 
                                            namespace.showSearchInput = false;
-                                           namespace.viewItems = namespace.items; 
+                                           namespace.viewItems = namespace.items;
                                            namespace.isPropertiesFormat = namespace.format == 'properties';
                                            namespace.isTextEditing = false;
                                            namespace.instanceViewType = namespace_instance_view_type.LATEST_RELEASE;
@@ -221,10 +222,11 @@ directive_module.directive('apollonspanel',
                                                                                           namespace.latestRelease.id,
                                                                                           namespace.latestReleaseInstancesPage)
                                                        .then(function (result) {
-                                                           if (result && result.content.length){
+                                                           if (result && result.content.length) {
                                                                namespace.latestReleaseInstancesPage++;
                                                                result.content.forEach(function (instance) {
-                                                                   namespace.latestReleaseInstances.content.push(instance);    
+                                                                   namespace.latestReleaseInstances.content.push(
+                                                                       instance);
                                                                })
                                                            }
 
@@ -271,9 +273,9 @@ directive_module.directive('apollonspanel',
                                                                                         scope.env,
                                                                                         scope.cluster,
                                                                                         namespace.baseInfo.namespaceName,
-                                               namespace.allInstancesPage)
+                                                                                        namespace.allInstancesPage)
                                                    .then(function (result) {
-                                                       if (result && result.content.length){
+                                                       if (result && result.content.length) {
                                                            namespace.allInstancesPage++;
                                                            result.content.forEach(function (instance) {
                                                                namespace.allInstances.push(instance);
@@ -390,7 +392,6 @@ directive_module.directive('apollonspanel',
                                            return result;
                                        }
 
-
                                        function toggleItemSearchInput(namespace) {
                                            namespace.showSearchInput = !namespace.showSearchInput;
                                        }
@@ -400,8 +401,8 @@ directive_module.directive('apollonspanel',
                                            var items = [];
                                            namespace.items.forEach(function (item) {
                                                var key = item.item.key;
-                                               if (key && key.toLowerCase().indexOf(searchKey) >= 0){
-                                                   items.push(item);    
+                                               if (key && key.toLowerCase().indexOf(searchKey) >= 0) {
+                                                   items.push(item);
                                                }
                                            });
                                            namespace.viewItems = items;
@@ -415,6 +416,7 @@ directive_module.directive('apollonspanel',
                                            }
                                            return true;
                                        }
+
 
                                    }
                                }

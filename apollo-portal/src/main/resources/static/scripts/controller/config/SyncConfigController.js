@@ -9,41 +9,64 @@ sync_item_module.controller("SyncItemController",
                                      clusterName: params.clusterName,
                                      namespaceName: params.namespaceName
                                  };
+                                 var sourceItems = [];
 
                                  $scope.syncBtnDisabled = false;
+                                 $scope.viewItems = [];
 
-                                 ////// load items //////
-                                 ConfigService.find_items($scope.pageContext.appId, $scope.pageContext.env,
-                                                          $scope.pageContext.clusterName,
-                                                          $scope.pageContext.namespaceName,
-                                                          "lastModifiedTime")
-                                     .then(function (result) {
+                                 $scope.toggleItemsCheckedStatus = toggleItemsCheckedStatus;
+                                 $scope.diff = diff;
+                                 $scope.removeItem = removeItem;
+                                 $scope.syncItems = syncItems;
+                                 $scope.collectSelectedClusters = collectSelectedClusters;
 
-                                         $scope.sourceItems = [];
-                                         result.forEach(function (item) {
-                                             if (item.key) {
-                                                 item.checked = false;
-                                                 $scope.sourceItems.push(item);
-                                             }
-                                         })
+                                 $scope.syncItemNextStep = syncItemNextStep;
+                                 $scope.backToAppHomePage = backToAppHomePage;
+                                 $scope.switchSelect = switchSelect;
 
-                                     }, function (result) {
-                                         toastr.error(AppUtil.errorMsg(result), "加载配置出错");
-                                     });
+                                 $scope.filter = filter;
+                                 $scope.resetFilter = resetFilter;
+
+                                 init();
+
+                                 function init() {
+                                     ////// load items //////
+                                     ConfigService.find_items($scope.pageContext.appId, $scope.pageContext.env,
+                                                              $scope.pageContext.clusterName,
+                                                              $scope.pageContext.namespaceName,
+                                                              "lastModifiedTime")
+                                         .then(function (result) {
+
+                                             sourceItems = [];
+                                             result.forEach(function (item) {
+                                                 if (item.key) {
+                                                     item.checked = false;
+                                                     sourceItems.push(item);
+                                                 }
+                                             });
+
+                                             $scope.viewItems = sourceItems;
+
+                                         }, function (result) {
+                                             toastr.error(AppUtil.errorMsg(result), "加载配置出错");
+                                         });
+                                 }
 
                                  var itemAllSelected = false;
-                                 $scope.toggleItemsCheckedStatus = function () {
+
+                                 function toggleItemsCheckedStatus() {
                                      itemAllSelected = !itemAllSelected;
-                                     $scope.sourceItems.forEach(function (item) {
+                                     $scope.viewItems.forEach(function (item) {
                                          item.checked = itemAllSelected;
                                      })
-                                 };
+                                 }
 
                                  var syncData = {
                                      syncToNamespaces: [],
                                      syncItems: []
                                  };
-                                 $scope.diff = function () {
+
+                                 function diff() {
                                      parseSyncSourceData();
                                      if (syncData.syncItems.length == 0) {
                                          toastr.warning("请选择需要同步的配置");
@@ -62,11 +85,12 @@ sync_item_module.controller("SyncItemController",
                                              $scope.clusterDiffs.forEach(function (clusterDiff) {
                                                  if (!$scope.hasDiff) {
                                                      $scope.hasDiff =
-                                                         clusterDiff.diffs.createItems.length + clusterDiff.diffs.updateItems.length
+                                                         clusterDiff.diffs.createItems.length
+                                                         + clusterDiff.diffs.updateItems.length
                                                          > 0;
                                                  }
 
-                                                 if (clusterDiff.diffs.updateItems.length > 0){
+                                                 if (clusterDiff.diffs.updateItems.length > 0) {
                                                      //赋予同步前的值
                                                      ConfigService.find_items(clusterDiff.namespace.appId,
                                                                               clusterDiff.namespace.env,
@@ -78,19 +102,19 @@ sync_item_module.controller("SyncItemController",
                                                                  oldItemMap[item.key] = item.value;
                                                              });
                                                              clusterDiff.diffs.updateItems.forEach(function (item) {
-                                                                item.oldValue = oldItemMap[item.key];    
-                                                             })   
-                                                         });    
+                                                                 item.oldValue = oldItemMap[item.key];
+                                                             })
+                                                         });
                                                  }
-                                                 
+
                                              });
                                              $scope.syncItemNextStep(1);
                                          }, function (result) {
                                              toastr.error(AppUtil.errorMsg(result));
                                          });
-                                 };
+                                 }
 
-                                 $scope.removeItem = function (diff, type, toRemoveItem) {
+                                 function removeItem(diff, type, toRemoveItem) {
                                      var syncDataResult = [],
                                          diffSetResult = [],
                                          diffSet;
@@ -116,9 +140,9 @@ sync_item_module.controller("SyncItemController",
                                          }
                                      });
                                      syncData.syncItems = syncDataResult;
-                                 };
+                                 }
 
-                                 $scope.syncItems = function () {
+                                 function syncItems() {
                                      $scope.syncBtnDisabled = true;
                                      ConfigService.sync_items($scope.pageContext.appId,
                                                               $scope.pageContext.namespaceName,
@@ -131,12 +155,13 @@ sync_item_module.controller("SyncItemController",
                                          $scope.syncBtnDisabled = false;
                                          toastr.error(AppUtil.errorMsg(result));
                                      });
-                                 };
+                                 }
 
                                  var selectedClusters = [];
-                                 $scope.collectSelectedClusters = function (data) {
+
+                                 function collectSelectedClusters(data) {
                                      selectedClusters = data;
-                                 };
+                                 }
 
                                  function parseSyncSourceData() {
                                      syncData = {
@@ -152,7 +177,7 @@ sync_item_module.controller("SyncItemController",
                                          }
                                      });
 
-                                     $scope.sourceItems.forEach(function (item) {
+                                     $scope.viewItems.forEach(function (item) {
                                          if (item.checked) {
                                              syncData.syncItems.push(item);
                                          }
@@ -163,18 +188,39 @@ sync_item_module.controller("SyncItemController",
                                  ////// flow control ///////
 
                                  $scope.syncItemStep = 1;
-                                 $scope.syncItemNextStep = function (offset) {
+                                 function syncItemNextStep(offset) {
                                      $scope.syncItemStep += offset;
-                                 };
+                                 }
 
-                                 $scope.backToAppHomePage = function () {
+                                 function backToAppHomePage() {
                                      $window.location.href = '/config.html?#appid=' + $scope.pageContext.appId;
-                                 };
+                                 }
 
-                                 $scope.switchSelect = function (o) {
+                                 function switchSelect(o) {
                                      o.checked = !o.checked;
-                                 };
+                                 }
 
+                                 function filter() {
+                                     var beginTime = $scope.filterBeginTime;
+                                     var endTime = $scope.filterEndTime;
+
+                                     var result = [];
+                                     sourceItems.forEach(function (item) {
+                                         var updateTime = new Date(item.dataChangeLastModifiedTime);
+                                         if ((!beginTime || updateTime > beginTime)
+                                             && (!endTime || updateTime < endTime)) {
+                                             result.push(item);
+                                         }
+                                     });
+
+                                     $scope.viewItems = result;
+                                 }
+
+                                 function resetFilter() {
+                                     $scope.filterBeginTime = null;
+                                     $scope.filterEndTime = null;
+                                     filter();
+                                 }
 
                              }]);
 

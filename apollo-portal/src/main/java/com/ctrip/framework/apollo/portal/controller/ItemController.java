@@ -68,6 +68,9 @@ public class ItemController {
                          @RequestBody ItemDTO item) {
     checkModel(isValidItem(item));
 
+    String username = userInfoHolder.getUser().getUserId();
+    item.setDataChangeLastModifiedBy(username);
+
     configService.updateItem(appId, Env.valueOf(env), clusterName, namespaceName, item);
   }
 

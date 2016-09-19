@@ -7,6 +7,7 @@ import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.ctrip.framework.apollo.model.ConfigChange;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import com.ctrip.framework.foundation.Foundation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,8 +77,16 @@ public class ApolloConfigDemo {
     System.out.println(configFile.getContent());
   }
 
+  private void printEnvInfo() {
+    String message = String.format("AppId: %s, Env: %s, DC: %s, IP: %s", Foundation.app()
+        .getAppId(), Foundation.server().getEnvType(), Foundation.server().getDataCenter(),
+        Foundation.net().getHostAddress());
+    System.out.println(message);
+  }
+
   public static void main(String[] args) throws IOException {
     ApolloConfigDemo apolloConfigDemo = new ApolloConfigDemo();
+    apolloConfigDemo.printEnvInfo();
     System.out.println(
         "Apollo Config Demo. Please input key to get the value.");
     while (true) {

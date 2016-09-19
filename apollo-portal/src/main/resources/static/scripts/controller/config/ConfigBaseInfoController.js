@@ -6,23 +6,25 @@ application_module.controller("ConfigBaseInfoController",
 
                                    var appId = AppUtil.parseParams($location.$$url).appid;
 
+                                   $rootScope.hideTip = JSON.parse(localStorage.getItem("hideTip"));
+
                                    //save user recent visited apps
                                    var VISITED_APPS_STORAGE_KEY = "VisitedApps";
                                    var visitedApps = JSON.parse(localStorage.getItem(VISITED_APPS_STORAGE_KEY));
                                    var hasSaved = false;
-                                   if (visitedApps){
+                                   if (visitedApps) {
                                        visitedApps.forEach(function (app) {
-                                           if (app == appId){
+                                           if (app == appId) {
                                                hasSaved = true;
                                                return;
                                            }
                                        });
-                                   }else {
+                                   } else {
                                        visitedApps = [];
                                    }
-                                   if (!hasSaved){
+                                   if (!hasSaved) {
                                        visitedApps.push(appId);
-                                       
+
                                        localStorage.setItem(VISITED_APPS_STORAGE_KEY,
                                                             JSON.stringify(visitedApps));
                                    }
@@ -78,7 +80,8 @@ application_module.controller("ConfigBaseInfoController",
                                                        parentNode = [];
 
                                                    //default selection from session storage or first env & first cluster
-                                                   if (pageContext.env == env.env && pageContext.clusterName == cluster.name) {
+                                                   if (pageContext.env == env.env && pageContext.clusterName
+                                                                                     == cluster.name) {
                                                        clusterNode.state = {};
                                                        clusterNode.state.selected = true;
                                                    }
@@ -94,6 +97,7 @@ application_module.controller("ConfigBaseInfoController",
                                            navTree.push(node);
                                        });
 
+                                       //init treeview
                                        $('#treeview').treeview({
                                                                    color: "#797979",
                                                                    showBorder: true,
@@ -117,13 +121,32 @@ application_module.controller("ConfigBaseInfoController",
                                                                        sessionStorage.setItem(
                                                                            $rootScope.pageContext.appId,
                                                                            JSON.stringify({
-                                                                               env: $rootScope.pageContext.env,
-                                                                               cluster: $rootScope.pageContext.clusterName
-                                                                           }));
+                                                                                              env: $rootScope.pageContext.env,
+                                                                                              cluster: $rootScope.pageContext.clusterName
+                                                                                          }));
 
                                                                        $rootScope.refreshNamespaces();
                                                                    }
                                                                });
+
+                                       var envMapClusters = {};
+                                       navTree.forEach(function (node) {
+                                           if (node.nodes && node.nodes.length > 0) {
+
+                                               var clusterNames = [];
+                                               node.nodes.forEach(function (cluster) {
+                                                   if (cluster.text != 'default') {
+                                                       clusterNames.push(cluster.text);
+                                                   }
+
+                                               });
+
+                                               envMapClusters[node.text] = clusterNames.join(",");
+
+                                           }
+                                       });
+
+                                       $rootScope.envMapClusters = envMapClusters;
 
                                    }, function (result) {
                                        toastr.error(AppUtil.errorMsg(result), "加载导航出错");

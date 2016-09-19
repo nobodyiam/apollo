@@ -99,10 +99,6 @@ public class ItemService {
   }
 
   public void updateItem(String appId, Env env, String clusterName, String namespaceName, ItemDTO item) {
-    if (StringUtils.isEmpty(item.getDataChangeLastModifiedBy())) {
-      String username = userInfoHolder.getUser().getUserId();
-      item.setDataChangeLastModifiedBy(username);
-    }
     itemAPI.updateItem(appId, env, clusterName, namespaceName, item.getId(), item);
   }
 
