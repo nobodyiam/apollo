@@ -148,7 +148,7 @@ public class DefaultServerProvider implements ServerProvider {
     // 4. Set environment to null.
     if (Utils.isBlank(m_env)) {
       m_env = null;
-      logger.error("Environment is set to null. "
+      logger.warn("Environment is set to null. "
           + "Because it is not available in either (1) JVM system property 'env', (2) OS env variable 'ENV' nor (3) property 'env' from the properties InputStream.");
     }
   }
@@ -196,7 +196,7 @@ public class DefaultServerProvider implements ServerProvider {
     // 4. Set Data Center to null.
     if (Utils.isBlank(m_dc)) {
       m_dc = null;
-      logger.error("Data Center is set to null. "
+      logger.warn("Data Center is set to null. "
           + "Because it is not available in either (1) JVM system property 'idc', (2) OS env variable 'IDC' nor (3) property 'idc' from the properties InputStream.");
     }
   }

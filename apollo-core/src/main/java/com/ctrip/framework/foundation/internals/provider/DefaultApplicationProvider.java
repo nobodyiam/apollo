@@ -98,7 +98,7 @@ public class DefaultApplicationProvider implements ApplicationProvider {
       m_appId = m_appId.trim();
       logger.info("App ID is set to {} by app.id property from {}", m_appId, APP_PROPERTIES_CLASSPATH);
     } else {
-      logger.error("app.id is not available from System Property and {}. It is set to null", APP_PROPERTIES_CLASSPATH);
+      logger.warn("app.id is not available from System Property and {}. It is set to null", APP_PROPERTIES_CLASSPATH);
       m_appId = null;
     }
   }
