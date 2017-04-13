@@ -142,11 +142,6 @@
 			</dependency>
 			<!-- ctrip internal dependencies, only used when ctrip profiles are enabled -->
 			<dependency>
-				<groupId>com.ctrip.framework</groupId>
-				<artifactId>framework-foundation</artifactId>
-				<version>1.5.2</version>
-			</dependency>
-			<dependency>
 				<groupId>com.dianping.cat</groupId>
 				<artifactId>cat-client</artifactId>
 				<version>2.2.3</version>
