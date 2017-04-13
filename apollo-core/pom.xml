@@ -16,12 +16,12 @@
 		<github.path>${project.artifactId}</github.path>
 	</properties>
 	<dependencies>
-		<!-- framework foundation -->
 		<dependency>
-			<groupId>com.ctrip.framework</groupId>
-			<artifactId>framework-foundation</artifactId>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
 		</dependency>
-		<!-- end of framework foundation -->
 		<!-- json -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

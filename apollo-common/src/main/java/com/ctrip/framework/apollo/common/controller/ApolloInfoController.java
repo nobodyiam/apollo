@@ -15,11 +15,6 @@ public class ApolloInfoController {
     return Foundation.app().toString();
   }
 
-  @RequestMapping("web")
-  public String getEnv() {
-    return Foundation.web().toString();
-  }
-
   @RequestMapping("net")
   public String getNet() {
     return Foundation.net().toString();

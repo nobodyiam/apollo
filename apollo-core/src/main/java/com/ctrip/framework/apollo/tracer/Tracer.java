@@ -1,11 +1,11 @@
 package com.ctrip.framework.apollo.tracer;
 
-import com.ctrip.framework.apollo.core.utils.ServiceBootstrap;
 import com.ctrip.framework.apollo.tracer.internals.NullMessageProducerManager;
 import com.ctrip.framework.apollo.tracer.spi.MessageProducer;
 import com.ctrip.framework.apollo.tracer.spi.MessageProducerManager;
 import com.ctrip.framework.apollo.tracer.spi.Transaction;
 
+import com.ctrip.framework.foundation.internals.ServiceBootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
