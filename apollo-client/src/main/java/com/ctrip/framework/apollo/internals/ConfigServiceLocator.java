@@ -20,8 +20,6 @@ import com.ctrip.framework.apollo.util.http.HttpResponse;
 import com.ctrip.framework.apollo.util.http.HttpUtil;
 
 import com.google.inject.Inject;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ConfigServiceLocator implements Initializable {
+public class ConfigServiceLocator {
   private static final Logger logger = LoggerFactory.getLogger(ConfigServiceLocator.class);
   @Inject
   private HttpUtil m_httpUtil;
@@ -56,8 +54,7 @@ public class ConfigServiceLocator implements Initializable {
         ApolloThreadFactory.create("ConfigServiceLocator", true));
   }
 
-  @Override
-  public void initialize() throws InitializationException {
+  public void initialize() {
     this.tryUpdateConfigServices();
     this.schedulePeriodicRefresh();
   }

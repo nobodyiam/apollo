@@ -1,7 +1,9 @@
 package com.ctrip.framework.apollo.build;
 
 import com.ctrip.framework.apollo.internals.ConfigManager;
+import com.ctrip.framework.apollo.internals.ConfigServiceLocator;
 import com.ctrip.framework.apollo.internals.DefaultConfigManager;
+import com.ctrip.framework.apollo.internals.RemoteConfigLongPollService;
 import com.ctrip.framework.apollo.spi.ConfigFactory;
 import com.ctrip.framework.apollo.spi.ConfigFactoryManager;
 import com.ctrip.framework.apollo.spi.ConfigRegistry;
@@ -11,6 +13,7 @@ import com.ctrip.framework.apollo.spi.DefaultConfigRegistry;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.ctrip.framework.apollo.util.http.HttpUtil;
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
 /**
@@ -26,5 +29,24 @@ public class ApolloModule extends AbstractModule {
     bind(ConfigFactory.class).to(DefaultConfigFactory.class).in(Singleton.class);
     bind(ConfigUtil.class).in(Singleton.class);
     bind(HttpUtil.class).in(Singleton.class);
+  }
+
+  @Provides
+  @Singleton
+  ConfigServiceLocator provideConfigServiceLocator() {
+    ConfigServiceLocator configServiceLocator = new ConfigServiceLocator();
+    requestInjection(configServiceLocator);
+    configServiceLocator.initialize();
+
+    return configServiceLocator;
+  }
+
+  @Provides
+  @Singleton
+  RemoteConfigLongPollService provideRemoteConfigLongPollService() {
+    RemoteConfigLongPollService remoteConfigLongPollService = new RemoteConfigLongPollService();
+    requestInjection(remoteConfigLongPollService);
+    remoteConfigLongPollService.initialize();
+    return remoteConfigLongPollService;
   }
 }

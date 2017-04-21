@@ -68,11 +68,15 @@ public class DefaultConfigFactory implements ConfigFactory {
     }
 
     injector.injectMembers(repository);
+
+    return repository;
   }
 
   RemoteConfigRepository createRemoteConfigRepository(String namespace) {
     RemoteConfigRepository repository = new RemoteConfigRepository(namespace);
 
     injector.injectMembers(repository);
+
+    return repository;
   }
 }

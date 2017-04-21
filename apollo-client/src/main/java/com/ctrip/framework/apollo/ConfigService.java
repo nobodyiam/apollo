@@ -9,9 +9,8 @@ import com.ctrip.framework.apollo.spi.ConfigFactory;
 import com.ctrip.framework.apollo.spi.ConfigRegistry;
 import com.ctrip.framework.apollo.tracer.Tracer;
 
+import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.netflix.governator.guice.LifecycleInjector;
-import com.netflix.governator.lifecycle.LifecycleManager;
 import org.codehaus.plexus.PlexusContainer;
 import org.unidal.lookup.ContainerLoader;
 
@@ -29,9 +28,8 @@ public class ConfigService {
   private volatile ConfigRegistry m_configRegistry;
 
   private ConfigService() {
-    m_injector = LifecycleInjector.builder().withModules(ApolloModule.class).build().createInjector();
     try {
-      m_injector.getInstance(LifecycleManager.class).start();
+      m_injector = Guice.createInjector(new ApolloModule());
     } catch (Throwable ex) {
       ApolloConfigException exception = new ApolloConfigException("Unable to load LifecycleManager!", ex);
       Tracer.logError(exception);
@@ -107,7 +105,7 @@ public class ConfigService {
    * Manually set the config for the namespace specified, use with caution.
    *
    * @param namespace the namespace
-   * @param config    the config instance
+   * @param config the config instance
    */
   static void setConfig(String namespace, final Config config) {
     s_instance.getRegistry().register(namespace, new ConfigFactory() {
@@ -132,7 +130,7 @@ public class ConfigService {
    * Manually set the config factory for the namespace specified, use with caution.
    *
    * @param namespace the namespace
-   * @param factory   the factory instance
+   * @param factory the factory instance
    */
   static void setConfigFactory(String namespace, ConfigFactory factory) {
     s_instance.getRegistry().register(namespace, factory);

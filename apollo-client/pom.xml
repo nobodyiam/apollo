@@ -26,10 +26,6 @@
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.netflix.governator</groupId>
-			<artifactId>governator</artifactId>
-		</dependency>
 		<!-- end of guice -->
 		<!-- foundation service -->
 		<dependency>

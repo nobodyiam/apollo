@@ -375,7 +375,7 @@ public class RemoteConfigLongPollServiceTest extends ComponentTestCase {
     }
 
     @Override
-    public void initialize() throws InitializationException {
+    public void initialize() {
       //do nothing
     }
   }

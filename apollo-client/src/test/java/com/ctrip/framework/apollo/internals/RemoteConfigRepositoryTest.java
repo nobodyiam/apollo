@@ -257,7 +257,7 @@ public class RemoteConfigRepositoryTest extends ComponentTestCase {
     }
 
     @Override
-    public void initialize() throws InitializationException {
+    public void initialize() {
       //do nothing
     }
   }
