@@ -2,20 +2,20 @@ package com.ctrip.framework.apollo.spi;
 
 import com.google.common.collect.Maps;
 
-import org.unidal.lookup.ContainerHolder;
-import org.unidal.lookup.LookupException;
-import org.unidal.lookup.annotation.Inject;
-import org.unidal.lookup.annotation.Named;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 
 import java.util.Map;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
-@Named(type = ConfigFactoryManager.class)
-public class DefaultConfigFactoryManager extends ContainerHolder implements ConfigFactoryManager {
+public class DefaultConfigFactoryManager implements ConfigFactoryManager {
   @Inject
   private ConfigRegistry m_registry;
+
+  @Inject
+  private Injector injector;
 
   private Map<String, ConfigFactory> m_factories = Maps.newConcurrentMap();
 
@@ -36,15 +36,16 @@ public class DefaultConfigFactoryManager extends ContainerHolder implements Conf
     }
 
     // step 3: check declared config factory
-    try {
-      factory = lookup(ConfigFactory.class, namespace);
-    } catch (LookupException ex) {
-      // ignore it
-    }
+//    try {
+//      factory = lookup(ConfigFactory.class, namespace);
+//    } catch (LookupException ex) {
+//      // ignore it
+//    }
 
     // step 4: check default config factory
+    // FIXME: 21/04/2017
     if (factory == null) {
-      factory = lookup(ConfigFactory.class);
+      factory = injector.getInstance(ConfigFactory.class);
     }
 
     m_factories.put(namespace, factory);

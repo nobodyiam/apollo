@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo;
 
+import com.ctrip.framework.apollo.build.ApolloModule;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
@@ -8,8 +9,10 @@ import com.ctrip.framework.apollo.spi.ConfigFactory;
 import com.ctrip.framework.apollo.spi.ConfigRegistry;
 import com.ctrip.framework.apollo.tracer.Tracer;
 
+import com.google.inject.Injector;
+import com.netflix.governator.guice.LifecycleInjector;
+import com.netflix.governator.lifecycle.LifecycleManager;
 import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.unidal.lookup.ContainerLoader;
 
 /**
@@ -21,10 +24,19 @@ public class ConfigService {
   private static final ConfigService s_instance = new ConfigService();
 
   private PlexusContainer m_container;
+  private Injector m_injector;
   private volatile ConfigManager m_configManager;
   private volatile ConfigRegistry m_configRegistry;
 
   private ConfigService() {
+    m_injector = LifecycleInjector.builder().withModules(ApolloModule.class).build().createInjector();
+    try {
+      m_injector.getInstance(LifecycleManager.class).start();
+    } catch (Throwable ex) {
+      ApolloConfigException exception = new ApolloConfigException("Unable to load LifecycleManager!", ex);
+      Tracer.logError(exception);
+      throw exception;
+    }
     m_container = ContainerLoader.getDefaultContainer();
   }
 
@@ -33,8 +45,8 @@ public class ConfigService {
       synchronized (this) {
         if (m_configManager == null) {
           try {
-            m_configManager = m_container.lookup(ConfigManager.class);
-          } catch (ComponentLookupException ex) {
+            m_configManager = m_injector.getInstance(ConfigManager.class);
+          } catch (Throwable ex) {
             ApolloConfigException exception = new ApolloConfigException("Unable to load ConfigManager!", ex);
             Tracer.logError(exception);
             throw exception;
@@ -51,8 +63,8 @@ public class ConfigService {
       synchronized (this) {
         if (m_configRegistry == null) {
           try {
-            m_configRegistry = m_container.lookup(ConfigRegistry.class);
-          } catch (ComponentLookupException ex) {
+            m_configRegistry = m_injector.getInstance(ConfigRegistry.class);
+          } catch (Throwable ex) {
             ApolloConfigException exception = new ApolloConfigException("Unable to load ConfigRegistry!", ex);
             Tracer.logError(exception);
             throw exception;

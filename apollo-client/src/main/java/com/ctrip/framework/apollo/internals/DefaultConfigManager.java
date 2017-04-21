@@ -8,15 +8,12 @@ import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.ctrip.framework.apollo.spi.ConfigFactory;
 import com.ctrip.framework.apollo.spi.ConfigFactoryManager;
 
-import org.unidal.lookup.annotation.Inject;
-import org.unidal.lookup.annotation.Named;
-
+import com.google.inject.Inject;
 import java.util.Map;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
-@Named(type = ConfigManager.class)
 public class DefaultConfigManager implements ConfigManager {
   @Inject
   private ConfigFactoryManager m_factoryManager;

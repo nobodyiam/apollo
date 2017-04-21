@@ -9,9 +9,8 @@ import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
 import com.ctrip.framework.apollo.exceptions.ApolloConfigStatusCodeException;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 
+import com.google.inject.Inject;
 import org.unidal.helper.Files;
-import org.unidal.lookup.annotation.Inject;
-import org.unidal.lookup.annotation.Named;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +22,6 @@ import java.net.URL;
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
-@Named(type = HttpUtil.class)
 public class HttpUtil {
   @Inject
   private ConfigUtil m_configUtil;

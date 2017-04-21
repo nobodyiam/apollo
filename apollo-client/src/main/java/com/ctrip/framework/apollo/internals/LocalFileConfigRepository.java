@@ -11,11 +11,9 @@ import com.ctrip.framework.apollo.tracer.spi.Transaction;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.ctrip.framework.apollo.util.ExceptionUtil;
 
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.unidal.lookup.ContainerLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,10 +33,10 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
     implements RepositoryChangeListener {
   private static final Logger logger = LoggerFactory.getLogger(LocalFileConfigRepository.class);
   private static final String CONFIG_DIR = "/config-cache";
-  private final PlexusContainer m_container;
   private final String m_namespace;
   private File m_baseDir;
-  private final ConfigUtil m_configUtil;
+  @Inject
+  private ConfigUtil m_configUtil;
   private volatile Properties m_fileProperties;
   private volatile ConfigRepository m_upstream;
 
@@ -53,13 +51,12 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
 
   public LocalFileConfigRepository(String namespace, ConfigRepository upstream) {
     m_namespace = namespace;
-    m_container = ContainerLoader.getDefaultContainer();
-    try {
-      m_configUtil = m_container.lookup(ConfigUtil.class);
-    } catch (ComponentLookupException ex) {
-      Tracer.logError(ex);
-      throw new ApolloConfigException("Unable to load component!", ex);
-    }
+//    try {
+//      m_configUtil = m_container.lookup(ConfigUtil.class);
+//    } catch (ComponentLookupException ex) {
+//      Tracer.logError(ex);
+//      throw new ApolloConfigException("Unable to load component!", ex);
+//    }
     this.setLocalCacheDir(findLocalCacheDir(), false);
     this.setUpstreamRepository(upstream);
     this.trySync();

@@ -14,19 +14,21 @@ import com.ctrip.framework.apollo.internals.YamlConfigFile;
 import com.ctrip.framework.apollo.internals.YmlConfigFile;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.unidal.lookup.annotation.Inject;
-import org.unidal.lookup.annotation.Named;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
-@Named(type = ConfigFactory.class)
 public class DefaultConfigFactory implements ConfigFactory {
   private static final Logger logger = LoggerFactory.getLogger(DefaultConfigFactory.class);
   @Inject
   private ConfigUtil m_configUtil;
+
+  @Inject
+  private Injector injector;
 
   @Override
   public Config create(String namespace) {
@@ -55,16 +57,22 @@ public class DefaultConfigFactory implements ConfigFactory {
   }
 
   LocalFileConfigRepository createLocalConfigRepository(String namespace) {
+    LocalFileConfigRepository repository;
     if (m_configUtil.isInLocalMode()) {
       logger.warn(
           "==== Apollo is in local mode! Won't pull configs from remote server for namespace {} ! ====",
           namespace);
-      return new LocalFileConfigRepository(namespace);
+      repository = new LocalFileConfigRepository(namespace);
+    } else {
+      repository = new LocalFileConfigRepository(namespace, createRemoteConfigRepository(namespace));
     }
-    return new LocalFileConfigRepository(namespace, createRemoteConfigRepository(namespace));
+
+    injector.injectMembers(repository);
   }
 
   RemoteConfigRepository createRemoteConfigRepository(String namespace) {
-    return new RemoteConfigRepository(namespace);
+    RemoteConfigRepository repository = new RemoteConfigRepository(namespace);
+
+    injector.injectMembers(repository);
   }
 }

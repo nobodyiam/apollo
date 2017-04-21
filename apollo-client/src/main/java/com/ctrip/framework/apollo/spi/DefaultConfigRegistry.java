@@ -2,26 +2,21 @@ package com.ctrip.framework.apollo.spi;
 
 import com.google.common.collect.Maps;
 
-import org.codehaus.plexus.logging.LogEnabled;
-import org.codehaus.plexus.logging.Logger;
-import org.unidal.lookup.annotation.Named;
-
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
-@Named(type = ConfigRegistry.class)
-public class DefaultConfigRegistry implements ConfigRegistry, LogEnabled {
+public class DefaultConfigRegistry implements ConfigRegistry {
+  private static final Logger s_logger = LoggerFactory.getLogger(DefaultConfigRegistry.class);
   private Map<String, ConfigFactory> m_instances = Maps.newConcurrentMap();
-
-  private Logger m_logger;
 
   @Override
   public void register(String namespace, ConfigFactory factory) {
     if (m_instances.containsKey(namespace)) {
-      m_logger.warn(
-          String.format("ConfigFactory(%s) is overridden by %s!", namespace, factory.getClass()));
+      s_logger.warn("ConfigFactory({}) is overridden by {}!", namespace, factory.getClass());
     }
 
     m_instances.put(namespace, factory);
@@ -32,10 +27,5 @@ public class DefaultConfigRegistry implements ConfigRegistry, LogEnabled {
     ConfigFactory config = m_instances.get(namespace);
 
     return config;
-  }
-
-  @Override
-  public void enableLogging(Logger logger) {
-    m_logger = logger;
   }
 }

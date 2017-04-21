@@ -23,6 +23,7 @@ import com.ctrip.framework.apollo.util.http.HttpRequest;
 import com.ctrip.framework.apollo.util.http.HttpResponse;
 import com.ctrip.framework.apollo.util.http.HttpUtil;
 
+import com.google.inject.Inject;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.slf4j.Logger;
@@ -45,11 +46,14 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
   private static final Logger logger = LoggerFactory.getLogger(RemoteConfigRepository.class);
   private static final Joiner STRING_JOINER = Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR);
   private static final Joiner.MapJoiner MAP_JOINER = Joiner.on("&").withKeyValueSeparator("=");
-  private PlexusContainer m_container;
-  private final ConfigServiceLocator m_serviceLocator;
-  private final HttpUtil m_httpUtil;
-  private final ConfigUtil m_configUtil;
-  private final RemoteConfigLongPollService remoteConfigLongPollService;
+  @Inject
+  private ConfigServiceLocator m_serviceLocator;
+  @Inject
+  private HttpUtil m_httpUtil;
+  @Inject
+  private ConfigUtil m_configUtil;
+  @Inject
+  private RemoteConfigLongPollService remoteConfigLongPollService;
   private volatile AtomicReference<ApolloConfig> m_configCache;
   private final String m_namespace;
   private final static ScheduledExecutorService m_executorService;
@@ -71,16 +75,15 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
   public RemoteConfigRepository(String namespace) {
     m_namespace = namespace;
     m_configCache = new AtomicReference<>();
-    m_container = ContainerLoader.getDefaultContainer();
-    try {
-      m_configUtil = m_container.lookup(ConfigUtil.class);
-      m_httpUtil = m_container.lookup(HttpUtil.class);
-      m_serviceLocator = m_container.lookup(ConfigServiceLocator.class);
-      remoteConfigLongPollService = m_container.lookup(RemoteConfigLongPollService.class);
-    } catch (ComponentLookupException ex) {
-      Tracer.logError(ex);
-      throw new ApolloConfigException("Unable to load component!", ex);
-    }
+//    try {
+//      m_configUtil = m_container.lookup(ConfigUtil.class);
+//      m_httpUtil = m_container.lookup(HttpUtil.class);
+//      m_serviceLocator = m_container.lookup(ConfigServiceLocator.class);
+//      remoteConfigLongPollService = m_container.lookup(RemoteConfigLongPollService.class);
+//    } catch (ComponentLookupException ex) {
+//      Tracer.logError(ex);
+//      throw new ApolloConfigException("Unable to load component!", ex);
+//    }
     m_longPollServiceDto = new AtomicReference<>();
     m_loadConfigRateLimiter = RateLimiter.create(m_configUtil.getLoadConfigQPS());
     this.trySync();
