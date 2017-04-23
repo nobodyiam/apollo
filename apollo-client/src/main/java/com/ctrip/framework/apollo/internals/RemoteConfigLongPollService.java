@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.unidal.lookup.annotation.Inject;
 
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.dto.ApolloConfigNotification;
 import com.ctrip.framework.apollo.core.dto.ServiceDTO;
@@ -60,11 +61,8 @@ public class RemoteConfigLongPollService {
   private final ConcurrentMap<String, Long> m_notifications;
   private Type m_responseType;
   private Gson gson;
-  @Inject
   private ConfigUtil m_configUtil;
-  @Inject
   private HttpUtil m_httpUtil;
-  @Inject
   private ConfigServiceLocator m_serviceLocator;
 
   /**
@@ -82,9 +80,9 @@ public class RemoteConfigLongPollService {
     m_responseType = new TypeToken<List<ApolloConfigNotification>>() {
     }.getType();
     gson = new Gson();
-  }
-
-  public void initialize() {
+    m_configUtil = ApolloInjector.getInstance(ConfigUtil.class);
+    m_httpUtil = ApolloInjector.getInstance(HttpUtil.class);
+    m_serviceLocator = ApolloInjector.getInstance(ConfigServiceLocator.class);
     m_longPollRateLimiter = RateLimiter.create(m_configUtil.getLongPollQPS());
   }
 

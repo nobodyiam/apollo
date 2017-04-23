@@ -2,6 +2,7 @@ package com.ctrip.framework.apollo.spi;
 
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigFile;
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.ctrip.framework.apollo.internals.ConfigRepository;
 import com.ctrip.framework.apollo.internals.DefaultConfig;
@@ -14,8 +15,6 @@ import com.ctrip.framework.apollo.internals.YamlConfigFile;
 import com.ctrip.framework.apollo.internals.YmlConfigFile;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 
-import com.google.inject.Inject;
-import com.google.inject.Injector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,11 +23,11 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultConfigFactory implements ConfigFactory {
   private static final Logger logger = LoggerFactory.getLogger(DefaultConfigFactory.class);
-  @Inject
   private ConfigUtil m_configUtil;
 
-  @Inject
-  private Injector injector;
+  public DefaultConfigFactory() {
+    m_configUtil = ApolloInjector.getInstance(ConfigUtil.class);
+  }
 
   @Override
   public Config create(String namespace) {
@@ -57,26 +56,17 @@ public class DefaultConfigFactory implements ConfigFactory {
   }
 
   LocalFileConfigRepository createLocalConfigRepository(String namespace) {
-    LocalFileConfigRepository repository;
     if (m_configUtil.isInLocalMode()) {
       logger.warn(
           "==== Apollo is in local mode! Won't pull configs from remote server for namespace {} ! ====",
           namespace);
-      repository = new LocalFileConfigRepository(namespace);
+      return new LocalFileConfigRepository(namespace);
     } else {
-      repository = new LocalFileConfigRepository(namespace, createRemoteConfigRepository(namespace));
+      return new LocalFileConfigRepository(namespace, createRemoteConfigRepository(namespace));
     }
-
-    injector.injectMembers(repository);
-
-    return repository;
   }
 
   RemoteConfigRepository createRemoteConfigRepository(String namespace) {
-    RemoteConfigRepository repository = new RemoteConfigRepository(namespace);
-
-    injector.injectMembers(repository);
-
-    return repository;
+    return new RemoteConfigRepository(namespace);
   }
 }

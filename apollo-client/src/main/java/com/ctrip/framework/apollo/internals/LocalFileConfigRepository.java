@@ -3,6 +3,7 @@ package com.ctrip.framework.apollo.internals;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.utils.ClassLoaderUtil;
 import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
@@ -35,7 +36,6 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
   private static final String CONFIG_DIR = "/config-cache";
   private final String m_namespace;
   private File m_baseDir;
-  @Inject
   private ConfigUtil m_configUtil;
   private volatile Properties m_fileProperties;
   private volatile ConfigRepository m_upstream;
@@ -51,12 +51,7 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
 
   public LocalFileConfigRepository(String namespace, ConfigRepository upstream) {
     m_namespace = namespace;
-//    try {
-//      m_configUtil = m_container.lookup(ConfigUtil.class);
-//    } catch (ComponentLookupException ex) {
-//      Tracer.logError(ex);
-//      throw new ApolloConfigException("Unable to load component!", ex);
-//    }
+    m_configUtil = ApolloInjector.getInstance(ConfigUtil.class);
     this.setLocalCacheDir(findLocalCacheDir(), false);
     this.setUpstreamRepository(upstream);
     this.trySync();

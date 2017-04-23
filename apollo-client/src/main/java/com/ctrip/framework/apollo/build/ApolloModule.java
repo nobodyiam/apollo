@@ -29,24 +29,7 @@ public class ApolloModule extends AbstractModule {
     bind(ConfigFactory.class).to(DefaultConfigFactory.class).in(Singleton.class);
     bind(ConfigUtil.class).in(Singleton.class);
     bind(HttpUtil.class).in(Singleton.class);
-  }
-
-  @Provides
-  @Singleton
-  ConfigServiceLocator provideConfigServiceLocator() {
-    ConfigServiceLocator configServiceLocator = new ConfigServiceLocator();
-    requestInjection(configServiceLocator);
-    configServiceLocator.initialize();
-
-    return configServiceLocator;
-  }
-
-  @Provides
-  @Singleton
-  RemoteConfigLongPollService provideRemoteConfigLongPollService() {
-    RemoteConfigLongPollService remoteConfigLongPollService = new RemoteConfigLongPollService();
-    requestInjection(remoteConfigLongPollService);
-    remoteConfigLongPollService.initialize();
-    return remoteConfigLongPollService;
+    bind(ConfigServiceLocator.class).in(Singleton.class);
+    bind(RemoteConfigLongPollService.class).in(Singleton.class);
   }
 }

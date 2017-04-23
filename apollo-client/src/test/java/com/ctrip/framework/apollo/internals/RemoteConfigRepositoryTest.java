@@ -256,10 +256,6 @@ public class RemoteConfigRepositoryTest extends ComponentTestCase {
       return Lists.newArrayList(serviceDTO);
     }
 
-    @Override
-    public void initialize() {
-      //do nothing
-    }
   }
 
   public static class MockHttpUtil extends HttpUtil {

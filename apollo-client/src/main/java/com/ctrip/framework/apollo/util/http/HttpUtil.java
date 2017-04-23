@@ -5,11 +5,11 @@ import com.google.common.base.Function;
 import com.google.common.io.BaseEncoding;
 import com.google.gson.Gson;
 
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
 import com.ctrip.framework.apollo.exceptions.ApolloConfigStatusCodeException;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 
-import com.google.inject.Inject;
 import org.unidal.helper.Files;
 
 import java.io.IOException;
@@ -23,7 +23,6 @@ import java.net.URL;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class HttpUtil {
-  @Inject
   private ConfigUtil m_configUtil;
   private Gson gson;
   private String basicAuth;
@@ -32,6 +31,7 @@ public class HttpUtil {
    * Constructor.
    */
   public HttpUtil() {
+    m_configUtil = ApolloInjector.getInstance(ConfigUtil.class);
     gson = new Gson();
     try {
       basicAuth = "Basic " + BaseEncoding.base64().encode("user:".getBytes("UTF-8"));

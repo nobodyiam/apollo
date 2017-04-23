@@ -1,18 +1,13 @@
 package com.ctrip.framework.apollo;
 
-import com.ctrip.framework.apollo.build.ApolloModule;
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
-import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
 import com.ctrip.framework.apollo.internals.ConfigManager;
 import com.ctrip.framework.apollo.spi.ConfigFactory;
 import com.ctrip.framework.apollo.spi.ConfigRegistry;
-import com.ctrip.framework.apollo.tracer.Tracer;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.codehaus.plexus.PlexusContainer;
-import org.unidal.lookup.ContainerLoader;
 
 /**
  * Entry point for client config use
@@ -22,33 +17,14 @@ import org.unidal.lookup.ContainerLoader;
 public class ConfigService {
   private static final ConfigService s_instance = new ConfigService();
 
-  private PlexusContainer m_container;
-  private Injector m_injector;
   private volatile ConfigManager m_configManager;
   private volatile ConfigRegistry m_configRegistry;
-
-  private ConfigService() {
-    try {
-      m_injector = Guice.createInjector(new ApolloModule());
-    } catch (Throwable ex) {
-      ApolloConfigException exception = new ApolloConfigException("Unable to load LifecycleManager!", ex);
-      Tracer.logError(exception);
-      throw exception;
-    }
-    m_container = ContainerLoader.getDefaultContainer();
-  }
 
   private ConfigManager getManager() {
     if (m_configManager == null) {
       synchronized (this) {
         if (m_configManager == null) {
-          try {
-            m_configManager = m_injector.getInstance(ConfigManager.class);
-          } catch (Throwable ex) {
-            ApolloConfigException exception = new ApolloConfigException("Unable to load ConfigManager!", ex);
-            Tracer.logError(exception);
-            throw exception;
-          }
+          m_configManager = ApolloInjector.getInstance(ConfigManager.class);
         }
       }
     }
@@ -60,13 +36,7 @@ public class ConfigService {
     if (m_configRegistry == null) {
       synchronized (this) {
         if (m_configRegistry == null) {
-          try {
-            m_configRegistry = m_injector.getInstance(ConfigRegistry.class);
-          } catch (Throwable ex) {
-            ApolloConfigException exception = new ApolloConfigException("Unable to load ConfigRegistry!", ex);
-            Tracer.logError(exception);
-            throw exception;
-          }
+          m_configRegistry = ApolloInjector.getInstance(ConfigRegistry.class);
         }
       }
     }
@@ -105,7 +75,7 @@ public class ConfigService {
    * Manually set the config for the namespace specified, use with caution.
    *
    * @param namespace the namespace
-   * @param config the config instance
+   * @param config    the config instance
    */
   static void setConfig(String namespace, final Config config) {
     s_instance.getRegistry().register(namespace, new ConfigFactory() {
@@ -130,7 +100,7 @@ public class ConfigService {
    * Manually set the config factory for the namespace specified, use with caution.
    *
    * @param namespace the namespace
-   * @param factory the factory instance
+   * @param factory   the factory instance
    */
   static void setConfigFactory(String namespace, ConfigFactory factory) {
     s_instance.getRegistry().register(namespace, factory);
@@ -139,7 +109,6 @@ public class ConfigService {
   // for test only
   static void setContainer(PlexusContainer m_container) {
     synchronized (s_instance) {
-      s_instance.m_container = m_container;
       s_instance.m_configManager = null;
       s_instance.m_configRegistry = null;
     }

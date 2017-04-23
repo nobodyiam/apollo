@@ -8,6 +8,7 @@ import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import com.google.gson.reflect.TypeToken;
 
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.dto.ServiceDTO;
 import com.ctrip.framework.apollo.core.utils.ApolloThreadFactory;
 import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
@@ -19,7 +20,6 @@ import com.ctrip.framework.apollo.util.http.HttpRequest;
 import com.ctrip.framework.apollo.util.http.HttpResponse;
 import com.ctrip.framework.apollo.util.http.HttpUtil;
 
-import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,9 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ConfigServiceLocator {
   private static final Logger logger = LoggerFactory.getLogger(ConfigServiceLocator.class);
-  @Inject
   private HttpUtil m_httpUtil;
-  @Inject
   private ConfigUtil m_configUtil;
   private AtomicReference<List<ServiceDTO>> m_configServices;
   private Type m_responseType;
@@ -50,11 +48,10 @@ public class ConfigServiceLocator {
     m_configServices = new AtomicReference<>(initial);
     m_responseType = new TypeToken<List<ServiceDTO>>() {
     }.getType();
+    m_httpUtil = ApolloInjector.getInstance(HttpUtil.class);
+    m_configUtil = ApolloInjector.getInstance(ConfigUtil.class);
     this.m_executorService = Executors.newScheduledThreadPool(1,
         ApolloThreadFactory.create("ConfigServiceLocator", true));
-  }
-
-  public void initialize() {
     this.tryUpdateConfigServices();
     this.schedulePeriodicRefresh();
   }

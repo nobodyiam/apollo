@@ -373,10 +373,5 @@ public class RemoteConfigLongPollServiceTest extends ComponentTestCase {
       when(serviceDTO.getHomepageUrl()).thenReturn(someServerUrl);
       return Lists.newArrayList(serviceDTO);
     }
-
-    @Override
-    public void initialize() {
-      //do nothing
-    }
   }
 }

@@ -3,7 +3,8 @@ package com.ctrip.framework.apollo.spi;
 import com.google.common.collect.Maps;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
+
+import com.ctrip.framework.apollo.build.ApolloInjector;
 
 import java.util.Map;
 
@@ -11,13 +12,13 @@ import java.util.Map;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class DefaultConfigFactoryManager implements ConfigFactoryManager {
-  @Inject
   private ConfigRegistry m_registry;
 
-  @Inject
-  private Injector injector;
-
   private Map<String, ConfigFactory> m_factories = Maps.newConcurrentMap();
+
+  public DefaultConfigFactoryManager() {
+    m_registry = ApolloInjector.getInstance(ConfigRegistry.class);
+  }
 
   @Override
   public ConfigFactory getFactory(String namespace) {
@@ -45,7 +46,7 @@ public class DefaultConfigFactoryManager implements ConfigFactoryManager {
     // step 4: check default config factory
     // FIXME: 21/04/2017
     if (factory == null) {
-      factory = injector.getInstance(ConfigFactory.class);
+      factory = ApolloInjector.getInstance(ConfigFactory.class);
     }
 
     m_factories.put(namespace, factory);
