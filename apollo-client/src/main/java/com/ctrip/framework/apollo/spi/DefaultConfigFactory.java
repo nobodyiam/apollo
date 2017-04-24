@@ -1,5 +1,8 @@
 package com.ctrip.framework.apollo.spi;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigFile;
 import com.ctrip.framework.apollo.build.ApolloInjector;
@@ -14,9 +17,6 @@ import com.ctrip.framework.apollo.internals.XmlConfigFile;
 import com.ctrip.framework.apollo.internals.YamlConfigFile;
 import com.ctrip.framework.apollo.internals.YmlConfigFile;
 import com.ctrip.framework.apollo.util.ConfigUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

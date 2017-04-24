@@ -1,6 +1,10 @@
 package com.ctrip.framework.apollo;
 
 
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+
 import com.ctrip.framework.apollo.integration.ConfigIntegrationTest;
 import com.ctrip.framework.apollo.internals.DefaultConfigManagerTest;
 import com.ctrip.framework.apollo.internals.DefaultConfigTest;
@@ -21,10 +25,6 @@ import com.ctrip.framework.apollo.spring.XmlConfigPlaceholderTest;
 import com.ctrip.framework.apollo.util.ExceptionUtilTest;
 import com.ctrip.framework.apollo.util.parser.DateParserTest;
 import com.ctrip.framework.apollo.util.parser.DurationParserTest;
-
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({

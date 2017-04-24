@@ -1,6 +1,9 @@
 package com.ctrip.framework.apollo.util;
 
-import com.google.common.base.Strings;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.MetaDomainConsts;
@@ -8,11 +11,7 @@ import com.ctrip.framework.apollo.core.enums.Env;
 import com.ctrip.framework.apollo.core.enums.EnvUtils;
 import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
 import com.ctrip.framework.foundation.Foundation;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.TimeUnit;
+import com.google.common.base.Strings;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

@@ -1,13 +1,10 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.util.concurrent.SettableFuture;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigChangeListener;
-import com.ctrip.framework.apollo.enums.PropertyChangeType;
-import com.ctrip.framework.apollo.model.ConfigChange;
-import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,11 +12,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigChangeListener;
+import com.ctrip.framework.apollo.enums.PropertyChangeType;
+import com.ctrip.framework.apollo.model.ConfigChange;
+import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.SettableFuture;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

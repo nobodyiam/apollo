@@ -1,6 +1,12 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,13 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Properties;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

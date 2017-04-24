@@ -1,12 +1,9 @@
 package com.ctrip.framework.apollo.spi;
 
-import com.google.common.collect.Maps;
-
-import com.google.inject.Inject;
+import java.util.Map;
 
 import com.ctrip.framework.apollo.build.ApolloInjector;
-
-import java.util.Map;
+import com.google.common.collect.Maps;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

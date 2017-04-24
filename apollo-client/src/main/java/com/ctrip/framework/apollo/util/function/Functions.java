@@ -1,12 +1,11 @@
 package com.ctrip.framework.apollo.util.function;
 
-import com.google.common.base.Function;
+import java.util.Date;
 
 import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
 import com.ctrip.framework.apollo.util.parser.ParserException;
 import com.ctrip.framework.apollo.util.parser.Parsers;
-
-import java.util.Date;
+import com.google.common.base.Function;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

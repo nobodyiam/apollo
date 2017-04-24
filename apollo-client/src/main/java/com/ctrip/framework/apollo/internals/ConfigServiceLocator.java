@@ -1,12 +1,14 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.escape.Escaper;
-import com.google.common.net.UrlEscapers;
-import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.dto.ServiceDTO;
@@ -19,16 +21,13 @@ import com.ctrip.framework.apollo.util.ExceptionUtil;
 import com.ctrip.framework.apollo.util.http.HttpRequest;
 import com.ctrip.framework.apollo.util.http.HttpResponse;
 import com.ctrip.framework.apollo.util.http.HttpUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicReference;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.escape.Escaper;
+import com.google.common.net.UrlEscapers;
+import com.google.gson.reflect.TypeToken;
 
 public class ConfigServiceLocator {
   private static final Logger logger = LoggerFactory.getLogger(ConfigServiceLocator.class);

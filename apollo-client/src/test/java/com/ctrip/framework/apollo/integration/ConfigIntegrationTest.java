@@ -1,30 +1,9 @@
 package com.ctrip.framework.apollo.integration;
 
-import com.ctrip.framework.apollo.build.ApolloInjector;
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.SettableFuture;
-
-import com.ctrip.framework.apollo.BaseIntegrationTest;
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigChangeListener;
-import com.ctrip.framework.apollo.ConfigService;
-import com.ctrip.framework.apollo.core.ConfigConsts;
-import com.ctrip.framework.apollo.core.dto.ApolloConfig;
-import com.ctrip.framework.apollo.core.dto.ApolloConfigNotification;
-import com.ctrip.framework.apollo.core.utils.ClassLoaderUtil;
-import com.ctrip.framework.apollo.internals.RemoteConfigLongPollService;
-import com.ctrip.framework.apollo.model.ConfigChangeEvent;
-
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,10 +19,30 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import com.ctrip.framework.apollo.BaseIntegrationTest;
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigChangeListener;
+import com.ctrip.framework.apollo.ConfigService;
+import com.ctrip.framework.apollo.build.ApolloInjector;
+import com.ctrip.framework.apollo.core.ConfigConsts;
+import com.ctrip.framework.apollo.core.dto.ApolloConfig;
+import com.ctrip.framework.apollo.core.dto.ApolloConfigNotification;
+import com.ctrip.framework.apollo.core.utils.ClassLoaderUtil;
+import com.ctrip.framework.apollo.internals.RemoteConfigLongPollService;
+import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.SettableFuture;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

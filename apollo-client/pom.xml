@@ -27,12 +27,6 @@
 			<artifactId>guice</artifactId>
 		</dependency>
 		<!-- end of guice -->
-		<!-- foundation service -->
-		<dependency>
-			<groupId>org.unidal.framework</groupId>
-			<artifactId>foundation-service</artifactId>
-		</dependency>
-		<!-- end of foundation service -->
 		<!-- log -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -67,19 +61,5 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- end of test -->
-		<!-- dal-jdbc -->
-		<dependency>
-			<groupId>org.unidal.framework</groupId>
-			<artifactId>dal-jdbc</artifactId>
-			<version>2.4.0</version>
-            <optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<groupId>com.dianping.cat</groupId>
-					<artifactId>cat-client</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- end of dal-jdbc -->
 	</dependencies>
 </project>

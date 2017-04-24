@@ -1,21 +1,20 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
-
-import com.ctrip.framework.apollo.model.ConfigChange;
-import com.ctrip.framework.apollo.model.ConfigChangeEvent;
-import com.ctrip.framework.apollo.tracer.Tracer;
-import com.ctrip.framework.apollo.util.ExceptionUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.ctrip.framework.apollo.model.ConfigChange;
+import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import com.ctrip.framework.apollo.tracer.Tracer;
+import com.ctrip.framework.apollo.util.ExceptionUtil;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

@@ -1,11 +1,7 @@
 package com.ctrip.framework.apollo.spring.config;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Multimap;
-
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigService;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -17,9 +13,11 @@ import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicBoolean;
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigService;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Multimap;
 
 /**
  * Apollo Property Sources processor for Spring Annotation Based Application

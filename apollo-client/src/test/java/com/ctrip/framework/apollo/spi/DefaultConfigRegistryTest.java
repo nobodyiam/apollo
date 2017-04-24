@@ -1,28 +1,27 @@
 package com.ctrip.framework.apollo.spi;
 
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigFile;
-import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.unidal.lookup.ComponentTestCase;
-
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigFile;
+import com.ctrip.framework.apollo.build.MockInjector;
+import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
+
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
-public class DefaultConfigRegistryTest extends ComponentTestCase {
+public class DefaultConfigRegistryTest {
   private DefaultConfigRegistry defaultConfigRegistry;
 
   @Before
   public void setUp() throws Exception {
-    super.tearDown();//clear the container
-    super.setUp();
-    defaultConfigRegistry = (DefaultConfigRegistry) lookup(ConfigRegistry.class);
+    MockInjector.reset();
+    defaultConfigRegistry = new DefaultConfigRegistry();
   }
 
   @Test

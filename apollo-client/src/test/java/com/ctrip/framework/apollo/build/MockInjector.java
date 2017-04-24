@@ -1,8 +1,8 @@
 package com.ctrip.framework.apollo.build;
 
-import com.ctrip.framework.apollo.internals.DefaultInjector;
 import java.util.Map;
 
+import com.ctrip.framework.apollo.internals.DefaultInjector;
 import com.ctrip.framework.apollo.internals.Injector;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
@@ -23,7 +23,11 @@ public class MockInjector implements Injector {
       return o;
     }
 
-    return delegate.getInstance(clazz);
+    if (delegate != null) {
+      return delegate.getInstance(clazz);
+    }
+
+    return null;
   }
 
   @Override
@@ -33,7 +37,11 @@ public class MockInjector implements Injector {
       return o;
     }
 
-    return delegate.getInstance(clazz, name);
+    if (delegate != null) {
+      return delegate.getInstance(clazz, name);
+    }
+
+    return null;
   }
 
   public static void setInstance(Class clazz, Object o) {

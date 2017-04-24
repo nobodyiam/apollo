@@ -1,11 +1,7 @@
 package com.ctrip.framework.apollo.spring.annotation;
 
-import com.google.common.base.Preconditions;
-
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigChangeListener;
-import com.ctrip.framework.apollo.ConfigService;
-import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -14,8 +10,11 @@ import org.springframework.core.PriorityOrdered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigChangeListener;
+import com.ctrip.framework.apollo.ConfigService;
+import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import com.google.common.base.Preconditions;
 
 /**
  * Apollo Annotation Processor for Spring Application

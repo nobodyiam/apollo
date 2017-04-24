@@ -1,14 +1,11 @@
 package com.ctrip.framework.apollo.spring;
 
-import com.google.common.collect.Lists;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigChangeListener;
-import com.ctrip.framework.apollo.core.ConfigConsts;
-import com.ctrip.framework.apollo.model.ConfigChangeEvent;
-import com.ctrip.framework.apollo.spring.annotation.ApolloConfig;
-import com.ctrip.framework.apollo.spring.annotation.ApolloConfigChangeListener;
-import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
+import java.util.List;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -18,12 +15,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigChangeListener;
+import com.ctrip.framework.apollo.core.ConfigConsts;
+import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import com.ctrip.framework.apollo.spring.annotation.ApolloConfig;
+import com.ctrip.framework.apollo.spring.annotation.ApolloConfigChangeListener;
+import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
+import com.google.common.collect.Lists;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

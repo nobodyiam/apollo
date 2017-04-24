@@ -1,15 +1,14 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.google.common.collect.Lists;
-
-import com.ctrip.framework.apollo.tracer.Tracer;
-import com.ctrip.framework.apollo.util.ExceptionUtil;
+import java.util.List;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Properties;
+import com.ctrip.framework.apollo.tracer.Tracer;
+import com.ctrip.framework.apollo.util.ExceptionUtil;
+import com.google.common.collect.Lists;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

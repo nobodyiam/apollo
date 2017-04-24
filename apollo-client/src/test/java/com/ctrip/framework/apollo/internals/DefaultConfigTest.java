@@ -1,30 +1,5 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Files;
-import com.google.common.util.concurrent.SettableFuture;
-
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigChangeListener;
-import com.ctrip.framework.apollo.core.utils.ClassLoaderUtil;
-import com.ctrip.framework.apollo.enums.PropertyChangeType;
-import com.ctrip.framework.apollo.model.ConfigChange;
-import com.ctrip.framework.apollo.model.ConfigChangeEvent;
-import com.ctrip.framework.apollo.util.ConfigUtil;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.unidal.lookup.ComponentTestCase;
-
-import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -32,10 +7,34 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigChangeListener;
+import com.ctrip.framework.apollo.build.MockInjector;
+import com.ctrip.framework.apollo.core.utils.ClassLoaderUtil;
+import com.ctrip.framework.apollo.enums.PropertyChangeType;
+import com.ctrip.framework.apollo.model.ConfigChange;
+import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import com.ctrip.framework.apollo.util.ConfigUtil;
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Files;
+import com.google.common.util.concurrent.SettableFuture;
+
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
-public class DefaultConfigTest extends ComponentTestCase {
+public class DefaultConfigTest {
   private File someResourceDir;
   private String someNamespace;
   private ConfigRepository configRepository;
@@ -43,9 +42,8 @@ public class DefaultConfigTest extends ComponentTestCase {
 
   @Before
   public void setUp() throws Exception {
-    super.tearDown();//clear the container
-    super.setUp();
-    defineComponent(ConfigUtil.class, MockConfigUtil.class);
+    MockInjector.reset();
+    MockInjector.setInstance(ConfigUtil.class, new MockConfigUtil());
 
     someResourceDir = new File(ClassLoaderUtil.getClassPath() + "/META-INF/config");
     someResourceDir.mkdirs();
@@ -55,7 +53,6 @@ public class DefaultConfigTest extends ComponentTestCase {
 
   @After
   public void tearDown() throws Exception {
-    super.tearDown();
     recursiveDelete(someResourceDir);
   }
 
@@ -197,7 +194,7 @@ public class DefaultConfigTest extends ComponentTestCase {
 
     Integer someDefaultValue = -1;
 
-    defineComponent(ConfigUtil.class, MockConfigUtilWithSmallCache.class);
+    MockInjector.setInstance(ConfigUtil.class, new MockConfigUtilWithSmallCache());
 
     //set up config repo
     someProperties = mock(Properties.class);
@@ -230,7 +227,7 @@ public class DefaultConfigTest extends ComponentTestCase {
 
     Integer someDefaultValue = -1;
 
-    defineComponent(ConfigUtil.class, MockConfigUtilWithShortExpireTime.class);
+    MockInjector.setInstance(ConfigUtil.class, new MockConfigUtilWithShortExpireTime());
 
     //set up config repo
     someProperties = mock(Properties.class);

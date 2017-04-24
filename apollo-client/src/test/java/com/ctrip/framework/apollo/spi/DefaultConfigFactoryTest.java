@@ -1,25 +1,5 @@
 package com.ctrip.framework.apollo.spi;
 
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigFile;
-import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
-import com.ctrip.framework.apollo.core.enums.Env;
-import com.ctrip.framework.apollo.internals.DefaultConfig;
-import com.ctrip.framework.apollo.internals.JsonConfigFile;
-import com.ctrip.framework.apollo.internals.LocalFileConfigRepository;
-import com.ctrip.framework.apollo.internals.PropertiesConfigFile;
-import com.ctrip.framework.apollo.internals.XmlConfigFile;
-import com.ctrip.framework.apollo.internals.YamlConfigFile;
-import com.ctrip.framework.apollo.internals.YmlConfigFile;
-import com.ctrip.framework.apollo.util.ConfigUtil;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.unidal.lookup.ComponentTestCase;
-
-import java.util.Properties;
-
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -30,22 +10,43 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.util.Properties;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigFile;
+import com.ctrip.framework.apollo.build.MockInjector;
+import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
+import com.ctrip.framework.apollo.core.enums.Env;
+import com.ctrip.framework.apollo.internals.DefaultConfig;
+import com.ctrip.framework.apollo.internals.DefaultInjector;
+import com.ctrip.framework.apollo.internals.JsonConfigFile;
+import com.ctrip.framework.apollo.internals.LocalFileConfigRepository;
+import com.ctrip.framework.apollo.internals.PropertiesConfigFile;
+import com.ctrip.framework.apollo.internals.XmlConfigFile;
+import com.ctrip.framework.apollo.internals.YamlConfigFile;
+import com.ctrip.framework.apollo.internals.YmlConfigFile;
+import com.ctrip.framework.apollo.util.ConfigUtil;
+
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
-public class DefaultConfigFactoryTest extends ComponentTestCase {
+public class DefaultConfigFactoryTest {
   private DefaultConfigFactory defaultConfigFactory;
   private static String someAppId;
   private static Env someEnv;
 
   @Before
   public void setUp() throws Exception {
-    super.tearDown();//clear the container
-    super.setUp();
     someAppId = "someId";
     someEnv = Env.DEV;
-    defineComponent(ConfigUtil.class, MockConfigUtil.class);
-    defaultConfigFactory = spy((DefaultConfigFactory) lookup(ConfigFactory.class));
+    MockInjector.reset();
+    MockInjector.setDelegate(new DefaultInjector());
+    MockInjector.setInstance(ConfigUtil.class, new MockConfigUtil());
+    defaultConfigFactory = spy(new DefaultConfigFactory());
   }
 
   @Test

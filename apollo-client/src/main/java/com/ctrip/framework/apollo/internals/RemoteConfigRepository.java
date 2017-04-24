@@ -1,12 +1,16 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.escape.Escaper;
-import com.google.common.net.UrlEscapers;
-import com.google.common.util.concurrent.RateLimiter;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ctrip.framework.apollo.Apollo;
 import com.ctrip.framework.apollo.build.ApolloInjector;
@@ -23,23 +27,13 @@ import com.ctrip.framework.apollo.util.ExceptionUtil;
 import com.ctrip.framework.apollo.util.http.HttpRequest;
 import com.ctrip.framework.apollo.util.http.HttpResponse;
 import com.ctrip.framework.apollo.util.http.HttpUtil;
-
-import com.google.inject.Inject;
-
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.unidal.lookup.ContainerLoader;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.escape.Escaper;
+import com.google.common.net.UrlEscapers;
+import com.google.common.util.concurrent.RateLimiter;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

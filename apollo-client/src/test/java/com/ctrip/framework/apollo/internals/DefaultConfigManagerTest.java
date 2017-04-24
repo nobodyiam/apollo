@@ -1,35 +1,36 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigFile;
-import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
-import com.ctrip.framework.apollo.spi.ConfigFactory;
-import com.ctrip.framework.apollo.spi.ConfigFactoryManager;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.unidal.lookup.ComponentTestCase;
-
-import java.util.Set;
-
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
+import java.util.Set;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigFile;
+import com.ctrip.framework.apollo.build.MockInjector;
+import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
+import com.ctrip.framework.apollo.spi.ConfigFactory;
+import com.ctrip.framework.apollo.spi.ConfigFactoryManager;
+import com.ctrip.framework.apollo.util.ConfigUtil;
+
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
-public class DefaultConfigManagerTest extends ComponentTestCase {
+public class DefaultConfigManagerTest {
   private DefaultConfigManager defaultConfigManager;
   private static String someConfigContent;
 
   @Before
   public void setUp() throws Exception {
-    super.tearDown();//clear the container
-    super.setUp();
-    defineComponent(ConfigFactoryManager.class, MockConfigFactoryManager.class);
-    defaultConfigManager = (DefaultConfigManager) lookup(ConfigManager.class);
+    MockInjector.reset();
+    MockInjector.setInstance(ConfigFactoryManager.class, new MockConfigFactoryManager());
+    MockInjector.setInstance(ConfigUtil.class, new ConfigUtil());
+    defaultConfigManager = new DefaultConfigManager();
     someConfigContent = "someContent";
   }
 

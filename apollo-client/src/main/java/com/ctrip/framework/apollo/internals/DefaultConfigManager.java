@@ -1,6 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.google.common.collect.Maps;
+import java.util.Map;
 
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigFile;
@@ -8,8 +8,7 @@ import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.ctrip.framework.apollo.spi.ConfigFactory;
 import com.ctrip.framework.apollo.spi.ConfigFactoryManager;
-
-import java.util.Map;
+import com.google.common.collect.Maps;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

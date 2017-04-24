@@ -1,23 +1,5 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.io.Files;
-
-import com.ctrip.framework.apollo.core.ConfigConsts;
-import com.ctrip.framework.apollo.util.ConfigUtil;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.unidal.lookup.ComponentTestCase;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
-
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -27,10 +9,27 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+
+import com.ctrip.framework.apollo.build.MockInjector;
+import com.ctrip.framework.apollo.core.ConfigConsts;
+import com.ctrip.framework.apollo.util.ConfigUtil;
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
+import com.google.common.io.Files;
+
 /**
  * Created by Jason on 4/9/16.
  */
-public class LocalFileConfigRepositoryTest extends ComponentTestCase {
+public class LocalFileConfigRepositoryTest {
   private File someBaseDir;
   private String someNamespace;
   private ConfigRepository upstreamRepo;
@@ -42,8 +41,6 @@ public class LocalFileConfigRepositoryTest extends ComponentTestCase {
 
   @Before
   public void setUp() throws Exception {
-    super.tearDown();//clear the container
-    super.setUp();
     someBaseDir = new File("src/test/resources/config-cache");
     someBaseDir.mkdir();
 
@@ -55,12 +52,12 @@ public class LocalFileConfigRepositoryTest extends ComponentTestCase {
     upstreamRepo = mock(ConfigRepository.class);
     when(upstreamRepo.getConfig()).thenReturn(someProperties);
 
-    defineComponent(ConfigUtil.class, MockConfigUtil.class);
+    MockInjector.reset();
+    MockInjector.setInstance(ConfigUtil.class, new MockConfigUtil());
   }
 
   @After
   public void tearDown() throws Exception {
-    super.tearDown();
     recursiveDelete(someBaseDir);
   }
 

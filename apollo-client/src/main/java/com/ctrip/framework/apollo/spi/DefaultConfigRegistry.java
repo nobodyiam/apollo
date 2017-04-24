@@ -1,10 +1,11 @@
 package com.ctrip.framework.apollo.spi;
 
-import com.google.common.collect.Maps;
-
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Maps;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

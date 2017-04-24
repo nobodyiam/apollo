@@ -13,7 +13,6 @@ import com.ctrip.framework.apollo.spi.DefaultConfigRegistry;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.ctrip.framework.apollo.util.http.HttpUtil;
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
 /**

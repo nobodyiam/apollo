@@ -1,14 +1,14 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.ctrip.framework.apollo.ConfigFile;
-import com.ctrip.framework.apollo.tracer.Tracer;
-import com.ctrip.framework.apollo.util.ExceptionUtil;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicReference;
+import com.ctrip.framework.apollo.ConfigFile;
+import com.ctrip.framework.apollo.tracer.Tracer;
+import com.ctrip.framework.apollo.util.ExceptionUtil;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

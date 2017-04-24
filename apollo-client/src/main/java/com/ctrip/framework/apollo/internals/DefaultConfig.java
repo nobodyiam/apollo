@@ -1,17 +1,5 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.google.common.collect.ImmutableMap;
-
-import com.ctrip.framework.apollo.core.utils.ClassLoaderUtil;
-import com.ctrip.framework.apollo.enums.PropertyChangeType;
-import com.ctrip.framework.apollo.model.ConfigChange;
-import com.ctrip.framework.apollo.model.ConfigChangeEvent;
-import com.ctrip.framework.apollo.tracer.Tracer;
-import com.ctrip.framework.apollo.util.ExceptionUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -21,6 +9,17 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.ctrip.framework.apollo.core.utils.ClassLoaderUtil;
+import com.ctrip.framework.apollo.enums.PropertyChangeType;
+import com.ctrip.framework.apollo.model.ConfigChange;
+import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import com.ctrip.framework.apollo.tracer.Tracer;
+import com.ctrip.framework.apollo.util.ExceptionUtil;
+import com.google.common.collect.ImmutableMap;
 
 
 /**

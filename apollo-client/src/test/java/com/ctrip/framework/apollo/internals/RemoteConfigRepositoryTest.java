@@ -1,38 +1,5 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.SettableFuture;
-
-import com.ctrip.framework.apollo.core.dto.ApolloConfig;
-import com.ctrip.framework.apollo.core.dto.ApolloConfigNotification;
-import com.ctrip.framework.apollo.core.dto.ServiceDTO;
-import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
-import com.ctrip.framework.apollo.util.ConfigUtil;
-import com.ctrip.framework.apollo.util.http.HttpRequest;
-import com.ctrip.framework.apollo.util.http.HttpResponse;
-import com.ctrip.framework.apollo.util.http.HttpUtil;
-
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
-import org.unidal.lookup.ComponentTestCase;
-
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.http.HttpServletResponse;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
@@ -43,11 +10,42 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
+
+import com.ctrip.framework.apollo.build.MockInjector;
+import com.ctrip.framework.apollo.core.dto.ApolloConfig;
+import com.ctrip.framework.apollo.core.dto.ApolloConfigNotification;
+import com.ctrip.framework.apollo.core.dto.ServiceDTO;
+import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
+import com.ctrip.framework.apollo.util.ConfigUtil;
+import com.ctrip.framework.apollo.util.http.HttpRequest;
+import com.ctrip.framework.apollo.util.http.HttpResponse;
+import com.ctrip.framework.apollo.util.http.HttpUtil;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.SettableFuture;
+
 /**
  * Created by Jason on 4/9/16.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class RemoteConfigRepositoryTest extends ComponentTestCase {
+public class RemoteConfigRepositoryTest {
   @Mock
   private ConfigServiceLocator configServiceLocator;
   private String someNamespace;
@@ -59,17 +57,26 @@ public class RemoteConfigRepositoryTest extends ComponentTestCase {
 
   @Before
   public void setUp() throws Exception {
-    super.tearDown();//clear the container
-    super.setUp();
     someNamespace = "someName";
 
     when(pollResponse.getStatusCode()).thenReturn(HttpServletResponse.SC_NOT_MODIFIED);
 
-    defineComponent(ConfigUtil.class, MockConfigUtil.class);
-    defineComponent(ConfigServiceLocator.class, MockConfigServiceLocator.class);
-    defineComponent(HttpUtil.class, MockHttpUtil.class);
+    MockInjector.reset();
+    MockInjector.setInstance(ConfigUtil.class, new MockConfigUtil());
 
-    remoteConfigLongPollService = lookup(RemoteConfigLongPollService.class);
+    String someServerUrl = "http://someServer";
+
+    ServiceDTO serviceDTO = mock(ServiceDTO.class);
+
+    when(serviceDTO.getHomepageUrl()).thenReturn(someServerUrl);
+    when(configServiceLocator.getConfigServices()).thenReturn(Lists.newArrayList(serviceDTO));
+    MockInjector.setInstance(ConfigServiceLocator.class, configServiceLocator);
+
+    MockInjector.setInstance(HttpUtil.class, new MockHttpUtil());
+
+    remoteConfigLongPollService = new RemoteConfigLongPollService();
+
+    MockInjector.setInstance(RemoteConfigLongPollService.class, remoteConfigLongPollService);
   }
 
   @Test
@@ -243,19 +250,6 @@ public class RemoteConfigRepositoryTest extends ComponentTestCase {
     public TimeUnit getOnErrorRetryIntervalTimeUnit() {
       return TimeUnit.MILLISECONDS;
     }
-  }
-
-  public static class MockConfigServiceLocator extends ConfigServiceLocator {
-    @Override
-    public List<ServiceDTO> getConfigServices() {
-      String someServerUrl = "http://someServer";
-
-      ServiceDTO serviceDTO = mock(ServiceDTO.class);
-
-      when(serviceDTO.getHomepageUrl()).thenReturn(someServerUrl);
-      return Lists.newArrayList(serviceDTO);
-    }
-
   }
 
   public static class MockHttpUtil extends HttpUtil {
