@@ -13,7 +13,6 @@ import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.build.MockInjector;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.ctrip.framework.apollo.internals.ConfigManager;
-import com.ctrip.framework.apollo.internals.DefaultInjector;
 import com.ctrip.framework.apollo.spring.config.PropertySourcesProcessor;
 import com.google.common.collect.Maps;
 
@@ -43,7 +42,6 @@ public abstract class AbstractSpringIntegrationTest {
     //as ConfigService is singleton, so we must manually clear its container
     ReflectionUtils.invokeMethod(CONFIG_SERVICE_RESET, null);
     MockInjector.reset();
-    MockInjector.setDelegate(new DefaultInjector());
     MockInjector.setInstance(ConfigManager.class, new MockConfigManager());
   }
 

@@ -22,7 +22,6 @@ import com.ctrip.framework.apollo.build.MockInjector;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.ctrip.framework.apollo.core.enums.Env;
 import com.ctrip.framework.apollo.internals.DefaultConfig;
-import com.ctrip.framework.apollo.internals.DefaultInjector;
 import com.ctrip.framework.apollo.internals.JsonConfigFile;
 import com.ctrip.framework.apollo.internals.LocalFileConfigRepository;
 import com.ctrip.framework.apollo.internals.PropertiesConfigFile;
@@ -44,7 +43,6 @@ public class DefaultConfigFactoryTest {
     someAppId = "someId";
     someEnv = Env.DEV;
     MockInjector.reset();
-    MockInjector.setDelegate(new DefaultInjector());
     MockInjector.setInstance(ConfigUtil.class, new MockConfigUtil());
     defaultConfigFactory = spy(new DefaultConfigFactory());
   }
