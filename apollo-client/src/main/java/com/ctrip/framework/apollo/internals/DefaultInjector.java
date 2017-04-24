@@ -1,9 +1,19 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.ctrip.framework.apollo.build.ApolloModule;
 import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
+import com.ctrip.framework.apollo.spi.ConfigFactory;
+import com.ctrip.framework.apollo.spi.ConfigFactoryManager;
+import com.ctrip.framework.apollo.spi.ConfigRegistry;
+import com.ctrip.framework.apollo.spi.DefaultConfigFactory;
+import com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager;
+import com.ctrip.framework.apollo.spi.DefaultConfigRegistry;
 import com.ctrip.framework.apollo.tracer.Tracer;
+import com.ctrip.framework.apollo.util.ConfigUtil;
+import com.ctrip.framework.apollo.util.http.HttpUtil;
+
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
+import com.google.inject.Singleton;
 
 /**
  * Guice injector
@@ -37,5 +47,19 @@ public class DefaultInjector implements Injector {
   public <T> T getInstance(Class<T> clazz, String name) {
     //Guice does not support get instance by type and name
     return null;
+  }
+
+  private static class ApolloModule extends AbstractModule {
+    @Override
+    protected void configure() {
+      bind(ConfigManager.class).to(DefaultConfigManager.class).in(Singleton.class);
+      bind(ConfigFactoryManager.class).to(DefaultConfigFactoryManager.class).in(Singleton.class);
+      bind(ConfigRegistry.class).to(DefaultConfigRegistry.class).in(Singleton.class);
+      bind(ConfigFactory.class).to(DefaultConfigFactory.class).in(Singleton.class);
+      bind(ConfigUtil.class).in(Singleton.class);
+      bind(HttpUtil.class).in(Singleton.class);
+      bind(ConfigServiceLocator.class).in(Singleton.class);
+      bind(RemoteConfigLongPollService.class).in(Singleton.class);
+    }
   }
 }
