@@ -7,8 +7,6 @@ import com.ctrip.framework.apollo.internals.ConfigManager;
 import com.ctrip.framework.apollo.spi.ConfigFactory;
 import com.ctrip.framework.apollo.spi.ConfigRegistry;
 
-import org.codehaus.plexus.PlexusContainer;
-
 /**
  * Entry point for client config use
  *
@@ -107,7 +105,7 @@ public class ConfigService {
   }
 
   // for test only
-  static void setContainer(PlexusContainer m_container) {
+  static void reset() {
     synchronized (s_instance) {
       s_instance.m_configManager = null;
       s_instance.m_configRegistry = null;

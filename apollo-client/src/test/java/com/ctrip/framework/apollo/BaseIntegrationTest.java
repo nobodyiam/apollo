@@ -65,7 +65,7 @@ public abstract class BaseIntegrationTest extends ComponentTestCase {
     refreshTimeUnit = TimeUnit.MINUTES;
 
     //as ConfigService is singleton, so we must manually clear its container
-    ConfigService.setContainer(getContainer());
+//    ConfigService.setContainer(getContainer());
 
     defineComponent(ConfigUtil.class, MockConfigUtil.class);
   }

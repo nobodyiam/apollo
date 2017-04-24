@@ -1,10 +1,9 @@
 package com.ctrip.framework.apollo.build;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
 import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
+import com.ctrip.framework.apollo.internals.Injector;
 import com.ctrip.framework.apollo.tracer.Tracer;
+import com.ctrip.framework.foundation.internals.ServiceBootstrap;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
@@ -18,9 +17,9 @@ public class ApolloInjector {
       synchronized (lock) {
         if (s_injector == null) {
           try {
-            s_injector = Guice.createInjector(new ApolloModule());
+            s_injector = ServiceBootstrap.loadFirst(Injector.class);
           } catch (Throwable ex) {
-            ApolloConfigException exception = new ApolloConfigException("Unable to initialize Guice Injector!", ex);
+            ApolloConfigException exception = new ApolloConfigException("Unable to initialize Apollo Injector!", ex);
             Tracer.logError(exception);
             throw exception;
           }
@@ -36,9 +35,17 @@ public class ApolloInjector {
       return getInjector().getInstance(clazz);
     } catch (Throwable ex) {
       Tracer.logError(ex);
-      throw new ApolloConfigException(
-          String.format("Unable to load instance for %s!", clazz.getName()), ex);
+      throw new ApolloConfigException(String.format("Unable to load instance for type %s!", clazz.getName()), ex);
     }
   }
 
+  public static <T> T getInstance(Class<T> clazz, String name) {
+    try {
+      return getInjector().getInstance(clazz, name);
+    } catch (Throwable ex) {
+      Tracer.logError(ex);
+      throw new ApolloConfigException(
+          String.format("Unable to load instance for type %s and name %s !", clazz.getName(), name), ex);
+    }
+  }
 }

@@ -37,17 +37,14 @@ public class DefaultConfigFactoryManager implements ConfigFactoryManager {
     }
 
     // step 3: check declared config factory
-//    try {
-//      factory = lookup(ConfigFactory.class, namespace);
-//    } catch (LookupException ex) {
-//      // ignore it
-//    }
+    factory = ApolloInjector.getInstance(ConfigFactory.class, namespace);
+
+    if (factory != null) {
+      return factory;
+    }
 
     // step 4: check default config factory
-    // FIXME: 21/04/2017
-    if (factory == null) {
-      factory = ApolloInjector.getInstance(ConfigFactory.class);
-    }
+    factory = ApolloInjector.getInstance(ConfigFactory.class);
 
     m_factories.put(namespace, factory);
 
