@@ -24,6 +24,8 @@ public class ConfigServiceTest {
   @Before
   public void setUp() throws Exception {
     someAppId = "someAppId";
+
+    //as ConfigService is singleton, so we must manually clear its container
     ConfigService.reset();
     MockInjector.reset();
     MockInjector.setDelegate(new DefaultInjector());

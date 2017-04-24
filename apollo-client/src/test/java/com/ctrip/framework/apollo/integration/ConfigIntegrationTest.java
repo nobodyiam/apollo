@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.integration;
 
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -66,7 +67,7 @@ public class ConfigIntegrationTest extends BaseIntegrationTest {
       configDir.delete();
     }
     configDir.mkdirs();
-    remoteConfigLongPollService = lookup(RemoteConfigLongPollService.class);
+    remoteConfigLongPollService = ApolloInjector.getInstance(RemoteConfigLongPollService.class);
   }
 
   @Override
