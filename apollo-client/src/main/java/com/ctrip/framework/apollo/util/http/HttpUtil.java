@@ -78,7 +78,6 @@ public class HttpUtil {
 
   private <T> HttpResponse<T> doGetWithSerializeFunction(HttpRequest httpRequest,
                                                          Function<String, T> serializeFunction) {
-    InputStream is = null;
     InputStreamReader isr = null;
     int statusCode;
     try {
@@ -105,9 +104,7 @@ public class HttpUtil {
       statusCode = conn.getResponseCode();
 
       if (statusCode == 200) {
-        is = conn.getInputStream();
-        isr = new InputStreamReader(is);
-        //FIXME charset???
+        isr = new InputStreamReader(conn.getInputStream());
         String content = CharStreams.toString(isr);
         return new HttpResponse<>(statusCode, serializeFunction.apply(content));
       }
@@ -119,13 +116,6 @@ public class HttpUtil {
     } catch (Throwable ex) {
       throw new ApolloConfigException("Could not complete get operation", ex);
     } finally {
-      if (is != null) {
-        try {
-          is.close();
-        } catch (IOException ex) {
-          // ignore
-        }
-      }
       if (isr != null) {
         try {
           isr.close();
