@@ -588,12 +588,6 @@
 					</plugin>
 				</plugins>
 			</build>
-			<repositories>
-				<repository>
-					<id>internal.repo</id>
-					<url>https://raw.github.com/ctripcorp/apollo/mvn-repo/</url>
-				</repository>
-			</repositories>
 		</profile>
 		<profile>
 			<!-- for open source usage -->
@@ -604,12 +598,6 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<repositories>
-				<repository>
-					<id>internal.repo</id>
-					<url>https://raw.github.com/ctripcorp/apollo/mvn-repo/</url>
-				</repository>
-			</repositories>
 		</profile>
 		<profile>
       <!-- for ctrip development -->
