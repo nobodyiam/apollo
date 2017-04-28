@@ -29,4 +29,11 @@ public interface ConfigFile {
    * @return the config file format enum
    */
   ConfigFileFormat getConfigFileFormat();
+
+  /**
+   * Add change listener to this config file instance.
+   *
+   * @param listener the config file change listener
+   */
+  public void addChangeListener(ConfigFileChangeListener listener);
 }

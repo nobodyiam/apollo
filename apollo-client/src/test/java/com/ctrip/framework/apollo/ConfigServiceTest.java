@@ -132,6 +132,11 @@ public class ConfigServiceTest {
     public ConfigFileFormat getConfigFileFormat() {
       return m_configFileFormat;
     }
+
+    @Override
+    public void addChangeListener(ConfigFileChangeListener listener) {
+
+    }
   }
 
   public static class MockConfigFactory implements ConfigFactory {

@@ -26,6 +26,12 @@ public class PropertiesConfigFile extends AbstractConfigFile {
   }
 
   @Override
+  protected void update(Properties newProperties) {
+    m_configProperties.set(newProperties);
+    m_contentCache.set(null);
+  }
+
+  @Override
   public String getContent() {
     if (m_contentCache.get() == null) {
       m_contentCache.set(doGetContent());
@@ -60,9 +66,4 @@ public class PropertiesConfigFile extends AbstractConfigFile {
     return ConfigFileFormat.Properties;
   }
 
-  @Override
-  public synchronized void onRepositoryChange(String namespace, Properties newProperties) {
-    super.onRepositoryChange(namespace, newProperties);
-    m_contentCache.set(null);
-  }
 }

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
+import java.util.Properties;
 import java.util.Set;
 
 import org.junit.Before;
@@ -109,6 +110,11 @@ public class DefaultConfigManagerTest {
         public ConfigFile createConfigFile(String namespace, final ConfigFileFormat configFileFormat) {
           ConfigRepository someConfigRepository = mock(ConfigRepository.class);
           return new AbstractConfigFile(namespace, someConfigRepository) {
+
+            @Override
+            protected void update(Properties newProperties) {
+
+            }
 
             @Override
             public String getContent() {
