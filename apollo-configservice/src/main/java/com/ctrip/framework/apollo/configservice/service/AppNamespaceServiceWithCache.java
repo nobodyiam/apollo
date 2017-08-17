@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.configservice.service;
 
+import com.ctrip.framework.apollo.core.utils.StringUtils;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -69,12 +70,16 @@ public class AppNamespaceServiceWithCache implements InitializingBean {
         .create("AppNamespaceServiceWithCache", true));
   }
 
+  public AppNamespace findByAppIdAndNamespace(String appId, String namespaceName) {
+    Preconditions.checkArgument(!StringUtils.isContainEmpty(appId, namespaceName), "appId and namespaceName must not be empty");
+    return appNamespaceCache.get(STRING_JOINER.join(appId, namespaceName));
+  }
+
   public List<AppNamespace> findByAppIdAndNamespaces(String appId, Set<String> namespaceNames) {
     Preconditions.checkArgument(!Strings.isNullOrEmpty(appId), "appId must not be null");
     if (namespaceNames == null || namespaceNames.isEmpty()) {
       return Collections.emptyList();
     }
-//    return appNamespaceRepository.findByAppIdAndNameIn(appId, namespaceNames);
     List<AppNamespace> result = Lists.newArrayList();
     for (String namespaceName : namespaceNames) {
       AppNamespace appNamespace = appNamespaceCache.get(STRING_JOINER.join(appId, namespaceName));
@@ -85,12 +90,16 @@ public class AppNamespaceServiceWithCache implements InitializingBean {
     return result;
   }
 
+  public AppNamespace findPublicNamespaceByName(String namespaceName) {
+    Preconditions.checkArgument(!Strings.isNullOrEmpty(namespaceName), "namespaceName must not be empty");
+    return publicAppNamespaceCache.get(namespaceName);
+  }
+
   public List<AppNamespace> findPublicNamespacesByNames(Set<String> namespaceNames) {
     if (namespaceNames == null || namespaceNames.isEmpty()) {
       return Collections.emptyList();
     }
 
-//    return appNamespaceRepository.findByNameInAndIsPublicTrue(namespaceNames);
     List<AppNamespace> result = Lists.newArrayList();
     for (String namespaceName : namespaceNames) {
       AppNamespace appNamespace = publicAppNamespaceCache.get(namespaceName);

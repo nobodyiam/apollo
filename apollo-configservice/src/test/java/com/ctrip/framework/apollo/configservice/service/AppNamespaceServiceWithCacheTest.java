@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -104,10 +105,17 @@ public class AppNamespaceServiceWithCacheTest {
     appNamespaceServiceWithCache.afterPropertiesSet();
 
     // Should have no record now
+    assertNull(appNamespaceServiceWithCache.findByAppIdAndNamespace(someAppId, somePrivateNamespace));
+    assertNull(appNamespaceServiceWithCache.findByAppIdAndNamespace(someAppId, yetAnotherPrivateNamespace));
+    assertNull(appNamespaceServiceWithCache.findByAppIdAndNamespace(someAppId, anotherPublicNamespace));
     assertTrue(appNamespaceServiceWithCache.findByAppIdAndNamespaces(someAppId, someAppIdNamespaces)
         .isEmpty());
+    assertNull(appNamespaceServiceWithCache.findByAppIdAndNamespace(somePublicAppId, somePublicNamespace));
+    assertNull(appNamespaceServiceWithCache.findByAppIdAndNamespace(somePublicAppId, anotherPrivateNamespace));
     assertTrue(appNamespaceServiceWithCache.findByAppIdAndNamespaces(somePublicAppId,
         somePublicAppIdNamespaces).isEmpty());
+    assertNull(appNamespaceServiceWithCache.findPublicNamespaceByName(somePublicNamespace));
+    assertNull(appNamespaceServiceWithCache.findPublicNamespaceByName(anotherPublicNamespace));
     assertTrue(appNamespaceServiceWithCache.findPublicNamespacesByNames(publicNamespaces).isEmpty
         ());
 
@@ -120,10 +128,15 @@ public class AppNamespaceServiceWithCacheTest {
 
     scanIntervalTimeUnit.sleep(sleepInterval);
 
+    assertEquals(somePrivateAppNamespace,
+        appNamespaceServiceWithCache.findByAppIdAndNamespace(someAppId, somePrivateNamespace));
     check(Lists.newArrayList(somePrivateAppNamespace), appNamespaceServiceWithCache
         .findByAppIdAndNamespaces(someAppId, someAppIdNamespaces));
+    assertEquals(somePublicAppNamespace, appNamespaceServiceWithCache.findByAppIdAndNamespace(somePublicAppId,
+        somePublicNamespace));
     check(Lists.newArrayList(somePublicAppNamespace), appNamespaceServiceWithCache
         .findByAppIdAndNamespaces(somePublicAppId, somePublicAppIdNamespaces));
+    assertEquals(somePublicAppNamespace, appNamespaceServiceWithCache.findPublicNamespaceByName(somePublicNamespace));
     check(Lists.newArrayList(somePublicAppNamespace), appNamespaceServiceWithCache
         .findPublicNamespacesByNames(publicNamespaces));
 
@@ -136,11 +149,22 @@ public class AppNamespaceServiceWithCacheTest {
     scanIntervalTimeUnit.sleep(sleepInterval);
 
     check(Lists.newArrayList(somePrivateAppNamespace, yetAnotherPrivateAppNamespace,
+        anotherPublicAppNamespace), Lists
+        .newArrayList(appNamespaceServiceWithCache.findByAppIdAndNamespace(someAppId, somePrivateNamespace),
+            appNamespaceServiceWithCache.findByAppIdAndNamespace(someAppId, yetAnotherPrivateNamespace),
+            appNamespaceServiceWithCache.findByAppIdAndNamespace(someAppId, anotherPublicNamespace)));
+    check(Lists.newArrayList(somePrivateAppNamespace, yetAnotherPrivateAppNamespace,
         anotherPublicAppNamespace), appNamespaceServiceWithCache.findByAppIdAndNamespaces
         (someAppId, someAppIdNamespaces));
     check(Lists.newArrayList(somePublicAppNamespace, anotherPrivateAppNamespace),
+        Lists.newArrayList(appNamespaceServiceWithCache.findByAppIdAndNamespace(somePublicAppId, somePublicNamespace),
+            appNamespaceServiceWithCache.findByAppIdAndNamespace(somePublicAppId, anotherPrivateNamespace)));
+    check(Lists.newArrayList(somePublicAppNamespace, anotherPrivateAppNamespace),
         appNamespaceServiceWithCache.findByAppIdAndNamespaces(somePublicAppId,
             somePublicAppIdNamespaces));
+    check(Lists.newArrayList(somePublicAppNamespace, anotherPublicAppNamespace),
+        Lists.newArrayList(appNamespaceServiceWithCache.findPublicNamespaceByName(somePublicNamespace),
+            appNamespaceServiceWithCache.findPublicNamespaceByName(anotherPublicNamespace)));
     check(Lists.newArrayList(somePublicAppNamespace, anotherPublicAppNamespace),
         appNamespaceServiceWithCache.findPublicNamespacesByNames(publicNamespaces));
 
@@ -173,16 +197,27 @@ public class AppNamespaceServiceWithCacheTest {
 
     scanIntervalTimeUnit.sleep(sleepInterval);
 
+    assertNull(appNamespaceServiceWithCache.findByAppIdAndNamespace(someAppId, somePrivateNamespace));
+    assertNull(appNamespaceServiceWithCache.findByAppIdAndNamespace(someAppId, yetAnotherPrivateNamespace));
+    assertNull(appNamespaceServiceWithCache.findByAppIdAndNamespace(someAppId, anotherPublicNamespace));
     check(Collections.emptyList(), appNamespaceServiceWithCache
         .findByAppIdAndNamespaces(someAppId, someAppIdNamespaces));
+    assertEquals(somePublicAppNamespaceNew,
+        appNamespaceServiceWithCache.findByAppIdAndNamespace(somePublicAppId, somePublicNamespace));
     check(Lists.newArrayList(somePublicAppNamespaceNew),
         appNamespaceServiceWithCache.findByAppIdAndNamespaces(somePublicAppId,
             somePublicAppIdNamespaces));
+    assertNull(appNamespaceServiceWithCache.findPublicNamespaceByName(somePublicNamespace));
+    assertNull(appNamespaceServiceWithCache.findPublicNamespaceByName(anotherPublicNamespace));
     check(Collections.emptyList(),
         appNamespaceServiceWithCache.findPublicNamespacesByNames(publicNamespaces));
 
+    assertEquals(somePrivateAppNamespaceNew,
+        appNamespaceServiceWithCache.findByAppIdAndNamespace(someAppId, somePrivateNamespaceNew));
     check(Lists.newArrayList(somePrivateAppNamespaceNew), appNamespaceServiceWithCache
         .findByAppIdAndNamespaces(someAppId, Sets.newHashSet(somePrivateNamespaceNew)));
+    assertEquals(yetAnotherPrivateAppNamespaceNew,
+        appNamespaceServiceWithCache.findByAppIdAndNamespace(someAppIdNew, yetAnotherPrivateNamespace));
     check(Lists.newArrayList(yetAnotherPrivateAppNamespaceNew), appNamespaceServiceWithCache
         .findByAppIdAndNamespaces(someAppIdNew, Sets.newHashSet(yetAnotherPrivateNamespace)));
   }
