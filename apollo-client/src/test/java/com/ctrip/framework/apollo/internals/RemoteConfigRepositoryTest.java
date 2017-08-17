@@ -185,13 +185,14 @@ public class RemoteConfigRepositoryTest {
     String someAppId = "someAppId";
     String someCluster = "someCluster+ &.-_someSign";
     String someReleaseKey = "20160705193346-583078ef5716c055+20160705193308-31c471ddf9087c3f";
+    long someNotificationId = 1;
 
     RemoteConfigRepository remoteConfigRepository = new RemoteConfigRepository(someNamespace);
     ApolloConfig someApolloConfig = mock(ApolloConfig.class);
     when(someApolloConfig.getReleaseKey()).thenReturn(someReleaseKey);
 
     String queryConfigUrl = remoteConfigRepository
-        .assembleQueryConfigUrl(someUri, someAppId, someCluster, someNamespace, null,
+        .assembleQueryConfigUrl(someUri, someAppId, someCluster, someNamespace, null, someNotificationId,
             someApolloConfig);
 
     remoteConfigLongPollService.stopLongPollingRefresh();
@@ -200,7 +201,8 @@ public class RemoteConfigRepositoryTest {
             "http://someServer/configs/someAppId/someCluster+%20&.-_someSign/" + someNamespace));
     assertTrue(queryConfigUrl
         .contains("releaseKey=20160705193346-583078ef5716c055%2B20160705193308-31c471ddf9087c3f"));
-
+    assertTrue(queryConfigUrl
+        .contains("notificationId="+someNotificationId));
   }
 
   private ApolloConfig assembleApolloConfig(Map<String, String> configurations) {

@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
+import com.ctrip.framework.apollo.core.dto.ApolloConfigNotification;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
   private final String m_namespace;
   private final static ScheduledExecutorService m_executorService;
   private AtomicReference<ServiceDTO> m_longPollServiceDto;
+  private AtomicReference<ApolloConfigNotification> m_lastNotification;
   private RateLimiter m_loadConfigRateLimiter;
   private AtomicBoolean m_configNeedForceRefresh;
   private SchedulePolicy m_loadConfigFailSchedulePolicy;
@@ -77,6 +79,7 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
     m_serviceLocator = ApolloInjector.getInstance(ConfigServiceLocator.class);
     remoteConfigLongPollService = ApolloInjector.getInstance(RemoteConfigLongPollService.class);
     m_longPollServiceDto = new AtomicReference<>();
+    m_lastNotification = new AtomicReference<>();
     m_loadConfigRateLimiter = RateLimiter.create(m_configUtil.getLoadConfigQPS());
     m_configNeedForceRefresh = new AtomicBoolean(true);
     m_loadConfigFailSchedulePolicy = new ExponentialSchedulePolicy(m_configUtil.getOnErrorRetryInterval(),
@@ -188,9 +191,10 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
           }
         }
 
+        long notificationId = retrieveLastNotificationId();
         String url =
             assembleQueryConfigUrl(configService.getHomepageUrl(), appId, cluster, m_namespace,
-                dataCenter, m_configCache.get());
+                dataCenter, notificationId, m_configCache.get());
 
         logger.debug("Loading config from {}", url);
         HttpRequest request = new HttpRequest(url);
@@ -250,8 +254,12 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
     throw new ApolloConfigException(message, exception);
   }
 
+  long retrieveLastNotificationId() {
+    return m_lastNotification.get() == null ? -1 : m_lastNotification.get().getNotificationId();
+  }
+
   String assembleQueryConfigUrl(String uri, String appId, String cluster, String namespace,
-                                String dataCenter, ApolloConfig previousConfig) {
+                                String dataCenter, long notificationId, ApolloConfig previousConfig) {
 
     String path = "configs/%s/%s/%s";
     List<String> pathParams =
@@ -272,6 +280,8 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
       queryParams.put("ip", queryParamEscaper.escape(localIp));
     }
 
+    queryParams.put("notificationId", String.valueOf(notificationId));
+
     String pathExpanded = String.format(path, pathParams.toArray());
 
     if (!queryParams.isEmpty()) {
@@ -287,8 +297,13 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
     remoteConfigLongPollService.submit(m_namespace, this);
   }
 
-  public void onLongPollNotified(ServiceDTO longPollNotifiedServiceDto) {
+  public void onLongPollNotified(ServiceDTO longPollNotifiedServiceDto, ApolloConfigNotification notification) {
     m_longPollServiceDto.set(longPollNotifiedServiceDto);
+    //to make sure the notification set is latest
+    if (m_lastNotification.get() == null ||
+        m_lastNotification.get().getNotificationId() < notification.getNotificationId()) {
+      m_lastNotification.set(notification);
+    }
     m_executorService.submit(new Runnable() {
       @Override
       public void run() {

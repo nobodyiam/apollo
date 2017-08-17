@@ -64,13 +64,11 @@ public class ConfigController {
   @RequestMapping(value = "/{appId}/{clusterName}/{namespace:.+}", method = RequestMethod.GET)
   public ApolloConfig queryConfig(@PathVariable String appId, @PathVariable String clusterName,
                                   @PathVariable String namespace,
-                                  @RequestParam(value = "dataCenter", required = false) String
-                                      dataCenter,
-                                  @RequestParam(value = "releaseKey", defaultValue = "-1") String
-                                      clientSideReleaseKey,
+                                  @RequestParam(value = "dataCenter", required = false) String dataCenter,
+                                  @RequestParam(value = "releaseKey", defaultValue = "-1") String clientSideReleaseKey,
                                   @RequestParam(value = "ip", required = false) String clientIp,
-                                  HttpServletRequest request,
-                                  HttpServletResponse response) throws IOException {
+                                  @RequestParam(value = "notificationId", defaultValue = "-1") long notificationId,
+                                  HttpServletRequest request, HttpServletResponse response) throws IOException {
     String originalNamespace = namespace;
     //strip out .properties suffix
     namespace = namespaceUtil.filterNamespaceName(namespace);

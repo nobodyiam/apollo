@@ -2,6 +2,7 @@ package com.ctrip.framework.apollo.internals;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -114,7 +115,7 @@ public class RemoteConfigLongPollServiceTest {
 
     remoteConfigLongPollService.stopLongPollingRefresh();
 
-    verify(someRepository, never()).onLongPollNotified(any(ServiceDTO.class));
+    verify(someRepository, never()).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
   }
 
   @Test
@@ -148,7 +149,7 @@ public class RemoteConfigLongPollServiceTest {
         onNotified.set(true);
         return null;
       }
-    }).when(someRepository).onLongPollNotified(any(ServiceDTO.class));
+    }).when(someRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
 
     remoteConfigLongPollService.submit(someNamespace, someRepository);
 
@@ -156,7 +157,7 @@ public class RemoteConfigLongPollServiceTest {
 
     remoteConfigLongPollService.stopLongPollingRefresh();
 
-    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class));
+    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
   }
 
   @Test
@@ -221,7 +222,7 @@ public class RemoteConfigLongPollServiceTest {
         onAnotherRepositoryNotified.set(true);
         return null;
       }
-    }).when(anotherRepository).onLongPollNotified(any(ServiceDTO.class));
+    }).when(anotherRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
 
     remoteConfigLongPollService.submit(someNamespace, someRepository);
 
@@ -233,8 +234,8 @@ public class RemoteConfigLongPollServiceTest {
 
     remoteConfigLongPollService.stopLongPollingRefresh();
 
-    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class));
-    verify(anotherRepository, times(1)).onLongPollNotified(any(ServiceDTO.class));
+    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
+    verify(anotherRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
   }
 
   @Test
@@ -273,7 +274,7 @@ public class RemoteConfigLongPollServiceTest {
         someRepositoryNotified.set(true);
         return null;
       }
-    }).when(someRepository).onLongPollNotified(any(ServiceDTO.class));
+    }).when(someRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
     final SettableFuture<Boolean> anotherRepositoryNotified = SettableFuture.create();
     doAnswer(new Answer<Void>() {
       @Override
@@ -281,7 +282,7 @@ public class RemoteConfigLongPollServiceTest {
         anotherRepositoryNotified.set(true);
         return null;
       }
-    }).when(anotherRepository).onLongPollNotified(any(ServiceDTO.class));
+    }).when(anotherRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
 
     remoteConfigLongPollService.submit(someNamespace, someRepository);
     remoteConfigLongPollService.submit(anotherNamespace, anotherRepository);
@@ -291,8 +292,8 @@ public class RemoteConfigLongPollServiceTest {
 
     remoteConfigLongPollService.stopLongPollingRefresh();
 
-    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class));
-    verify(anotherRepository, times(1)).onLongPollNotified(any(ServiceDTO.class));
+    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
+    verify(anotherRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
   }
 
   @Test
