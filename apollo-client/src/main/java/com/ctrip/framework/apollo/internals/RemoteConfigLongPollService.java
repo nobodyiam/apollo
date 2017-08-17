@@ -212,7 +212,7 @@ public class RemoteConfigLongPollService {
           .get(String.format("%s.%s", namespaceName, ConfigFileFormat.Properties.getValue())));
       for (RemoteConfigRepository remoteConfigRepository : toBeNotified) {
         try {
-          remoteConfigRepository.onLongPollNotified(lastServiceDto);
+          remoteConfigRepository.onLongPollNotified(lastServiceDto, notification);
         } catch (Throwable ex) {
           Tracer.logError(ex);
         }
