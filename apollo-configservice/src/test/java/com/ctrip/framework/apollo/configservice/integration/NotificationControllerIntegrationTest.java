@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.configservice.integration;
 
+import com.ctrip.framework.apollo.configservice.service.AppNamespaceServiceWithCache;
 import com.google.common.base.Joiner;
 
 import com.ctrip.framework.apollo.configservice.service.ReleaseMessageServiceWithCache;
@@ -35,10 +36,13 @@ public class NotificationControllerIntegrationTest extends AbstractBaseIntegrati
 
   @Autowired
   private ReleaseMessageServiceWithCache releaseMessageServiceWithCache;
+  @Autowired
+  private AppNamespaceServiceWithCache appNamespaceServiceWithCache;
 
   @Before
   public void setUp() throws Exception {
     ReflectionTestUtils.invokeMethod(releaseMessageServiceWithCache, "reset");
+    ReflectionTestUtils.invokeMethod(appNamespaceServiceWithCache, "reset");
     someAppId = "someAppId";
     someCluster = ConfigConsts.CLUSTER_NAME_DEFAULT;
     defaultNamespace = ConfigConsts.NAMESPACE_APPLICATION;

@@ -62,6 +62,10 @@ public class AppNamespaceServiceWithCache implements InitializingBean {
   private Map<Long, AppNamespace> appNamespaceIdCache;
 
   public AppNamespaceServiceWithCache() {
+    initialize();
+  }
+
+  private void initialize() {
     maxIdScanned = 0;
     publicAppNamespaceCache = Maps.newConcurrentMap();
     appNamespaceCache = Maps.newConcurrentMap();
@@ -257,5 +261,12 @@ public class AppNamespaceServiceWithCache implements InitializingBean {
     scanIntervalTimeUnit = bizConfig.appNamespaceCacheScanIntervalTimeUnit();
     rebuildInterval = bizConfig.appNamespaceCacheRebuildInterval();
     rebuildIntervalTimeUnit = bizConfig.appNamespaceCacheRebuildIntervalTimeUnit();
+  }
+
+  //only for test use
+  private void reset() throws Exception {
+    scheduledExecutorService.shutdownNow();
+    initialize();
+    afterPropertiesSet();
   }
 }

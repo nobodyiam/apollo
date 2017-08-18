@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.configservice.controller;
 
+import com.ctrip.framework.apollo.configservice.service.AppNamespaceServiceWithCache;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -47,7 +48,7 @@ public class ConfigControllerTest {
   @Mock
   private ReleaseService releaseService;
   @Mock
-  private AppNamespaceService appNamespaceService;
+  private AppNamespaceServiceWithCache appNamespaceService;
   private String someAppId;
   private String someClusterName;
   private String defaultClusterName;
@@ -199,7 +200,7 @@ public class ConfigControllerTest {
         .thenReturn(someRelease);
     when(someRelease.getReleaseKey()).thenReturn(someServerSideNewReleaseKey);
     when(namespaceUtil.filterNamespaceName(somePrivateNamespaceName)).thenReturn(somePrivateNamespace);
-    when(appNamespaceService.findOne(someAppId, somePrivateNamespace))
+    when(appNamespaceService.findByAppIdAndNamespace(someAppId, somePrivateNamespace))
         .thenReturn(appNamespace);
 
     ApolloConfig result = configController.queryConfig(someAppId, someClusterName,
@@ -377,7 +378,7 @@ public class ConfigControllerTest {
         .thenReturn(somePublicRelease);
     when(somePublicRelease.getReleaseKey()).thenReturn(someServerSideReleaseKey);
     when(namespaceUtil.filterNamespaceName(someNamespace)).thenReturn(somePublicNamespaceName);
-    when(appNamespaceService.findOne(someAppId, somePublicNamespaceName)).thenReturn(null);
+    when(appNamespaceService.findByAppIdAndNamespace(someAppId, somePublicNamespaceName)).thenReturn(null);
 
     ApolloConfig result = configController
         .queryConfig(someAppId, someClusterName, someNamespace, someDataCenter,
