@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.configservice.integration;
 
+import com.ctrip.framework.apollo.configservice.service.AppNamespaceServiceWithCache;
 import com.google.common.base.Joiner;
 
 import com.ctrip.framework.apollo.core.ConfigConsts;
@@ -7,9 +8,11 @@ import com.ctrip.framework.apollo.core.dto.ApolloConfig;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 
 import java.util.concurrent.ExecutorService;
@@ -33,8 +36,13 @@ public class ConfigControllerIntegrationTest extends AbstractBaseIntegrationTest
   private String someClientIp;
   private ExecutorService executorService;
 
+  @Autowired
+  private AppNamespaceServiceWithCache appNamespaceServiceWithCache;
+
   @Before
   public void setUp() throws Exception {
+    ReflectionTestUtils.invokeMethod(appNamespaceServiceWithCache, "reset");
+
     someAppId = "someAppId";
     someCluster = "someCluster";
     someNamespace = "someNamespace";

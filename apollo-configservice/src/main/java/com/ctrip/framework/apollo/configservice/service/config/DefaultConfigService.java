@@ -17,12 +17,13 @@ public class DefaultConfigService extends AbstractConfigService {
   private ReleaseService releaseService;
 
   @Override
-  protected Release findActiveOne(Long id) {
+  protected Release findActiveOne(Long id, long notificationId) {
     return releaseService.findActiveOne(id);
   }
 
   @Override
-  protected Release findLatestActiveRelease(String configAppId, String configClusterName, String configNamespace) {
+  protected Release findLatestActiveRelease(String configAppId, String configClusterName, String configNamespace,
+      long notificationId) {
     return releaseService.findLatestActiveRelease(configAppId, configClusterName,
         configNamespace);
   }

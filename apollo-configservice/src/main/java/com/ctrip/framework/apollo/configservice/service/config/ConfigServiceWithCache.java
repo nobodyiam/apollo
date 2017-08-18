@@ -17,12 +17,14 @@ public class ConfigServiceWithCache extends AbstractConfigService {
   private ReleaseService releaseService;
 
   @Override
-  protected Release findActiveOne(Long id) {
+  protected Release findActiveOne(Long id, long notificationId) {
     return null;
   }
 
   @Override
-  protected Release findLatestActiveRelease(String appId, String clusterName, String namespaceName) {
+  protected Release findLatestActiveRelease(String appId, String clusterName, String namespaceName,
+      long notificationId) {
+
     return null;
   }
 

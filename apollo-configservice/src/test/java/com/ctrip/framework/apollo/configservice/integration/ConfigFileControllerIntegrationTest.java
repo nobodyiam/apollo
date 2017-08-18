@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.configservice.integration;
 
+import com.ctrip.framework.apollo.configservice.service.AppNamespaceServiceWithCache;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -12,6 +13,7 @@ import com.netflix.servo.util.Strings;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
@@ -23,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -45,8 +48,12 @@ public class ConfigFileControllerIntegrationTest extends AbstractBaseIntegration
   private ExecutorService executorService;
   private Type mapResponseType = new TypeToken<Map<String, String>>(){}.getType();
 
+  @Autowired
+  private AppNamespaceServiceWithCache appNamespaceServiceWithCache;
+
   @Before
   public void setUp() throws Exception {
+    ReflectionTestUtils.invokeMethod(appNamespaceServiceWithCache, "reset");
     someDefaultCluster = ConfigConsts.CLUSTER_NAME_DEFAULT;
     someAppId = "someAppId";
     somePublicAppId = "somePublicAppId";
