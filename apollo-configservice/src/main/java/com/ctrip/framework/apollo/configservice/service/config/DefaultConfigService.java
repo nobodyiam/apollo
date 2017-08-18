@@ -7,6 +7,8 @@ import com.ctrip.framework.apollo.biz.entity.Release;
 import com.ctrip.framework.apollo.biz.service.ReleaseService;
 
 /**
+ * config service with no cache
+ *
  * @author Jason Song(song_s@ctrip.com)
  */
 public class DefaultConfigService extends AbstractConfigService {
