@@ -12,6 +12,7 @@ import com.ctrip.framework.apollo.biz.grayReleaseRule.GrayReleaseRulesHolder;
 import com.ctrip.framework.apollo.biz.service.AppNamespaceService;
 import com.ctrip.framework.apollo.biz.service.ReleaseService;
 import com.ctrip.framework.apollo.common.entity.AppNamespace;
+import com.ctrip.framework.apollo.configservice.service.config.ConfigService;
 import com.ctrip.framework.apollo.configservice.util.InstanceConfigAuditUtil;
 import com.ctrip.framework.apollo.configservice.util.NamespaceUtil;
 import com.ctrip.framework.apollo.core.ConfigConsts;
@@ -46,7 +47,7 @@ import static org.mockito.Mockito.when;
 public class ConfigControllerTest {
   private ConfigController configController;
   @Mock
-  private ReleaseService releaseService;
+  private ConfigService configService;
   @Mock
   private AppNamespaceServiceWithCache appNamespaceService;
   private String someAppId;
@@ -73,7 +74,7 @@ public class ConfigControllerTest {
   @Before
   public void setUp() throws Exception {
     configController = new ConfigController();
-    ReflectionTestUtils.setField(configController, "releaseService", releaseService);
+    ReflectionTestUtils.setField(configController, "configService", configService);
     ReflectionTestUtils.setField(configController, "appNamespaceService", appNamespaceService);
     ReflectionTestUtils.setField(configController, "namespaceUtil", namespaceUtil);
     ReflectionTestUtils.setField(configController, "instanceConfigAuditUtil", instanceConfigAuditUtil);
@@ -107,8 +108,8 @@ public class ConfigControllerTest {
     String someServerSideNewReleaseKey = "2";
     HttpServletResponse someResponse = mock(HttpServletResponse.class);
 
-    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, defaultNamespaceName))
-        .thenReturn(someRelease);
+    when(configService.loadConfig(someAppId, someClientIp, someAppId, someClusterName, defaultNamespaceName,
+        someDataCenter, someNotificationId)).thenReturn(someRelease);
     when(someRelease.getReleaseKey()).thenReturn(someServerSideNewReleaseKey);
     when(someRelease.getNamespaceName()).thenReturn(defaultNamespaceName);
 
@@ -116,7 +117,8 @@ public class ConfigControllerTest {
         defaultNamespaceName, someDataCenter, someClientSideReleaseKey,
         someClientIp, someNotificationId, someRequest, someResponse);
 
-    verify(releaseService, times(1)).findLatestActiveRelease(someAppId, someClusterName, defaultNamespaceName);
+    verify(configService, times(1)).loadConfig(someAppId, someClientIp, someAppId, someClusterName,
+        defaultNamespaceName, someDataCenter, someNotificationId);
     assertEquals(someAppId, result.getAppId());
     assertEquals(someClusterName, result.getCluster());
     assertEquals(defaultNamespaceName, result.getNamespaceName());
@@ -126,53 +128,14 @@ public class ConfigControllerTest {
   }
 
   @Test
-  public void testQueryConfigWithGrayRelease() throws Exception {
-    String someClientSideReleaseKey = "1";
-    String someServerSideNewReleaseKey = "2";
-    String someServerSideGrayReleaseKey = "3";
-    HttpServletResponse someResponse = mock(HttpServletResponse.class);
-    Release grayRelease = mock(Release.class);
-    long grayReleaseId = 999;
-    String someGrayConfiguration = "{\"apollo.bar\": \"foo_gray\"}";
-
-    when(grayReleaseRulesHolder.findReleaseIdFromGrayReleaseRule(someAppId, someClientIp,
-        someAppId, someClusterName, defaultNamespaceName)).thenReturn(grayReleaseId);
-    when(releaseService.findActiveOne(grayReleaseId)).thenReturn(grayRelease);
-    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, defaultNamespaceName))
-        .thenReturn(someRelease);
-
-    when(someRelease.getReleaseKey()).thenReturn(someServerSideNewReleaseKey);
-
-    when(grayRelease.getAppId()).thenReturn(someAppId);
-    when(grayRelease.getClusterName()).thenReturn(someClusterName);
-    when(grayRelease.getReleaseKey()).thenReturn(someServerSideGrayReleaseKey);
-    when(grayRelease.getNamespaceName()).thenReturn(defaultNamespaceName);
-    when(grayRelease.getConfigurations()).thenReturn(someGrayConfiguration);
-
-    ApolloConfig result = configController.queryConfig(someAppId, someClusterName,
-        defaultNamespaceName, someDataCenter, someClientSideReleaseKey,
-        someClientIp, someNotificationId, someRequest, someResponse);
-
-    verify(releaseService, times(1)).findActiveOne(grayReleaseId);
-    verify(releaseService, never()).findLatestActiveRelease(someAppId, someClusterName, defaultNamespaceName);
-
-    assertEquals(someAppId, result.getAppId());
-    assertEquals(someClusterName, result.getCluster());
-    assertEquals(defaultNamespaceName, result.getNamespaceName());
-    assertEquals(someServerSideGrayReleaseKey, result.getReleaseKey());
-    verify(instanceConfigAuditUtil, times(1)).audit(someAppId, someClusterName, someDataCenter,
-        someClientIp, someAppId, someClusterName, defaultNamespaceName, someServerSideGrayReleaseKey);
-  }
-
-  @Test
   public void testQueryConfigFile() throws Exception {
     String someClientSideReleaseKey = "1";
     String someServerSideNewReleaseKey = "2";
     HttpServletResponse someResponse = mock(HttpServletResponse.class);
     String someNamespaceName = String.format("%s.%s", defaultClusterName, "properties");
 
-    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, defaultNamespaceName))
-        .thenReturn(someRelease);
+    when(configService.loadConfig(someAppId, someClientIp, someAppId, someClusterName, defaultNamespaceName,
+        someDataCenter, someNotificationId)).thenReturn(someRelease);
     when(someRelease.getReleaseKey()).thenReturn(someServerSideNewReleaseKey);
     when(namespaceUtil.filterNamespaceName(someNamespaceName)).thenReturn(defaultNamespaceName);
 
@@ -180,7 +143,8 @@ public class ConfigControllerTest {
         someNamespaceName, someDataCenter, someClientSideReleaseKey,
         someClientIp, someNotificationId, someRequest, someResponse);
 
-    verify(releaseService, times(1)).findLatestActiveRelease(someAppId, someClusterName, defaultNamespaceName);
+    verify(configService, times(1)).loadConfig(someAppId, someClientIp, someAppId, someClusterName,
+        defaultNamespaceName, someDataCenter, someNotificationId);
     assertEquals(someAppId, result.getAppId());
     assertEquals(someClusterName, result.getCluster());
     assertEquals(someNamespaceName, result.getNamespaceName());
@@ -196,8 +160,8 @@ public class ConfigControllerTest {
     String somePrivateNamespaceName = String.format("%s.%s", somePrivateNamespace, "xml");
     AppNamespace appNamespace = mock(AppNamespace.class);
 
-    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, somePrivateNamespace))
-        .thenReturn(someRelease);
+    when(configService.loadConfig(someAppId, someClientIp, someAppId, someClusterName, somePrivateNamespace,
+        someDataCenter, someNotificationId)).thenReturn(someRelease);
     when(someRelease.getReleaseKey()).thenReturn(someServerSideNewReleaseKey);
     when(namespaceUtil.filterNamespaceName(somePrivateNamespaceName)).thenReturn(somePrivateNamespace);
     when(appNamespaceService.findByAppIdAndNamespace(someAppId, somePrivateNamespace))
@@ -218,8 +182,8 @@ public class ConfigControllerTest {
     String someClientSideReleaseKey = "1";
     HttpServletResponse someResponse = mock(HttpServletResponse.class);
 
-    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, defaultNamespaceName))
-        .thenReturn(null);
+    when(configService.loadConfig(someAppId, someClientIp, someAppId, someClusterName, defaultNamespaceName,
+        someDataCenter, someNotificationId)).thenReturn(null);
 
     ApolloConfig result = configController.queryConfig(someAppId, someClusterName,
         defaultNamespaceName, someDataCenter, someClientSideReleaseKey,
@@ -235,66 +199,16 @@ public class ConfigControllerTest {
     String someServerSideReleaseKey = someClientSideReleaseKey;
     HttpServletResponse someResponse = mock(HttpServletResponse.class);
 
-    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, defaultNamespaceName))
-        .thenReturn(someRelease);
+    when(configService.loadConfig(someAppId, someClientIp, someAppId, someClusterName, defaultNamespaceName,
+        someDataCenter, someNotificationId)).thenReturn(someRelease);
     when(someRelease.getReleaseKey()).thenReturn(someServerSideReleaseKey);
 
-    ApolloConfig
-        result =
-        configController.queryConfig(someAppId, someClusterName, defaultNamespaceName,
-            someDataCenter, String.valueOf(someClientSideReleaseKey), someClientIp, someNotificationId, someRequest,
-            someResponse);
+    ApolloConfig result =
+        configController.queryConfig(someAppId, someClusterName, defaultNamespaceName, someDataCenter, String.valueOf
+            (someClientSideReleaseKey), someClientIp, someNotificationId, someRequest, someResponse);
 
     assertNull(result);
     verify(someResponse, times(1)).setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-  }
-
-  @Test
-  public void testQueryConfigWithDefaultClusterWithDataCenterRelease() throws Exception {
-    String someClientSideReleaseKey = "1";
-    String someServerSideNewReleaseKey = "2";
-    HttpServletResponse someResponse = mock(HttpServletResponse.class);
-
-    when(releaseService.findLatestActiveRelease(someAppId, someDataCenter, defaultNamespaceName))
-        .thenReturn(someRelease);
-    when(someRelease.getReleaseKey()).thenReturn(someServerSideNewReleaseKey);
-    when(someRelease.getClusterName()).thenReturn(someDataCenter);
-
-    ApolloConfig result = configController.queryConfig(someAppId, defaultClusterName,
-        defaultNamespaceName, someDataCenter, someClientSideReleaseKey,
-        someClientIp, someNotificationId, someRequest, someResponse);
-
-    verify(releaseService, times(1)).findLatestActiveRelease(someAppId, someDataCenter, defaultNamespaceName);
-    assertEquals(someAppId, result.getAppId());
-    assertEquals(someDataCenter, result.getCluster());
-    assertEquals(defaultNamespaceName, result.getNamespaceName());
-    assertEquals(someServerSideNewReleaseKey, result.getReleaseKey());
-  }
-
-  @Test
-  public void testQueryConfigWithDefaultClusterWithNoDataCenterRelease() throws Exception {
-    String someClientSideReleaseKey = "1";
-    String someServerSideNewReleaseKey = "2";
-    HttpServletResponse someResponse = mock(HttpServletResponse.class);
-
-    when(releaseService.findLatestActiveRelease(someAppId, someDataCenter, defaultNamespaceName))
-        .thenReturn(null);
-    when(releaseService.findLatestActiveRelease(someAppId, defaultClusterName, defaultNamespaceName))
-        .thenReturn(someRelease);
-    when(someRelease.getReleaseKey()).thenReturn(someServerSideNewReleaseKey);
-    when(someRelease.getClusterName()).thenReturn(defaultClusterName);
-
-    ApolloConfig result = configController.queryConfig(someAppId, defaultClusterName,
-        defaultNamespaceName, someDataCenter, someClientSideReleaseKey,
-        someClientIp, someNotificationId, someRequest, someResponse);
-
-    verify(releaseService, times(1)).findLatestActiveRelease(someAppId, someDataCenter, defaultNamespaceName);
-    verify(releaseService, times(1))
-        .findLatestActiveRelease(someAppId, defaultClusterName, defaultNamespaceName);
-    assertEquals(someAppId, result.getAppId());
-    assertEquals(defaultClusterName, result.getCluster());
-    assertEquals(defaultNamespaceName, result.getNamespaceName());
-    assertEquals(someServerSideNewReleaseKey, result.getReleaseKey());
   }
 
   @Test
@@ -306,8 +220,8 @@ public class ConfigControllerTest {
     AppNamespace someAppOwnNamespace =
         assemblePublicAppNamespace(someAppId, someAppOwnNamespaceName);
 
-    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, someAppOwnNamespaceName))
-        .thenReturn(someRelease);
+    when(configService.loadConfig(someAppId, someClientIp, someAppId, someClusterName, someAppOwnNamespaceName,
+        someDataCenter, someNotificationId)).thenReturn(someRelease);
     when(appNamespaceService.findPublicNamespaceByName(someAppOwnNamespaceName))
         .thenReturn(someAppOwnNamespace);
     when(someRelease.getReleaseKey()).thenReturn(someServerSideReleaseKey);
@@ -336,12 +250,12 @@ public class ConfigControllerTest {
     AppNamespace somePublicAppNamespace =
         assemblePublicAppNamespace(somePublicAppId, somePublicNamespaceName);
 
-    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, somePublicNamespaceName))
-        .thenReturn(null);
+    when(configService.loadConfig(someAppId, someClientIp, someAppId, someClusterName, somePublicNamespaceName,
+        someDataCenter, someNotificationId)).thenReturn(null);
     when(appNamespaceService.findPublicNamespaceByName(somePublicNamespaceName))
         .thenReturn(somePublicAppNamespace);
-    when(releaseService.findLatestActiveRelease(somePublicAppId, someDataCenter, somePublicNamespaceName))
-        .thenReturn(somePublicRelease);
+    when(configService.loadConfig(someAppId, someClientIp, somePublicAppId, someClusterName, somePublicNamespaceName,
+        someDataCenter, someNotificationId)).thenReturn(somePublicRelease);
     when(somePublicRelease.getReleaseKey()).thenReturn(someServerSideReleaseKey);
     when(somePublicRelease.getAppId()).thenReturn(somePublicAppId);
     when(somePublicRelease.getClusterName()).thenReturn(somePublicClusterName);
@@ -370,12 +284,12 @@ public class ConfigControllerTest {
     AppNamespace somePublicAppNamespace =
         assemblePublicAppNamespace(somePublicAppId, somePublicNamespaceName);
 
-    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, somePublicNamespaceName))
-        .thenReturn(null);
+    when(configService.loadConfig(someAppId, someClientIp, someAppId, someClusterName, somePublicNamespaceName,
+        someDataCenter, someNotificationId)).thenReturn(null);
     when(appNamespaceService.findPublicNamespaceByName(somePublicNamespaceName))
         .thenReturn(somePublicAppNamespace);
-    when(releaseService.findLatestActiveRelease(somePublicAppId, someDataCenter, somePublicNamespaceName))
-        .thenReturn(somePublicRelease);
+    when(configService.loadConfig(someAppId, someClientIp, somePublicAppId, someClusterName, somePublicNamespaceName,
+        someDataCenter, someNotificationId)).thenReturn(somePublicRelease);
     when(somePublicRelease.getReleaseKey()).thenReturn(someServerSideReleaseKey);
     when(namespaceUtil.filterNamespaceName(someNamespace)).thenReturn(somePublicNamespaceName);
     when(appNamespaceService.findByAppIdAndNamespace(someAppId, somePublicNamespaceName)).thenReturn(null);
@@ -388,38 +302,6 @@ public class ConfigControllerTest {
     assertEquals(someAppId, result.getAppId());
     assertEquals(someClusterName, result.getCluster());
     assertEquals(someNamespace, result.getNamespaceName());
-    assertEquals("foo", result.getConfigurations().get("apollo.public.bar"));
-  }
-
-  @Test
-  public void testQueryConfigWithPublicNamespaceAndNoAppOverrideAndNoDataCenter() throws Exception {
-    String someClientSideReleaseKey = "1";
-    String someServerSideReleaseKey = "2";
-    HttpServletResponse someResponse = mock(HttpServletResponse.class);
-    String somePublicAppId = "somePublicAppId";
-    AppNamespace somePublicAppNamespace =
-        assemblePublicAppNamespace(somePublicAppId, somePublicNamespaceName);
-
-    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, somePublicNamespaceName))
-        .thenReturn(null);
-    when(appNamespaceService.findPublicNamespaceByName(somePublicNamespaceName))
-        .thenReturn(somePublicAppNamespace);
-    when(releaseService.findLatestActiveRelease(somePublicAppId, someDataCenter, somePublicNamespaceName))
-        .thenReturn(null);
-    when(releaseService
-        .findLatestActiveRelease(somePublicAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, somePublicNamespaceName))
-        .thenReturn(somePublicRelease);
-    when(somePublicRelease.getReleaseKey()).thenReturn(someServerSideReleaseKey);
-
-    ApolloConfig result =
-        configController
-            .queryConfig(someAppId, someClusterName, somePublicNamespaceName, someDataCenter,
-                someClientSideReleaseKey, someClientIp, someNotificationId, someRequest, someResponse);
-
-    assertEquals(someServerSideReleaseKey, result.getReleaseKey());
-    assertEquals(someAppId, result.getAppId());
-    assertEquals(someClusterName, result.getCluster());
-    assertEquals(somePublicNamespaceName, result.getNamespaceName());
     assertEquals("foo", result.getConfigurations().get("apollo.public.bar"));
   }
 
@@ -437,14 +319,14 @@ public class ConfigControllerTest {
     when(somePublicRelease.getConfigurations())
         .thenReturn("{\"apollo.public.foo\": \"foo\", \"apollo.public.bar\": \"bar\"}");
 
-    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, somePublicNamespaceName))
-        .thenReturn(someRelease);
+    when(configService.loadConfig(someAppId, someClientIp, someAppId, someClusterName, somePublicNamespaceName,
+        someDataCenter, someNotificationId)).thenReturn(someRelease);
     when(someRelease.getReleaseKey()).thenReturn(someAppSideReleaseKey);
     when(someRelease.getNamespaceName()).thenReturn(somePublicNamespaceName);
     when(appNamespaceService.findPublicNamespaceByName(somePublicNamespaceName))
         .thenReturn(somePublicAppNamespace);
-    when(releaseService.findLatestActiveRelease(somePublicAppId, someDataCenter, somePublicNamespaceName))
-        .thenReturn(somePublicRelease);
+    when(configService.loadConfig(someAppId, someClientIp, somePublicAppId, someClusterName, somePublicNamespaceName,
+        someDataCenter, someNotificationId)).thenReturn(somePublicRelease);
     when(somePublicRelease.getReleaseKey()).thenReturn(somePublicAppSideReleaseKey);
     when(somePublicRelease.getAppId()).thenReturn(somePublicAppId);
     when(somePublicRelease.getClusterName()).thenReturn(someDataCenter);
@@ -516,7 +398,8 @@ public class ConfigControllerTest {
         defaultNamespaceName, someDataCenter, someClientSideReleaseKey,
         someClientIp, someNotificationId, someRequest, someResponse);
 
-    verify(releaseService, never()).findLatestActiveRelease(appId, someClusterName, defaultNamespaceName);
+    verify(configService, never()).loadConfig(appId, someClientIp, someAppId, someClusterName, defaultNamespaceName,
+        someDataCenter, someNotificationId);
     verify(appNamespaceService, never()).findPublicNamespaceByName(defaultNamespaceName);
     assertNull(result);
     verify(someResponse, times(1)).sendError(eq(HttpServletResponse.SC_NOT_FOUND), anyString());
@@ -534,15 +417,16 @@ public class ConfigControllerTest {
 
     when(appNamespaceService.findPublicNamespaceByName(somePublicNamespaceName))
         .thenReturn(somePublicAppNamespace);
-    when(releaseService.findLatestActiveRelease(somePublicAppId, someDataCenter, somePublicNamespaceName))
-        .thenReturn(somePublicRelease);
+    when(configService.loadConfig(appId, someClientIp, somePublicAppId, someClusterName, somePublicNamespaceName,
+        someDataCenter, someNotificationId)).thenReturn(somePublicRelease);
     when(somePublicRelease.getReleaseKey()).thenReturn(someServerSideReleaseKey);
 
     ApolloConfig result = configController.queryConfig(appId, someClusterName,
         somePublicNamespaceName, someDataCenter, someClientSideReleaseKey,
         someClientIp, someNotificationId, someRequest, someResponse);
 
-    verify(releaseService, never()).findLatestActiveRelease(appId, someClusterName, somePublicNamespaceName);
+    verify(configService, never()).loadConfig(appId, someClientIp, appId, someClusterName,
+        somePublicNamespaceName, someDataCenter, someNotificationId);
     assertEquals(someServerSideReleaseKey, result.getReleaseKey());
     assertEquals(appId, result.getAppId());
     assertEquals(someClusterName, result.getCluster());

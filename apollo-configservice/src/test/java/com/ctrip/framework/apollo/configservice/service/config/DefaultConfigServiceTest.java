@@ -30,7 +30,6 @@ public class DefaultConfigServiceTest {
   private String someClusterName;
   private String defaultClusterName;
   private String defaultNamespaceName;
-  private String somePublicNamespaceName;
   private String someDataCenter;
   private String someClientIp;
   private long someNotificationId;
@@ -54,7 +53,6 @@ public class DefaultConfigServiceTest {
     someClusterName = "someClusterName";
     defaultClusterName = ConfigConsts.CLUSTER_NAME_DEFAULT;
     defaultNamespaceName = ConfigConsts.NAMESPACE_APPLICATION;
-    somePublicNamespaceName = "somePublicNamespace";
     someDataCenter = "someDC";
     someClientIp = "someClientIp";
     someNotificationId = -1;
