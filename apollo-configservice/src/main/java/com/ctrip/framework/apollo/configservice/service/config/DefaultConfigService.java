@@ -17,7 +17,7 @@ public class DefaultConfigService extends AbstractConfigService {
   private ReleaseService releaseService;
 
   @Override
-  protected Release findActiveOne(Long id, long notificationId) {
+  protected Release findActiveOne(long id, long notificationId) {
     return releaseService.findActiveOne(id);
   }
 
