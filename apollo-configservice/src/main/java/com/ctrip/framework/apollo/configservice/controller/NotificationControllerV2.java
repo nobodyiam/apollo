@@ -61,7 +61,6 @@ public class NotificationControllerV2 implements ReleaseMessageListener {
       NOT_MODIFIED_RESPONSE_LIST = new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
   private static final Splitter STRING_SPLITTER =
       Splitter.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR).omitEmptyStrings();
-  private static final long NOTIFICATION_ID_PLACEHOLDER = -1;
   private static final Type notificationsTypeReference =
       new TypeToken<List<ApolloConfigNotification>>() {
       }.getType();
@@ -190,17 +189,20 @@ public class NotificationControllerV2 implements ReleaseMessageListener {
 
       for (String namespace : namespaces) {
         long clientSideId = clientSideNotifications.get(namespace);
-        long latestId = NOTIFICATION_ID_PLACEHOLDER;
+        long latestId = ConfigConsts.NOTIFICATION_ID_PLACEHOLDER;
         Collection<String> namespaceWatchedKeys = watchedKeysMap.get(namespace);
         for (String namespaceWatchedKey : namespaceWatchedKeys) {
           long namespaceNotificationId =
-              latestNotifications.getOrDefault(namespaceWatchedKey, NOTIFICATION_ID_PLACEHOLDER);
+              latestNotifications.getOrDefault(namespaceWatchedKey, ConfigConsts.NOTIFICATION_ID_PLACEHOLDER);
           if (namespaceNotificationId > latestId) {
             latestId = namespaceNotificationId;
           }
         }
         if (latestId > clientSideId) {
-          newNotifications.add(new ApolloConfigNotification(namespace, latestId));
+          ApolloConfigNotification notification = new ApolloConfigNotification(namespace, latestId);
+          namespaceWatchedKeys.stream().filter(latestNotifications::containsKey).forEach(namespaceWatchedKey ->
+              notification.addChangedNotification(namespaceWatchedKey, latestNotifications.get(namespaceWatchedKey)));
+          newNotifications.add(notification);
         }
       }
     }
@@ -224,10 +226,10 @@ public class NotificationControllerV2 implements ReleaseMessageListener {
       return;
     }
 
-    ResponseEntity<List<ApolloConfigNotification>> notification =
-        new ResponseEntity<>(
-            Lists.newArrayList(new ApolloConfigNotification(changedNamespace, message.getId())),
-            HttpStatus.OK);
+    ApolloConfigNotification configNotification = new ApolloConfigNotification(changedNamespace, message.getId());
+    configNotification.addChangedNotification(content, message.getId());
+    ResponseEntity<List<ApolloConfigNotification>> notification = new ResponseEntity<>(
+        Lists.newArrayList(configNotification), HttpStatus.OK);
 
     if (!deferredResults.containsKey(content)) {
       return;

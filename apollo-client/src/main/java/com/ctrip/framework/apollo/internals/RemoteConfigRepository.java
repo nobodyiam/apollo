@@ -1,6 +1,5 @@
 package com.ctrip.framework.apollo.internals;
 
-import com.ctrip.framework.apollo.core.dto.ApolloConfigNotification;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +37,7 @@ import com.google.common.collect.Maps;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import com.google.common.util.concurrent.RateLimiter;
+import com.google.gson.Gson;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
@@ -54,10 +54,11 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
   private final String m_namespace;
   private final static ScheduledExecutorService m_executorService;
   private AtomicReference<ServiceDTO> m_longPollServiceDto;
-  private AtomicReference<ApolloConfigNotification> m_lastNotification;
+  private AtomicReference<Map<String, Long>> m_remoteNotifications;
   private RateLimiter m_loadConfigRateLimiter;
   private AtomicBoolean m_configNeedForceRefresh;
   private SchedulePolicy m_loadConfigFailSchedulePolicy;
+  private Gson gson;
   private static final Escaper pathEscaper = UrlEscapers.urlPathSegmentEscaper();
   private static final Escaper queryParamEscaper = UrlEscapers.urlFormParameterEscaper();
 
@@ -79,11 +80,12 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
     m_serviceLocator = ApolloInjector.getInstance(ConfigServiceLocator.class);
     remoteConfigLongPollService = ApolloInjector.getInstance(RemoteConfigLongPollService.class);
     m_longPollServiceDto = new AtomicReference<>();
-    m_lastNotification = new AtomicReference<>();
+    m_remoteNotifications = new AtomicReference<>();
     m_loadConfigRateLimiter = RateLimiter.create(m_configUtil.getLoadConfigQPS());
     m_configNeedForceRefresh = new AtomicBoolean(true);
     m_loadConfigFailSchedulePolicy = new ExponentialSchedulePolicy(m_configUtil.getOnErrorRetryInterval(),
         m_configUtil.getOnErrorRetryInterval() * 8);
+    gson = new Gson();
     this.trySync();
     this.schedulePeriodicRefresh();
     this.scheduleLongPollingRefresh();
@@ -191,10 +193,9 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
           }
         }
 
-        long notificationId = retrieveLastNotificationId();
         String url =
             assembleQueryConfigUrl(configService.getHomepageUrl(), appId, cluster, m_namespace,
-                dataCenter, notificationId, m_configCache.get());
+                dataCenter, m_remoteNotifications.get(), m_configCache.get());
 
         logger.debug("Loading config from {}", url);
         HttpRequest request = new HttpRequest(url);
@@ -254,12 +255,8 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
     throw new ApolloConfigException(message, exception);
   }
 
-  long retrieveLastNotificationId() {
-    return m_lastNotification.get() == null ? -1 : m_lastNotification.get().getNotificationId();
-  }
-
   String assembleQueryConfigUrl(String uri, String appId, String cluster, String namespace,
-                                String dataCenter, long notificationId, ApolloConfig previousConfig) {
+                                String dataCenter, Map<String, Long> remoteNotifications, ApolloConfig previousConfig) {
 
     String path = "configs/%s/%s/%s";
     List<String> pathParams =
@@ -280,7 +277,9 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
       queryParams.put("ip", queryParamEscaper.escape(localIp));
     }
 
-    queryParams.put("notificationId", String.valueOf(notificationId));
+    if (remoteNotifications != null) {
+      queryParams.put("notifications", queryParamEscaper.escape(gson.toJson(remoteNotifications)));
+    }
 
     String pathExpanded = String.format(path, pathParams.toArray());
 
@@ -297,13 +296,9 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
     remoteConfigLongPollService.submit(m_namespace, this);
   }
 
-  public void onLongPollNotified(ServiceDTO longPollNotifiedServiceDto, ApolloConfigNotification notification) {
+  public void onLongPollNotified(ServiceDTO longPollNotifiedServiceDto, Map<String, Long> remoteNotifications) {
     m_longPollServiceDto.set(longPollNotifiedServiceDto);
-    //to make sure the notification set is latest
-    if (m_lastNotification.get() == null ||
-        m_lastNotification.get().getNotificationId() < notification.getNotificationId()) {
-      m_lastNotification.set(notification);
-    }
+    m_remoteNotifications.set(remoteNotifications);
     m_executorService.submit(new Runnable() {
       @Override
       public void run() {

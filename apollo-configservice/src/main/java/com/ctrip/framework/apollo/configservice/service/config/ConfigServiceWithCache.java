@@ -18,8 +18,10 @@ import com.ctrip.framework.apollo.tracer.Tracer;
 import com.ctrip.framework.apollo.tracer.spi.Transaction;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -30,7 +32,6 @@ import javax.annotation.PostConstruct;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class ConfigServiceWithCache extends AbstractConfigService {
-  static final long DEFAULT_NOTIFICATION_ID = -1;
   private static final long DEFAULT_EXPIRED_AFTER_ACCESS_IN_MINUTES = 60;//1 hour
   private static final String CAT_EVENT_CACHE_INVALIDATE = "Cache.Invalidate";
   private static final String CAT_EVENT_CACHE_LOAD = "Cache.LoadFromDB";
@@ -49,7 +50,7 @@ public class ConfigServiceWithCache extends AbstractConfigService {
   private ConfigCacheEntry nullConfigCacheEntry;
 
   public ConfigServiceWithCache() {
-    nullConfigCacheEntry = new ConfigCacheEntry(DEFAULT_NOTIFICATION_ID, null);
+    nullConfigCacheEntry = new ConfigCacheEntry(ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, null);
   }
 
   @PostConstruct
@@ -75,10 +76,10 @@ public class ConfigServiceWithCache extends AbstractConfigService {
 
               transaction.setStatus(Transaction.SUCCESS);
 
-              long notificationId = latestReleaseMessage == null ? DEFAULT_NOTIFICATION_ID : latestReleaseMessage
+              long notificationId = latestReleaseMessage == null ? ConfigConsts.NOTIFICATION_ID_PLACEHOLDER : latestReleaseMessage
                   .getId();
 
-              if (notificationId == DEFAULT_NOTIFICATION_ID && latestRelease == null) {
+              if (notificationId == ConfigConsts.NOTIFICATION_ID_PLACEHOLDER && latestRelease == null) {
                 return nullConfigCacheEntry;
               }
 
@@ -94,14 +95,14 @@ public class ConfigServiceWithCache extends AbstractConfigService {
   }
 
   @Override
-  protected Release findActiveOne(long id, long notificationId) {
+  protected Release findActiveOne(long id, Map<String, Long> clientNotifications) {
     //this is only used for gray releases, hit db for now
     return releaseService.findActiveOne(id);
   }
 
   @Override
   protected Release findLatestActiveRelease(String appId, String clusterName, String namespaceName,
-                                            long notificationId) {
+                                            Map<String, Long> clientNotifications) {
     String key = ReleaseMessageKeyGenerator.generate(appId, clusterName, namespaceName);
 
     Tracer.logEvent(CAT_EVENT_CACHE_GET, key);
@@ -109,8 +110,8 @@ public class ConfigServiceWithCache extends AbstractConfigService {
     ConfigCacheEntry cacheEntry = configCache.getUnchecked(key);
 
     //cache is out-dated
-    //FIXME There is a critical bug here...
-    if (notificationId > cacheEntry.getNotificationId()) {
+    if (!CollectionUtils.isEmpty(clientNotifications) && clientNotifications.containsKey(key) &&
+        clientNotifications.get(key) > cacheEntry.getNotificationId()) {
       //invalidate the cache and try to load from db again
       invalidate(key);
       cacheEntry = configCache.getUnchecked(key);

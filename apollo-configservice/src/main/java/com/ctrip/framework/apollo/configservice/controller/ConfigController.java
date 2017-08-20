@@ -2,6 +2,7 @@ package com.ctrip.framework.apollo.configservice.controller;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ctrip.framework.apollo.biz.entity.Release;
 import com.ctrip.framework.apollo.biz.grayReleaseRule.GrayReleaseRulesHolder;
-import com.ctrip.framework.apollo.biz.service.ReleaseService;
 import com.ctrip.framework.apollo.common.entity.AppNamespace;
 import com.ctrip.framework.apollo.configservice.service.AppNamespaceServiceWithCache;
 import com.ctrip.framework.apollo.configservice.service.config.ConfigService;
@@ -56,9 +57,10 @@ public class ConfigController {
   private GrayReleaseRulesHolder grayReleaseRulesHolder;
 
   private static final Gson gson = new Gson();
-  private static final Type configurationTypeReference =
-      new TypeToken<Map<java.lang.String, java.lang.String>>() {
+  private static final Type configurationTypeReference = new TypeToken<Map<String, String>>() {
       }.getType();
+  private static final Type notificationsTypeReference = new TypeToken<Map<String, Long>>() {
+  }.getType();
   private static final Joiner STRING_JOINER = Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR);
 
   @RequestMapping(value = "/{appId}/{clusterName}/{namespace:.+}", method = RequestMethod.GET)
@@ -67,7 +69,7 @@ public class ConfigController {
                                   @RequestParam(value = "dataCenter", required = false) String dataCenter,
                                   @RequestParam(value = "releaseKey", defaultValue = "-1") String clientSideReleaseKey,
                                   @RequestParam(value = "ip", required = false) String clientIp,
-                                  @RequestParam(value = "notificationId", defaultValue = "-1") long notificationId,
+                                  @RequestParam(value = "notifications", required = false) String notificationsAsString,
                                   HttpServletRequest request, HttpServletResponse response) throws IOException {
     String originalNamespace = namespace;
     //strip out .properties suffix
@@ -77,12 +79,23 @@ public class ConfigController {
       clientIp = tryToGetClientIp(request);
     }
 
+    Map<String, Long> clientNotifications = null;
+
+    if (!Strings.isNullOrEmpty(notificationsAsString)) {
+      try {
+        clientNotifications =
+            gson.fromJson(notificationsAsString, notificationsTypeReference);
+      } catch (Throwable ex) {
+        Tracer.logError(ex);
+      }
+    }
+
     List<Release> releases = Lists.newLinkedList();
 
     String appClusterNameLoaded = clusterName;
     if (!ConfigConsts.NO_APPID_PLACEHOLDER.equalsIgnoreCase(appId)) {
       Release currentAppRelease = configService.loadConfig(appId, clientIp, appId, clusterName, namespace,
-          dataCenter, notificationId);
+          dataCenter, clientNotifications);
 
       if (currentAppRelease != null) {
         releases.add(currentAppRelease);
@@ -94,7 +107,7 @@ public class ConfigController {
     //if namespace does not belong to this appId, should check if there is a public configuration
     if (!namespaceBelongsToAppId(appId, namespace)) {
       Release publicRelease = this.findPublicConfig(appId, clientIp, clusterName, namespace,
-          dataCenter, notificationId);
+          dataCenter, clientNotifications);
       if (!Objects.isNull(publicRelease)) {
         releases.add(publicRelease);
       }
@@ -154,7 +167,7 @@ public class ConfigController {
    * @param dataCenter  the datacenter
    */
   private Release findPublicConfig(String clientAppId, String clientIp, String clusterName,
-                                   String namespace, String dataCenter, long notificationId) {
+                                   String namespace, String dataCenter, Map<String, Long> clientNotifications) {
     AppNamespace appNamespace = appNamespaceService.findPublicNamespaceByName(namespace);
 
     //check whether the namespace's appId equals to current one
@@ -165,7 +178,7 @@ public class ConfigController {
     String publicConfigAppId = appNamespace.getAppId();
 
     return configService.loadConfig(clientAppId, clientIp, publicConfigAppId, clusterName, namespace, dataCenter,
-        notificationId);
+        clientNotifications);
   }
 
   /**

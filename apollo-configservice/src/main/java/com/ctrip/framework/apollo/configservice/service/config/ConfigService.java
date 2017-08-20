@@ -3,6 +3,8 @@ package com.ctrip.framework.apollo.configservice.service.config;
 import com.ctrip.framework.apollo.biz.entity.Release;
 import com.ctrip.framework.apollo.biz.message.ReleaseMessageListener;
 
+import java.util.Map;
+
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
@@ -17,9 +19,9 @@ public interface ConfigService extends ReleaseMessageListener {
    * @param configClusterName the requested config's cluster name
    * @param configNamespace the requested config's namespace name
    * @param dataCenter the client data center
-   * @param notificationId the client side notification id
+   * @param clientNotifications the client side notification ids
    * @return the Release
    */
   Release loadConfig(String clientAppId, String clientIp, String configAppId, String
-      configClusterName, String configNamespace, String dataCenter, long notificationId);
+      configClusterName, String configNamespace, String dataCenter, Map<String, Long> clientNotifications);
 }
