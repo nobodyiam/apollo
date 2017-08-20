@@ -136,6 +136,10 @@ public class BizConfig extends RefreshableConfig {
     return checkInt(interval, 10, Integer.MAX_VALUE, DEFAULT_RELEASE_MESSAGE_NOTIFICATION_BATCH_INTERVAL_IN_MILLI);
   }
 
+  public boolean isConfigServiceCacheEnabled() {
+    return getBooleanProperty("config-service.cache.enabled", false);
+  }
+
   int checkInt(int value, int min, int max, int defaultValue) {
     if (value >= min && value <= max) {
       return value;

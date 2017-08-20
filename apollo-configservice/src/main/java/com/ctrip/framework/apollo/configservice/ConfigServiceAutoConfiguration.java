@@ -9,6 +9,7 @@ import com.ctrip.framework.apollo.configservice.controller.NotificationControlle
 import com.ctrip.framework.apollo.configservice.service.ReleaseMessageServiceWithCache;
 
 import com.ctrip.framework.apollo.configservice.service.config.ConfigService;
+import com.ctrip.framework.apollo.configservice.service.config.ConfigServiceWithCache;
 import com.ctrip.framework.apollo.configservice.service.config.DefaultConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +31,9 @@ public class ConfigServiceAutoConfiguration {
 
   @Bean
   public ConfigService configService() {
-    //TODO check biz config
+    if (bizConfig.isConfigServiceCacheEnabled()) {
+      return new ConfigServiceWithCache();
+    }
     return new DefaultConfigService();
   }
 
