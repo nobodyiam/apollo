@@ -367,7 +367,7 @@ VALUES
     ('eureka.service.url', 'default', 'http://apollo-configservice:8080/eureka/', 'Eureka服务Url，多个service以英文逗号分隔'),
     ('namespace.lock.switch', 'default', 'false', '一次发布只能有一个人修改开关'),
     ('item.value.length.limit', 'default', '20000', 'item value最大长度限制'),
-    ('appnamespace.private.enable', 'default', 'false', '是否开启private namespace'),
+    ('config-service.cache.enabled', 'default', 'false', 'ConfigService是否开启缓存，开启后能提高性能，但是会增大内存消耗！'),
     ('item.key.length.limit', 'default', '128', 'item key 最大长度限制');
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
