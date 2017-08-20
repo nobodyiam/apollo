@@ -73,7 +73,7 @@ public abstract class AbstractConfigService implements ConfigService {
   /**
    * Find active release by id
    */
-  protected abstract Release findActiveOne(Long id, long notificationId);
+  protected abstract Release findActiveOne(long id, long notificationId);
 
   /**
    * Find active release by app id, cluster name and namespace name
