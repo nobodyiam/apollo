@@ -30,6 +30,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.ctrip.framework.apollo.build.MockInjector;
 import com.ctrip.framework.apollo.core.dto.ApolloConfigNotification;
+import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.ctrip.framework.apollo.core.dto.ServiceDTO;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.ctrip.framework.apollo.util.http.HttpRequest;
@@ -115,7 +116,7 @@ public class RemoteConfigLongPollServiceTest {
 
     remoteConfigLongPollService.stopLongPollingRefresh();
 
-    verify(someRepository, never()).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
+    verify(someRepository, never()).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
   }
 
   @Test
@@ -149,7 +150,7 @@ public class RemoteConfigLongPollServiceTest {
         onNotified.set(true);
         return null;
       }
-    }).when(someRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
+    }).when(someRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
 
     remoteConfigLongPollService.submit(someNamespace, someRepository);
 
@@ -157,7 +158,7 @@ public class RemoteConfigLongPollServiceTest {
 
     remoteConfigLongPollService.stopLongPollingRefresh();
 
-    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
+    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
   }
 
   @Test
@@ -222,7 +223,7 @@ public class RemoteConfigLongPollServiceTest {
         onAnotherRepositoryNotified.set(true);
         return null;
       }
-    }).when(anotherRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
+    }).when(anotherRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
 
     remoteConfigLongPollService.submit(someNamespace, someRepository);
 
@@ -234,8 +235,8 @@ public class RemoteConfigLongPollServiceTest {
 
     remoteConfigLongPollService.stopLongPollingRefresh();
 
-    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
-    verify(anotherRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
+    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
+    verify(anotherRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
   }
 
   @Test
@@ -274,7 +275,7 @@ public class RemoteConfigLongPollServiceTest {
         someRepositoryNotified.set(true);
         return null;
       }
-    }).when(someRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
+    }).when(someRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
     final SettableFuture<Boolean> anotherRepositoryNotified = SettableFuture.create();
     doAnswer(new Answer<Void>() {
       @Override
@@ -282,7 +283,7 @@ public class RemoteConfigLongPollServiceTest {
         anotherRepositoryNotified.set(true);
         return null;
       }
-    }).when(anotherRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
+    }).when(anotherRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
 
     remoteConfigLongPollService.submit(someNamespace, someRepository);
     remoteConfigLongPollService.submit(anotherNamespace, anotherRepository);
@@ -292,8 +293,8 @@ public class RemoteConfigLongPollServiceTest {
 
     remoteConfigLongPollService.stopLongPollingRefresh();
 
-    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
-    verify(anotherRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloConfigNotification.class));
+    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
+    verify(anotherRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
   }
 
   @Test

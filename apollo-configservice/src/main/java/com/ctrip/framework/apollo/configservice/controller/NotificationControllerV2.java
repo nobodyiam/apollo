@@ -201,7 +201,7 @@ public class NotificationControllerV2 implements ReleaseMessageListener {
         if (latestId > clientSideId) {
           ApolloConfigNotification notification = new ApolloConfigNotification(namespace, latestId);
           namespaceWatchedKeys.stream().filter(latestNotifications::containsKey).forEach(namespaceWatchedKey ->
-              notification.addChangedNotification(namespaceWatchedKey, latestNotifications.get(namespaceWatchedKey)));
+              notification.addMessage(namespaceWatchedKey, latestNotifications.get(namespaceWatchedKey)));
           newNotifications.add(notification);
         }
       }
@@ -227,7 +227,7 @@ public class NotificationControllerV2 implements ReleaseMessageListener {
     }
 
     ApolloConfigNotification configNotification = new ApolloConfigNotification(changedNamespace, message.getId());
-    configNotification.addChangedNotification(content, message.getId());
+    configNotification.addMessage(content, message.getId());
     ResponseEntity<List<ApolloConfigNotification>> notification = new ResponseEntity<>(
         Lists.newArrayList(configNotification), HttpStatus.OK);
 

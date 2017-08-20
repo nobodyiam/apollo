@@ -225,7 +225,7 @@ public class ConfigFileController implements ReleaseMessageListener {
                             HttpServletRequest request,
                             HttpServletResponse response) throws IOException {
     ApolloConfig apolloConfig = configController.queryConfig(appId, clusterName, namespace,
-        dataCenter, "-1", clientIp, -1, request, response);
+        dataCenter, "-1", clientIp, null, request, response);
 
     if (apolloConfig == null || apolloConfig.getConfigurations() == null) {
       return null;

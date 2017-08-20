@@ -27,6 +27,7 @@ import com.ctrip.framework.apollo.configservice.util.InstanceConfigAuditUtil;
 import com.ctrip.framework.apollo.configservice.util.NamespaceUtil;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.dto.ApolloConfig;
+import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.ctrip.framework.apollo.tracer.Tracer;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -59,8 +60,6 @@ public class ConfigController {
   private static final Gson gson = new Gson();
   private static final Type configurationTypeReference = new TypeToken<Map<String, String>>() {
       }.getType();
-  private static final Type notificationsTypeReference = new TypeToken<Map<String, Long>>() {
-  }.getType();
   private static final Joiner STRING_JOINER = Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR);
 
   @RequestMapping(value = "/{appId}/{clusterName}/{namespace:.+}", method = RequestMethod.GET)
@@ -69,7 +68,7 @@ public class ConfigController {
                                   @RequestParam(value = "dataCenter", required = false) String dataCenter,
                                   @RequestParam(value = "releaseKey", defaultValue = "-1") String clientSideReleaseKey,
                                   @RequestParam(value = "ip", required = false) String clientIp,
-                                  @RequestParam(value = "notifications", required = false) String notificationsAsString,
+                                  @RequestParam(value = "messages", required = false) String messagesAsString,
                                   HttpServletRequest request, HttpServletResponse response) throws IOException {
     String originalNamespace = namespace;
     //strip out .properties suffix
@@ -79,12 +78,11 @@ public class ConfigController {
       clientIp = tryToGetClientIp(request);
     }
 
-    Map<String, Long> clientNotifications = null;
+    ApolloNotificationMessages clientMessages = null;
 
-    if (!Strings.isNullOrEmpty(notificationsAsString)) {
+    if (!Strings.isNullOrEmpty(messagesAsString)) {
       try {
-        clientNotifications =
-            gson.fromJson(notificationsAsString, notificationsTypeReference);
+        clientMessages = gson.fromJson(messagesAsString, ApolloNotificationMessages.class);
       } catch (Throwable ex) {
         Tracer.logError(ex);
       }
@@ -95,7 +93,7 @@ public class ConfigController {
     String appClusterNameLoaded = clusterName;
     if (!ConfigConsts.NO_APPID_PLACEHOLDER.equalsIgnoreCase(appId)) {
       Release currentAppRelease = configService.loadConfig(appId, clientIp, appId, clusterName, namespace,
-          dataCenter, clientNotifications);
+          dataCenter, clientMessages);
 
       if (currentAppRelease != null) {
         releases.add(currentAppRelease);
@@ -107,7 +105,7 @@ public class ConfigController {
     //if namespace does not belong to this appId, should check if there is a public configuration
     if (!namespaceBelongsToAppId(appId, namespace)) {
       Release publicRelease = this.findPublicConfig(appId, clientIp, clusterName, namespace,
-          dataCenter, clientNotifications);
+          dataCenter, clientMessages);
       if (!Objects.isNull(publicRelease)) {
         releases.add(publicRelease);
       }
@@ -167,7 +165,7 @@ public class ConfigController {
    * @param dataCenter  the datacenter
    */
   private Release findPublicConfig(String clientAppId, String clientIp, String clusterName,
-                                   String namespace, String dataCenter, Map<String, Long> clientNotifications) {
+                                   String namespace, String dataCenter, ApolloNotificationMessages clientMessages) {
     AppNamespace appNamespace = appNamespaceService.findPublicNamespaceByName(namespace);
 
     //check whether the namespace's appId equals to current one
@@ -178,7 +176,7 @@ public class ConfigController {
     String publicConfigAppId = appNamespace.getAppId();
 
     return configService.loadConfig(clientAppId, clientIp, publicConfigAppId, clusterName, namespace, dataCenter,
-        clientNotifications);
+        clientMessages);
   }
 
   /**
