@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.ctrip.framework.apollo.biz.entity.Release;
 import com.ctrip.framework.apollo.biz.service.ReleaseService;
 
+import java.util.Map;
+
 /**
  * config service with no cache
  *
@@ -17,13 +19,13 @@ public class DefaultConfigService extends AbstractConfigService {
   private ReleaseService releaseService;
 
   @Override
-  protected Release findActiveOne(long id, long notificationId) {
+  protected Release findActiveOne(long id, Map<String, Long> clientNotifications) {
     return releaseService.findActiveOne(id);
   }
 
   @Override
   protected Release findLatestActiveRelease(String configAppId, String configClusterName, String configNamespace,
-      long notificationId) {
+                                            Map<String, Long> clientNotifications) {
     return releaseService.findLatestActiveRelease(configAppId, configClusterName,
         configNamespace);
   }

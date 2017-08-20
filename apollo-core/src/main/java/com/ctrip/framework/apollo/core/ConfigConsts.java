@@ -7,4 +7,5 @@ public interface ConfigConsts {
   String APOLLO_CLUSTER_KEY = "apollo.cluster";
   String CONFIG_FILE_CONTENT_KEY = "content";
   String NO_APPID_PLACEHOLDER = "ApolloNoAppIdPlaceHolder";
+  long NOTIFICATION_ID_PLACEHOLDER = -1;
 }

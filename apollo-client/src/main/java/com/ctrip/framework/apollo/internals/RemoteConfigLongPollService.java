@@ -1,17 +1,18 @@
 package com.ctrip.framework.apollo.internals;
 
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.escape.Escaper;
+import com.google.common.net.UrlEscapers;
+import com.google.common.reflect.TypeToken;
+import com.google.common.util.concurrent.RateLimiter;
+import com.google.gson.Gson;
 
 import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.ConfigConsts;
@@ -29,18 +30,19 @@ import com.ctrip.framework.apollo.util.ExceptionUtil;
 import com.ctrip.framework.apollo.util.http.HttpRequest;
 import com.ctrip.framework.apollo.util.http.HttpResponse;
 import com.ctrip.framework.apollo.util.http.HttpUtil;
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import com.google.common.escape.Escaper;
-import com.google.common.net.UrlEscapers;
-import com.google.common.reflect.TypeToken;
-import com.google.common.util.concurrent.RateLimiter;
-import com.google.gson.Gson;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
@@ -50,7 +52,7 @@ public class RemoteConfigLongPollService {
   private static final Joiner STRING_JOINER = Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR);
   private static final Joiner.MapJoiner MAP_JOINER = Joiner.on("&").withKeyValueSeparator("=");
   private static final Escaper queryParamEscaper = UrlEscapers.urlFormParameterEscaper();
-  private static final long INIT_NOTIFICATION_ID = -1;
+  private static final long INIT_NOTIFICATION_ID = ConfigConsts.NOTIFICATION_ID_PLACEHOLDER;
   private final ExecutorService m_longPollingService;
   private final AtomicBoolean m_longPollingStopped;
   private SchedulePolicy m_longPollFailSchedulePolicyInSecond;
@@ -58,6 +60,7 @@ public class RemoteConfigLongPollService {
   private final AtomicBoolean m_longPollStarted;
   private final Multimap<String, RemoteConfigRepository> m_longPollNamespaces;
   private final ConcurrentMap<String, Long> m_notifications;
+  private final Map<String, Map<String, Long>> m_remoteNotifications;//namespaceName -> watchedKey -> notificationId
   private Type m_responseType;
   private Gson gson;
   private ConfigUtil m_configUtil;
@@ -76,6 +79,7 @@ public class RemoteConfigLongPollService {
     m_longPollNamespaces =
         Multimaps.synchronizedSetMultimap(HashMultimap.<String, RemoteConfigRepository>create());
     m_notifications = Maps.newConcurrentMap();
+    m_remoteNotifications = Maps.newConcurrentMap();
     m_responseType = new TypeToken<List<ApolloConfigNotification>>() {
     }.getType();
     gson = new Gson();
@@ -166,6 +170,7 @@ public class RemoteConfigLongPollService {
         logger.debug("Long polling response: {}, url: {}", response.getStatusCode(), url);
         if (response.getStatusCode() == 200 && response.getBody() != null) {
           updateNotifications(response.getBody());
+          updateRemoteNotifications(response.getBody());
           transaction.addData("Result", response.getBody().toString());
           notify(lastServiceDto, response.getBody());
         }
@@ -207,12 +212,13 @@ public class RemoteConfigLongPollService {
       //create a new list to avoid ConcurrentModificationException
       List<RemoteConfigRepository> toBeNotified =
           Lists.newArrayList(m_longPollNamespaces.get(namespaceName));
+      Map<String, Long> remoteConfigurations = ImmutableMap.copyOf(m_remoteNotifications.get(namespaceName));
       //since .properties are filtered out by default, so we need to check if there is any listener for it
       toBeNotified.addAll(m_longPollNamespaces
           .get(String.format("%s.%s", namespaceName, ConfigFileFormat.Properties.getValue())));
       for (RemoteConfigRepository remoteConfigRepository : toBeNotified) {
         try {
-          remoteConfigRepository.onLongPollNotified(lastServiceDto, notification);
+          remoteConfigRepository.onLongPollNotified(lastServiceDto, remoteConfigurations);
         } catch (Throwable ex) {
           Tracer.logError(ex);
         }
@@ -234,6 +240,33 @@ public class RemoteConfigLongPollService {
           String.format("%s.%s", namespaceName, ConfigFileFormat.Properties.getValue());
       if (m_notifications.containsKey(namespaceNameWithPropertiesSuffix)) {
         m_notifications.put(namespaceNameWithPropertiesSuffix, notification.getNotificationId());
+      }
+    }
+  }
+
+  private void updateRemoteNotifications(List<ApolloConfigNotification> deltaNotifications) {
+    for (ApolloConfigNotification notification : deltaNotifications) {
+      if (Strings.isNullOrEmpty(notification.getNamespaceName())) {
+        continue;
+      }
+
+      if (notification.getChangedNotifications() == null || notification.getChangedNotifications().isEmpty()) {
+        continue;
+      }
+
+      Map<String, Long> remoteNotifications = m_remoteNotifications.get(notification.getNamespaceName());
+      if (remoteNotifications == null) {
+        remoteNotifications = Maps.newConcurrentMap();
+        m_remoteNotifications.put(notification.getNamespaceName(), remoteNotifications);
+      }
+
+      for (Map.Entry<String, Long> entry : notification.getChangedNotifications().entrySet()) {
+        //to make sure the notification id always grows bigger
+        if (remoteNotifications.containsKey(entry.getKey()) &&
+            remoteNotifications.get(entry.getKey()) >= entry.getValue()) {
+          continue;
+        }
+        remoteNotifications.put(entry.getKey(), entry.getValue());
       }
     }
   }
