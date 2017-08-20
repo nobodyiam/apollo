@@ -21,6 +21,7 @@ import com.ctrip.framework.apollo.biz.grayReleaseRule.GrayReleaseRulesHolder;
 import com.ctrip.framework.apollo.biz.service.ReleaseService;
 import com.ctrip.framework.apollo.common.entity.AppNamespace;
 import com.ctrip.framework.apollo.configservice.service.AppNamespaceServiceWithCache;
+import com.ctrip.framework.apollo.configservice.service.config.ConfigService;
 import com.ctrip.framework.apollo.configservice.util.InstanceConfigAuditUtil;
 import com.ctrip.framework.apollo.configservice.util.NamespaceUtil;
 import com.ctrip.framework.apollo.core.ConfigConsts;
@@ -44,7 +45,7 @@ public class ConfigController {
   private static final Splitter X_FORWARDED_FOR_SPLITTER = Splitter.on(",").omitEmptyStrings()
       .trimResults();
   @Autowired
-  private ReleaseService releaseService;
+  private ConfigService configService;
   @Autowired
   private AppNamespaceServiceWithCache appNamespaceService;
   @Autowired
@@ -80,8 +81,8 @@ public class ConfigController {
 
     String appClusterNameLoaded = clusterName;
     if (!ConfigConsts.NO_APPID_PLACEHOLDER.equalsIgnoreCase(appId)) {
-      Release currentAppRelease = loadConfig(appId, clientIp, appId, clusterName, namespace,
-          dataCenter);
+      Release currentAppRelease = configService.loadConfig(appId, clientIp, appId, clusterName, namespace,
+          dataCenter, notificationId);
 
       if (currentAppRelease != null) {
         releases.add(currentAppRelease);
@@ -93,7 +94,7 @@ public class ConfigController {
     //if namespace does not belong to this appId, should check if there is a public configuration
     if (!namespaceBelongsToAppId(appId, namespace)) {
       Release publicRelease = this.findPublicConfig(appId, clientIp, clusterName, namespace,
-          dataCenter);
+          dataCenter, notificationId);
       if (!Objects.isNull(publicRelease)) {
         releases.add(publicRelease);
       }
@@ -153,8 +154,7 @@ public class ConfigController {
    * @param dataCenter  the datacenter
    */
   private Release findPublicConfig(String clientAppId, String clientIp, String clusterName,
-                                   String namespace,
-                                   String dataCenter) {
+                                   String namespace, String dataCenter, long notificationId) {
     AppNamespace appNamespace = appNamespaceService.findPublicNamespaceByName(namespace);
 
     //check whether the namespace's appId equals to current one
@@ -164,52 +164,8 @@ public class ConfigController {
 
     String publicConfigAppId = appNamespace.getAppId();
 
-    return loadConfig(clientAppId, clientIp, publicConfigAppId, clusterName, namespace, dataCenter);
-  }
-
-  private Release loadConfig(String clientAppId, String clientIp, String configAppId, String
-      configClusterName, String configNamespace, String dataCenter) {
-    //load from specified cluster fist
-    if (!Objects.equals(ConfigConsts.CLUSTER_NAME_DEFAULT, configClusterName)) {
-      Release clusterRelease = findRelease(clientAppId, clientIp, configAppId, configClusterName,
-          configNamespace);
-
-      if (!Objects.isNull(clusterRelease)) {
-        return clusterRelease;
-      }
-    }
-
-    //try to load via data center
-    if (!Strings.isNullOrEmpty(dataCenter) && !Objects.equals(dataCenter, configClusterName)) {
-      Release dataCenterRelease = findRelease(clientAppId, clientIp, configAppId, dataCenter,
-          configNamespace);
-      if (!Objects.isNull(dataCenterRelease)) {
-        return dataCenterRelease;
-      }
-    }
-
-    //fallback to default release
-    return findRelease(clientAppId, clientIp, configAppId, ConfigConsts.CLUSTER_NAME_DEFAULT,
-        configNamespace);
-  }
-
-  private Release findRelease(String clientAppId, String clientIp, String configAppId, String
-      configClusterName, String configNamespace) {
-    Long grayReleaseId = grayReleaseRulesHolder.findReleaseIdFromGrayReleaseRule(clientAppId,
-        clientIp, configAppId, configClusterName, configNamespace);
-
-    Release release = null;
-
-    if (grayReleaseId != null) {
-      release = releaseService.findActiveOne(grayReleaseId);
-    }
-
-    if (release == null) {
-      release = releaseService.findLatestActiveRelease(configAppId, configClusterName,
-          configNamespace);
-    }
-
-    return release;
+    return configService.loadConfig(clientAppId, clientIp, publicConfigAppId, clusterName, namespace, dataCenter,
+        notificationId);
   }
 
   /**
@@ -224,22 +180,22 @@ public class ConfigController {
     return result;
   }
 
-  private String assembleKey(String appId, String cluster, String namespace, String datacenter) {
+  private String assembleKey(String appId, String cluster, String namespace, String dataCenter) {
     List<String> keyParts = Lists.newArrayList(appId, cluster, namespace);
-    if (!Strings.isNullOrEmpty(datacenter)) {
-      keyParts.add(datacenter);
+    if (!Strings.isNullOrEmpty(dataCenter)) {
+      keyParts.add(dataCenter);
     }
     return STRING_JOINER.join(keyParts);
   }
 
-  private void auditReleases(String appId, String cluster, String datacenter, String clientIp,
+  private void auditReleases(String appId, String cluster, String dataCenter, String clientIp,
                              List<Release> releases) {
     if (Strings.isNullOrEmpty(clientIp)) {
       //no need to audit instance config when there is no ip
       return;
     }
     for (Release release : releases) {
-      instanceConfigAuditUtil.audit(appId, cluster, datacenter, clientIp, release.getAppId(),
+      instanceConfigAuditUtil.audit(appId, cluster, dataCenter, clientIp, release.getAppId(),
           release.getClusterName(),
           release.getNamespaceName(), release.getReleaseKey());
     }
