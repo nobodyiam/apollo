@@ -1,16 +1,12 @@
 package com.ctrip.framework.apollo.core.dto;
 
-import com.google.common.collect.Maps;
-
-import java.util.Map;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class ApolloConfigNotification {
   private String namespaceName;
   private long notificationId;
-  private Map<String, Long> changedNotifications = Maps.newHashMap();
+  private ApolloNotificationMessages messages;
 
   //for json converter
   public ApolloConfigNotification() {
@@ -37,16 +33,16 @@ public class ApolloConfigNotification {
     this.notificationId = notificationId;
   }
 
-  public Map<String, Long> getChangedNotifications() {
-    return changedNotifications;
+  public ApolloNotificationMessages getMessages() {
+    return messages;
   }
 
-  public void setChangedNotifications(Map<String, Long> changedNotifications) {
-    this.changedNotifications = changedNotifications;
+  public void setMessages(ApolloNotificationMessages messages) {
+    this.messages = messages;
   }
 
-  public void addChangedNotification(String key, Long notificationId) {
-    changedNotifications.put(key, notificationId);
+  public void addMessage(String key, long notificationId) {
+    this.messages.put(key, notificationId);
   }
 
   @Override

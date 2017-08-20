@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.dto.ApolloConfigNotification;
+import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.ctrip.framework.apollo.core.dto.ServiceDTO;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.ctrip.framework.apollo.core.schedule.ExponentialSchedulePolicy;
@@ -60,7 +61,7 @@ public class RemoteConfigLongPollService {
   private final AtomicBoolean m_longPollStarted;
   private final Multimap<String, RemoteConfigRepository> m_longPollNamespaces;
   private final ConcurrentMap<String, Long> m_notifications;
-  private final Map<String, Map<String, Long>> m_remoteNotifications;//namespaceName -> watchedKey -> notificationId
+  private final Map<String, ApolloNotificationMessages> m_remoteNotificationMessages;//namespaceName -> watchedKey -> notificationId
   private Type m_responseType;
   private Gson gson;
   private ConfigUtil m_configUtil;
@@ -79,7 +80,7 @@ public class RemoteConfigLongPollService {
     m_longPollNamespaces =
         Multimaps.synchronizedSetMultimap(HashMultimap.<String, RemoteConfigRepository>create());
     m_notifications = Maps.newConcurrentMap();
-    m_remoteNotifications = Maps.newConcurrentMap();
+    m_remoteNotificationMessages = Maps.newConcurrentMap();
     m_responseType = new TypeToken<List<ApolloConfigNotification>>() {
     }.getType();
     gson = new Gson();
@@ -212,13 +213,14 @@ public class RemoteConfigLongPollService {
       //create a new list to avoid ConcurrentModificationException
       List<RemoteConfigRepository> toBeNotified =
           Lists.newArrayList(m_longPollNamespaces.get(namespaceName));
-      Map<String, Long> remoteConfigurations = ImmutableMap.copyOf(m_remoteNotifications.get(namespaceName));
+      ApolloNotificationMessages originalMessages = m_remoteNotificationMessages.get(namespaceName);
+      ApolloNotificationMessages remoteMessages = originalMessages == null ? null : originalMessages.clone();
       //since .properties are filtered out by default, so we need to check if there is any listener for it
       toBeNotified.addAll(m_longPollNamespaces
           .get(String.format("%s.%s", namespaceName, ConfigFileFormat.Properties.getValue())));
       for (RemoteConfigRepository remoteConfigRepository : toBeNotified) {
         try {
-          remoteConfigRepository.onLongPollNotified(lastServiceDto, remoteConfigurations);
+          remoteConfigRepository.onLongPollNotified(lastServiceDto, remoteMessages);
         } catch (Throwable ex) {
           Tracer.logError(ex);
         }
@@ -250,24 +252,18 @@ public class RemoteConfigLongPollService {
         continue;
       }
 
-      if (notification.getChangedNotifications() == null || notification.getChangedNotifications().isEmpty()) {
+      if (notification.getMessages() == null || notification.getMessages().isEmpty()) {
         continue;
       }
 
-      Map<String, Long> remoteNotifications = m_remoteNotifications.get(notification.getNamespaceName());
-      if (remoteNotifications == null) {
-        remoteNotifications = Maps.newConcurrentMap();
-        m_remoteNotifications.put(notification.getNamespaceName(), remoteNotifications);
+      ApolloNotificationMessages localRemoteMessages =
+          m_remoteNotificationMessages.get(notification.getNamespaceName());
+      if (localRemoteMessages == null) {
+        localRemoteMessages = new ApolloNotificationMessages();
+        m_remoteNotificationMessages.put(notification.getNamespaceName(), localRemoteMessages);
       }
 
-      for (Map.Entry<String, Long> entry : notification.getChangedNotifications().entrySet()) {
-        //to make sure the notification id always grows bigger
-        if (remoteNotifications.containsKey(entry.getKey()) &&
-            remoteNotifications.get(entry.getKey()) >= entry.getValue()) {
-          continue;
-        }
-        remoteNotifications.put(entry.getKey(), entry.getValue());
-      }
+      localRemoteMessages.mergeFrom(notification.getMessages());
     }
   }
 

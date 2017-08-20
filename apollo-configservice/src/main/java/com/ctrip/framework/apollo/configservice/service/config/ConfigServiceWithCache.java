@@ -14,14 +14,13 @@ import com.ctrip.framework.apollo.biz.service.ReleaseMessageService;
 import com.ctrip.framework.apollo.biz.service.ReleaseService;
 import com.ctrip.framework.apollo.biz.utils.ReleaseMessageKeyGenerator;
 import com.ctrip.framework.apollo.core.ConfigConsts;
+import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.ctrip.framework.apollo.tracer.Tracer;
 import com.ctrip.framework.apollo.tracer.spi.Transaction;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -95,14 +94,14 @@ public class ConfigServiceWithCache extends AbstractConfigService {
   }
 
   @Override
-  protected Release findActiveOne(long id, Map<String, Long> clientNotifications) {
+  protected Release findActiveOne(long id, ApolloNotificationMessages clientMessages) {
     //this is only used for gray releases, hit db for now
     return releaseService.findActiveOne(id);
   }
 
   @Override
   protected Release findLatestActiveRelease(String appId, String clusterName, String namespaceName,
-                                            Map<String, Long> clientNotifications) {
+                                            ApolloNotificationMessages clientMessages) {
     String key = ReleaseMessageKeyGenerator.generate(appId, clusterName, namespaceName);
 
     Tracer.logEvent(CAT_EVENT_CACHE_GET, key);
@@ -110,8 +109,8 @@ public class ConfigServiceWithCache extends AbstractConfigService {
     ConfigCacheEntry cacheEntry = configCache.getUnchecked(key);
 
     //cache is out-dated
-    if (!CollectionUtils.isEmpty(clientNotifications) && clientNotifications.containsKey(key) &&
-        clientNotifications.get(key) > cacheEntry.getNotificationId()) {
+    if (clientMessages != null && clientMessages.has(key) &&
+        clientMessages.get(key) > cacheEntry.getNotificationId()) {
       //invalidate the cache and try to load from db again
       invalidate(key);
       cacheEntry = configCache.getUnchecked(key);
