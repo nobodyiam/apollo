@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.configservice.controller;
 
+import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
@@ -249,6 +250,10 @@ public class NotificationControllerV2Test {
     assertEquals(1, result.getBody().size());
     assertEquals(somePublicNamespace, result.getBody().get(0).getNamespaceName());
     assertEquals(notificationId, result.getBody().get(0).getNotificationId());
+
+    ApolloNotificationMessages notificationMessages = result.getBody().get(0).getMessages();
+    assertEquals(1, notificationMessages.getDetails().size());
+    assertEquals(notificationId, notificationMessages.get(anotherWatchKey).longValue());
   }
 
   @Test
@@ -286,11 +291,16 @@ public class NotificationControllerV2Test {
 
     ResponseEntity<List<ApolloConfigNotification>> response =
         (ResponseEntity<List<ApolloConfigNotification>>) deferredResult.getResult();
+
     assertEquals(1, response.getBody().size());
     ApolloConfigNotification notification = response.getBody().get(0);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(somePublicNamespace, notification.getNamespaceName());
     assertEquals(someId, notification.getNotificationId());
+
+    ApolloNotificationMessages notificationMessages = response.getBody().get(0).getMessages();
+    assertEquals(1, notificationMessages.getDetails().size());
+    assertEquals(someId, notificationMessages.get(anotherWatchKey).longValue());
   }
 
   @Test
