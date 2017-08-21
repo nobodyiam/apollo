@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.configservice.service.config;
 
+import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.google.common.collect.Lists;
 
 import com.ctrip.framework.apollo.biz.entity.Release;
@@ -44,6 +45,7 @@ public class ConfigServiceWithCacheTest {
   private String someNamespaceName;
   private String someKey;
   private long someNotificationId;
+  private ApolloNotificationMessages someNotificationMessages;
 
   @Before
   public void setUp() throws Exception {
@@ -59,6 +61,8 @@ public class ConfigServiceWithCacheTest {
     someNotificationId = 1;
 
     someKey = ReleaseMessageKeyGenerator.generate(someAppId, someClusterName, someNamespaceName);
+
+    someNotificationMessages = new ApolloNotificationMessages();
   }
 
   @Test
@@ -67,7 +71,7 @@ public class ConfigServiceWithCacheTest {
 
     when(releaseService.findActiveOne(someId)).thenReturn(someRelease);
 
-    assertEquals(someRelease, configServiceWithCache.findActiveOne(someId, someNotificationId));
+    assertEquals(someRelease, configServiceWithCache.findActiveOne(someId, someNotificationMessages));
 
     verify(releaseService, times(1)).findActiveOne(someId);
   }
@@ -81,15 +85,15 @@ public class ConfigServiceWithCacheTest {
     when(someReleaseMessage.getId()).thenReturn(someNotificationId);
 
     Release release = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName, someNamespaceName,
-        someNotificationId);
+        someNotificationMessages);
     Release anotherRelease = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName,
-        someNamespaceName, someNotificationId);
+        someNamespaceName, someNotificationMessages);
 
     int retryTimes = 100;
 
     for (int i = 0; i < retryTimes; i++) {
       configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName,
-          someNamespaceName, someNotificationId);
+          someNamespaceName, someNotificationMessages);
     }
 
     assertEquals(someRelease, release);
@@ -105,15 +109,15 @@ public class ConfigServiceWithCacheTest {
     when(releaseService.findLatestActiveRelease(someAppId, someClusterName, someNamespaceName)).thenReturn(null);
 
     Release release = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName, someNamespaceName,
-        ConfigServiceWithCache.DEFAULT_NOTIFICATION_ID);
+        someNotificationMessages);
     Release anotherRelease = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName,
-        someNamespaceName, ConfigServiceWithCache.DEFAULT_NOTIFICATION_ID);
+        someNamespaceName, someNotificationMessages);
 
     int retryTimes = 100;
 
     for (int i = 0; i < retryTimes; i++) {
       configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName,
-          someNamespaceName, ConfigServiceWithCache.DEFAULT_NOTIFICATION_ID);
+          someNamespaceName, someNotificationMessages);
     }
 
     assertNull(release);
@@ -136,7 +140,7 @@ public class ConfigServiceWithCacheTest {
     when(someReleaseMessage.getId()).thenReturn(someNotificationId);
 
     Release release = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName, someNamespaceName,
-        someNotificationId);
+        someNotificationMessages);
 
     when(releaseMessageService.findLatestReleaseMessageForMessages(Lists.newArrayList(someKey))).thenReturn
         (anotherReleaseMessage);
@@ -145,10 +149,12 @@ public class ConfigServiceWithCacheTest {
     when(anotherReleaseMessage.getId()).thenReturn(someNewNotificationId);
 
     Release stillOldRelease = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName,
-        someNamespaceName, someNotificationId);
+        someNamespaceName, someNotificationMessages);
+
+    someNotificationMessages.put(someKey, someNewNotificationId);
 
     Release shouldBeNewRelease = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName,
-        someNamespaceName, someNewNotificationId);
+        someNamespaceName, someNotificationMessages);
 
     assertEquals(someRelease, release);
     assertEquals(someRelease, stillOldRelease);
@@ -171,7 +177,7 @@ public class ConfigServiceWithCacheTest {
     when(someReleaseMessage.getId()).thenReturn(someNotificationId);
 
     Release release = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName, someNamespaceName,
-        someNotificationId);
+        someNotificationMessages);
 
     when(releaseMessageService.findLatestReleaseMessageForMessages(Lists.newArrayList(someKey))).thenReturn
         (anotherReleaseMessage);
@@ -181,12 +187,12 @@ public class ConfigServiceWithCacheTest {
     when(anotherReleaseMessage.getId()).thenReturn(someNewNotificationId);
 
     Release stillOldRelease = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName,
-        someNamespaceName, someNotificationId);
+        someNamespaceName, someNotificationMessages);
 
     configServiceWithCache.handleMessage(anotherReleaseMessage, Topics.APOLLO_RELEASE_TOPIC);
 
     Release shouldBeNewRelease = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName,
-        someNamespaceName, someNotificationId);
+        someNamespaceName, someNotificationMessages);
 
     assertEquals(someRelease, release);
     assertEquals(someRelease, stillOldRelease);

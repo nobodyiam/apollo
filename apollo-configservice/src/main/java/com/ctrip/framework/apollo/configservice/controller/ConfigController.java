@@ -2,7 +2,6 @@ package com.ctrip.framework.apollo.configservice.controller;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -56,8 +54,9 @@ public class ConfigController {
   private InstanceConfigAuditUtil instanceConfigAuditUtil;
   @Autowired
   private GrayReleaseRulesHolder grayReleaseRulesHolder;
+  @Autowired
+  private Gson gson;
 
-  private static final Gson gson = new Gson();
   private static final Type configurationTypeReference = new TypeToken<Map<String, String>>() {
       }.getType();
   private static final Joiner STRING_JOINER = Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR);
@@ -78,15 +77,7 @@ public class ConfigController {
       clientIp = tryToGetClientIp(request);
     }
 
-    ApolloNotificationMessages clientMessages = null;
-
-    if (!Strings.isNullOrEmpty(messagesAsString)) {
-      try {
-        clientMessages = gson.fromJson(messagesAsString, ApolloNotificationMessages.class);
-      } catch (Throwable ex) {
-        Tracer.logError(ex);
-      }
-    }
+    ApolloNotificationMessages clientMessages = transformMessages(messagesAsString);
 
     List<Release> releases = Lists.newLinkedList();
 
@@ -220,4 +211,16 @@ public class ConfigController {
     return request.getRemoteAddr();
   }
 
+  ApolloNotificationMessages transformMessages(String messagesAsString) {
+    ApolloNotificationMessages notificationMessages = null;
+    if (!Strings.isNullOrEmpty(messagesAsString)) {
+      try {
+        notificationMessages = gson.fromJson(messagesAsString, ApolloNotificationMessages.class);
+      } catch (Throwable ex) {
+        Tracer.logError(ex);
+      }
+    }
+
+    return notificationMessages;
+  }
 }
