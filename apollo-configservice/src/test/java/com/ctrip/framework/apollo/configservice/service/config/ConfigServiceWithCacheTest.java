@@ -202,4 +202,41 @@ public class ConfigServiceWithCacheTest {
     verify(releaseService, times(2)).findLatestActiveRelease(someAppId, someClusterName, someNamespaceName);
   }
 
+  @Test
+  public void testFindLatestActiveReleaseWithIrrelevantMessages() throws Exception {
+    long someNewNotificationId = someNotificationId + 1;
+    ReleaseMessage anotherReleaseMessage = mock(ReleaseMessage.class);
+    Release anotherRelease = mock(Release.class);
+    String someIrrelevantKey = "someIrrelevantKey";
+
+    when(releaseMessageService.findLatestReleaseMessageForMessages(Lists.newArrayList(someKey))).thenReturn
+        (someReleaseMessage);
+    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, someNamespaceName)).thenReturn
+        (someRelease);
+    when(someReleaseMessage.getId()).thenReturn(someNotificationId);
+
+    Release release = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName, someNamespaceName,
+        someNotificationMessages);
+
+    when(releaseMessageService.findLatestReleaseMessageForMessages(Lists.newArrayList(someKey))).thenReturn
+        (anotherReleaseMessage);
+    when(releaseService.findLatestActiveRelease(someAppId, someClusterName, someNamespaceName)).thenReturn
+        (anotherRelease);
+    when(anotherReleaseMessage.getId()).thenReturn(someNewNotificationId);
+
+    Release stillOldRelease = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName,
+        someNamespaceName, someNotificationMessages);
+
+    someNotificationMessages.put(someIrrelevantKey, someNewNotificationId);
+
+    Release shouldStillBeOldRelease = configServiceWithCache.findLatestActiveRelease(someAppId, someClusterName,
+        someNamespaceName, someNotificationMessages);
+
+    assertEquals(someRelease, release);
+    assertEquals(someRelease, stillOldRelease);
+    assertEquals(someRelease, shouldStillBeOldRelease);
+
+    verify(releaseMessageService, times(1)).findLatestReleaseMessageForMessages(Lists.newArrayList(someKey));
+    verify(releaseService, times(1)).findLatestActiveRelease(someAppId, someClusterName, someNamespaceName);
+  }
 }
