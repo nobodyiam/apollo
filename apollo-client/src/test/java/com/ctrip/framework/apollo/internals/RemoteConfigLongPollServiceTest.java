@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -11,9 +12,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ctrip.framework.apollo.Apollo;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -124,8 +128,17 @@ public class RemoteConfigLongPollServiceTest {
     RemoteConfigRepository someRepository = mock(RemoteConfigRepository.class);
     final String someNamespace = "someNamespace";
 
+    ApolloNotificationMessages notificationMessages = new ApolloNotificationMessages();
+    String someKey = "someKey";
+    long someNotificationId = 1;
+    String anotherKey = "anotherKey";
+    long anotherNotificationId = 2;
+    notificationMessages.put(someKey, someNotificationId);
+    notificationMessages.put(anotherKey, anotherNotificationId);
+
     ApolloConfigNotification someNotification = mock(ApolloConfigNotification.class);
     when(someNotification.getNamespaceName()).thenReturn(someNamespace);
+    when(someNotification.getMessages()).thenReturn(notificationMessages);
 
     when(pollResponse.getStatusCode()).thenReturn(HttpServletResponse.SC_OK);
     when(pollResponse.getBody()).thenReturn(Lists.newArrayList(someNotification));
@@ -158,7 +171,14 @@ public class RemoteConfigLongPollServiceTest {
 
     remoteConfigLongPollService.stopLongPollingRefresh();
 
-    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
+    final ArgumentCaptor<ApolloNotificationMessages> captor = ArgumentCaptor.forClass(ApolloNotificationMessages.class);
+    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), captor.capture());
+
+    ApolloNotificationMessages captured = captor.getValue();
+
+    assertEquals(2, captured.getDetails().size());
+    assertEquals(someNotificationId, captured.get(someKey).longValue());
+    assertEquals(anotherNotificationId, captured.get(anotherKey).longValue());
   }
 
   @Test
@@ -246,11 +266,22 @@ public class RemoteConfigLongPollServiceTest {
     final String someNamespace = "someNamespace";
     final String anotherNamespace = "anotherNamespace";
 
+    ApolloNotificationMessages notificationMessages = new ApolloNotificationMessages();
+    String someKey = "someKey";
+    long someNotificationId = 1;
+    notificationMessages.put(someKey, someNotificationId);
+    ApolloNotificationMessages anotherNotificationMessages = new ApolloNotificationMessages();
+    String anotherKey = "anotherKey";
+    long anotherNotificationId = 2;
+    anotherNotificationMessages.put(anotherKey, anotherNotificationId);
+
     final ApolloConfigNotification someNotification = mock(ApolloConfigNotification.class);
     when(someNotification.getNamespaceName()).thenReturn(someNamespace);
+    when(someNotification.getMessages()).thenReturn(notificationMessages);
 
     final ApolloConfigNotification anotherNotification = mock(ApolloConfigNotification.class);
     when(anotherNotification.getNamespaceName()).thenReturn(anotherNamespace);
+    when(anotherNotification.getMessages()).thenReturn(anotherNotificationMessages);
 
     when(pollResponse.getStatusCode()).thenReturn(HttpServletResponse.SC_OK);
     when(pollResponse.getBody()).thenReturn(Lists.newArrayList(someNotification, anotherNotification));
@@ -293,8 +324,101 @@ public class RemoteConfigLongPollServiceTest {
 
     remoteConfigLongPollService.stopLongPollingRefresh();
 
-    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
-    verify(anotherRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
+    final ArgumentCaptor<ApolloNotificationMessages> captor = ArgumentCaptor.forClass(ApolloNotificationMessages.class);
+    final ArgumentCaptor<ApolloNotificationMessages> anotherCaptor = ArgumentCaptor.forClass(ApolloNotificationMessages.class);
+    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), captor.capture());
+    verify(anotherRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), anotherCaptor.capture());
+
+    ApolloNotificationMessages result = captor.getValue();
+    assertEquals(1, result.getDetails().size());
+    assertEquals(someNotificationId, result.get(someKey).longValue());
+
+    ApolloNotificationMessages anotherResult = anotherCaptor.getValue();
+    assertEquals(1, anotherResult.getDetails().size());
+    assertEquals(anotherNotificationId, anotherResult.get(anotherKey).longValue());
+  }
+
+  @Test
+  public void testSubmitLongPollNamespaceWithMessagesUpdated() throws Exception {
+    RemoteConfigRepository someRepository = mock(RemoteConfigRepository.class);
+    final String someNamespace = "someNamespace";
+
+    ApolloNotificationMessages notificationMessages = new ApolloNotificationMessages();
+    String someKey = "someKey";
+    long someNotificationId = 1;
+    notificationMessages.put(someKey, someNotificationId);
+
+    ApolloConfigNotification someNotification = mock(ApolloConfigNotification.class);
+    when(someNotification.getNamespaceName()).thenReturn(someNamespace);
+    when(someNotification.getMessages()).thenReturn(notificationMessages);
+
+    when(pollResponse.getStatusCode()).thenReturn(HttpServletResponse.SC_OK);
+    when(pollResponse.getBody()).thenReturn(Lists.newArrayList(someNotification));
+
+    doAnswer(new Answer<HttpResponse<List<ApolloConfigNotification>>>() {
+      @Override
+      public HttpResponse<List<ApolloConfigNotification>> answer(InvocationOnMock invocation)
+          throws Throwable {
+        try {
+          TimeUnit.MILLISECONDS.sleep(50);
+        } catch (InterruptedException e) {
+        }
+
+        return pollResponse;
+      }
+    }).when(httpUtil).doGet(any(HttpRequest.class), eq(responseType));
+
+    final SettableFuture<Boolean> onNotified = SettableFuture.create();
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        onNotified.set(true);
+        return null;
+      }
+    }).when(someRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
+
+    remoteConfigLongPollService.submit(someNamespace, someRepository);
+
+    onNotified.get(5000, TimeUnit.MILLISECONDS);
+
+    //reset to 304
+    when(pollResponse.getStatusCode()).thenReturn(HttpServletResponse.SC_NOT_MODIFIED);
+
+    final ArgumentCaptor<ApolloNotificationMessages> captor = ArgumentCaptor.forClass(ApolloNotificationMessages.class);
+    verify(someRepository, times(1)).onLongPollNotified(any(ServiceDTO.class), captor.capture());
+
+    ApolloNotificationMessages captured = captor.getValue();
+
+    assertEquals(1, captured.getDetails().size());
+    assertEquals(someNotificationId, captured.get(someKey).longValue());
+
+    final SettableFuture<Boolean> anotherOnNotified = SettableFuture.create();
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        anotherOnNotified.set(true);
+        return null;
+      }
+    }).when(someRepository).onLongPollNotified(any(ServiceDTO.class), any(ApolloNotificationMessages.class));
+
+    String anotherKey = "anotherKey";
+    long anotherNotificationId = 2;
+    notificationMessages.put(anotherKey, anotherNotificationId);
+
+    //send notifications
+    when(pollResponse.getStatusCode()).thenReturn(HttpServletResponse.SC_OK);
+
+    anotherOnNotified.get(5000, TimeUnit.MILLISECONDS);
+
+    remoteConfigLongPollService.stopLongPollingRefresh();
+
+    verify(someRepository, times(2)).onLongPollNotified(any(ServiceDTO.class), captor.capture());
+
+    captured = captor.getValue();
+
+    assertEquals(2, captured.getDetails().size());
+    assertEquals(someNotificationId, captured.get(someKey).longValue());
+    assertEquals(anotherNotificationId, captured.get(anotherKey).longValue());
   }
 
   @Test
