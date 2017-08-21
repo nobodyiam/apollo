@@ -365,9 +365,7 @@ public class NotificationControllerV2Test {
 
   private ApolloConfigNotification assembleApolloConfigNotification(String namespace,
                                                                     long notificationId) {
-    ApolloConfigNotification notification = new ApolloConfigNotification();
-    notification.setNamespaceName(namespace);
-    notification.setNotificationId(notificationId);
+    ApolloConfigNotification notification = new ApolloConfigNotification(namespace, notificationId);
     return notification;
   }
 

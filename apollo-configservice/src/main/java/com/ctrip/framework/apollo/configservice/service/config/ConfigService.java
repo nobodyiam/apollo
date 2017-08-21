@@ -4,8 +4,6 @@ import com.ctrip.framework.apollo.biz.entity.Release;
 import com.ctrip.framework.apollo.biz.message.ReleaseMessageListener;
 import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 
-import java.util.Map;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */

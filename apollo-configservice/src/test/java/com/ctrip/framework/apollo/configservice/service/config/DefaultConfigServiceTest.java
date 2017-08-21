@@ -12,6 +12,7 @@ import com.ctrip.framework.apollo.biz.entity.Release;
 import com.ctrip.framework.apollo.biz.grayReleaseRule.GrayReleaseRulesHolder;
 import com.ctrip.framework.apollo.biz.service.ReleaseService;
 import com.ctrip.framework.apollo.core.ConfigConsts;
+import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,8 +33,8 @@ public class DefaultConfigServiceTest {
   private String defaultNamespaceName;
   private String someDataCenter;
   private String someClientIp;
-  private long someNotificationId;
-
+  @Mock
+  private ApolloNotificationMessages someNotificationMessages;
   @Mock
   private ReleaseService releaseService;
   @Mock
@@ -55,7 +56,6 @@ public class DefaultConfigServiceTest {
     defaultNamespaceName = ConfigConsts.NAMESPACE_APPLICATION;
     someDataCenter = "someDC";
     someClientIp = "someClientIp";
-    someNotificationId = -1;
 
     when(grayReleaseRulesHolder.findReleaseIdFromGrayReleaseRule(anyString(), anyString(),
         anyString(), anyString(), anyString())).thenReturn(null);
@@ -68,7 +68,7 @@ public class DefaultConfigServiceTest {
 
     Release release = configService
         .loadConfig(someClientAppId, someClientIp, someConfigAppId, someClusterName, defaultNamespaceName, someDataCenter,
-            someNotificationId);
+            someNotificationMessages);
 
     verify(releaseService, times(1)).findLatestActiveRelease(someConfigAppId, someClusterName, defaultNamespaceName);
 
@@ -88,7 +88,7 @@ public class DefaultConfigServiceTest {
 
     Release release = configService
         .loadConfig(someClientAppId, someClientIp, someConfigAppId, someClusterName, defaultNamespaceName, someDataCenter,
-            someNotificationId);
+            someNotificationMessages);
 
     verify(releaseService, times(1)).findActiveOne(grayReleaseId);
     verify(releaseService, never()).findLatestActiveRelease(someConfigAppId, someClusterName, defaultNamespaceName);
@@ -103,7 +103,7 @@ public class DefaultConfigServiceTest {
 
     Release release = configService
         .loadConfig(someClientAppId, someClientIp, someConfigAppId, someClusterName, defaultNamespaceName, someDataCenter,
-            someNotificationId);
+            someNotificationMessages);
 
     assertNull(release);
   }
@@ -115,7 +115,7 @@ public class DefaultConfigServiceTest {
 
     Release release = configService
         .loadConfig(someClientAppId, someClientIp, someConfigAppId, defaultClusterName, defaultNamespaceName, someDataCenter,
-            someNotificationId);
+            someNotificationMessages);
 
     verify(releaseService, times(1)).findLatestActiveRelease(someConfigAppId, someDataCenter, defaultNamespaceName);
 
@@ -131,7 +131,7 @@ public class DefaultConfigServiceTest {
 
     Release release = configService
         .loadConfig(someClientAppId, someClientIp, someConfigAppId, defaultClusterName, defaultNamespaceName, someDataCenter,
-            someNotificationId);
+            someNotificationMessages);
 
     verify(releaseService, times(1)).findLatestActiveRelease(someConfigAppId, someDataCenter, defaultNamespaceName);
     verify(releaseService, times(1))

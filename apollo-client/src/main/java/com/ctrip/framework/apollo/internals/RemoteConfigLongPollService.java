@@ -298,9 +298,7 @@ public class RemoteConfigLongPollService {
   String assembleNotifications(Map<String, Long> notificationsMap) {
     List<ApolloConfigNotification> notifications = Lists.newArrayList();
     for (Map.Entry<String, Long> entry : notificationsMap.entrySet()) {
-      ApolloConfigNotification notification = new ApolloConfigNotification();
-      notification.setNamespaceName(entry.getKey());
-      notification.setNotificationId(entry.getValue());
+      ApolloConfigNotification notification = new ApolloConfigNotification(entry.getKey(), entry.getValue());
       notifications.add(notification);
     }
     return gson.toJson(notifications);
