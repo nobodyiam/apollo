@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.configservice.integration;
 
+import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
@@ -62,14 +64,14 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
   @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
   public void testPollNotificationWithDefaultNamespace() throws Exception {
     AtomicBoolean stop = new AtomicBoolean();
-    periodicSendMessage(executorService, assembleKey(someAppId, someCluster, defaultNamespace),
-        stop);
+    String key = assembleKey(someAppId, someCluster, defaultNamespace);
+    periodicSendMessage(executorService, key, stop);
 
     ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
         "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}",
         HttpMethod.GET, null, typeReference,
         getHostUrl(), someAppId, someCluster,
-        transformApolloConfigNotificationsToString(defaultNamespace, -1));
+        transformApolloConfigNotificationsToString(defaultNamespace, ConfigConsts.NOTIFICATION_ID_PLACEHOLDER));
 
     stop.set(true);
 
@@ -78,20 +80,27 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     assertEquals(1, notifications.size());
     assertEquals(defaultNamespace, notifications.get(0).getNamespaceName());
     assertNotEquals(0, notifications.get(0).getNotificationId());
+
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertNotEquals(ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, messages.get(key).longValue());
   }
 
   @Test(timeout = 5000L)
   @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
   public void testPollNotificationWithDefaultNamespaceAsFile() throws Exception {
     AtomicBoolean stop = new AtomicBoolean();
-    periodicSendMessage(executorService, assembleKey(someAppId, someCluster, defaultNamespace),
+    String key = assembleKey(someAppId, someCluster, defaultNamespace);
+    periodicSendMessage(executorService, key,
         stop);
 
     ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
         "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}",
         HttpMethod.GET, null, typeReference,
         getHostUrl(), someAppId, someCluster,
-        transformApolloConfigNotificationsToString(defaultNamespace + ".properties", -1));
+        transformApolloConfigNotificationsToString(defaultNamespace + ".properties",
+            ConfigConsts.NOTIFICATION_ID_PLACEHOLDER));
 
     stop.set(true);
 
@@ -100,21 +109,27 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     assertEquals(1, notifications.size());
     assertEquals(defaultNamespace, notifications.get(0).getNamespaceName());
     assertNotEquals(0, notifications.get(0).getNotificationId());
+
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertNotEquals(ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, messages.get(key).longValue());
   }
 
   @Test
   @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
   public void testPollNotificationWithMultipleNamespaces() throws Exception {
     AtomicBoolean stop = new AtomicBoolean();
-    periodicSendMessage(executorService, assembleKey(someAppId, someCluster, somePublicNamespace),
-        stop);
+    String key = assembleKey(someAppId, someCluster, somePublicNamespace);
+    periodicSendMessage(executorService, key, stop);
 
     ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
         "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}",
         HttpMethod.GET, null, typeReference,
         getHostUrl(), someAppId, someCluster,
-        transformApolloConfigNotificationsToString(defaultNamespace + ".properties", -1,
-            defaultNamespace, -1, somePublicNamespace, -1));
+        transformApolloConfigNotificationsToString(defaultNamespace + ".properties",
+            ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, defaultNamespace, ConfigConsts.NOTIFICATION_ID_PLACEHOLDER,
+            somePublicNamespace, ConfigConsts.NOTIFICATION_ID_PLACEHOLDER));
 
     stop.set(true);
 
@@ -123,6 +138,11 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     assertEquals(1, notifications.size());
     assertEquals(somePublicNamespace, notifications.get(0).getNamespaceName());
     assertNotEquals(0, notifications.get(0).getNotificationId());
+
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertNotEquals(ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, messages.get(key).longValue());
   }
 
   @Test(timeout = 5000L)
@@ -131,15 +151,15 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
   public void testPollNotificationWithPrivateNamespaceAsFile() throws Exception {
     String namespace = "someNamespace.xml";
     AtomicBoolean stop = new AtomicBoolean();
-    periodicSendMessage(executorService,
-        assembleKey(someAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, namespace),
-        stop);
+
+    String key = assembleKey(someAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, namespace);
+    periodicSendMessage(executorService, key, stop);
 
     ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
         "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}",
         HttpMethod.GET, null, typeReference,
         getHostUrl(), someAppId, someCluster,
-        transformApolloConfigNotificationsToString(namespace, -1));
+        transformApolloConfigNotificationsToString(namespace, ConfigConsts.NOTIFICATION_ID_PLACEHOLDER));
 
     stop.set(true);
 
@@ -148,6 +168,11 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     assertEquals(1, notifications.size());
     assertEquals(namespace, notifications.get(0).getNamespaceName());
     assertNotEquals(0, notifications.get(0).getNotificationId());
+
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertNotEquals(ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, messages.get(key).longValue());
   }
 
   @Test(timeout = 5000L)
@@ -163,11 +188,19 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
         getHostUrl(), someAppId, someCluster,
         transformApolloConfigNotificationsToString(defaultNamespace, someOutDatedNotificationId));
 
+    long newNotificationId = 10;
+
     List<ApolloConfigNotification> notifications = result.getBody();
     assertEquals(HttpStatus.OK, result.getStatusCode());
     assertEquals(1, notifications.size());
     assertEquals(defaultNamespace, notifications.get(0).getNamespaceName());
-    assertEquals(10, notifications.get(0).getNotificationId());
+    assertEquals(newNotificationId, notifications.get(0).getNotificationId());
+
+    String key = assembleKey(someAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, ConfigConsts.NAMESPACE_APPLICATION);
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertEquals(newNotificationId, messages.get(key).longValue());
   }
 
   @Test(timeout = 5000L)
@@ -177,15 +210,14 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     String publicAppId = "somePublicAppId";
 
     AtomicBoolean stop = new AtomicBoolean();
-    periodicSendMessage(executorService,
-        assembleKey(publicAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, somePublicNamespace),
-        stop);
+    String key = assembleKey(publicAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, somePublicNamespace);
+    periodicSendMessage(executorService, key, stop);
 
     ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
         "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}",
         HttpMethod.GET, null, typeReference,
         getHostUrl(), someAppId, someCluster,
-        transformApolloConfigNotificationsToString(somePublicNamespace, -1));
+        transformApolloConfigNotificationsToString(somePublicNamespace, ConfigConsts.NOTIFICATION_ID_PLACEHOLDER));
 
     stop.set(true);
 
@@ -194,6 +226,11 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     assertEquals(1, notifications.size());
     assertEquals(somePublicNamespace, notifications.get(0).getNamespaceName());
     assertNotEquals(0, notifications.get(0).getNotificationId());
+
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertNotEquals(ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, messages.get(key).longValue());
   }
 
   @Test(timeout = 5000L)
@@ -204,14 +241,15 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     String someDC = "someDC";
 
     AtomicBoolean stop = new AtomicBoolean();
-    periodicSendMessage(executorService, assembleKey(publicAppId, someDC, somePublicNamespace),
-        stop);
+    String key = assembleKey(publicAppId, someDC, somePublicNamespace);
+    periodicSendMessage(executorService, key, stop);
 
     ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
         "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}&dataCenter={dataCenter}",
         HttpMethod.GET, null, typeReference,
         getHostUrl(), someAppId, someCluster,
-        transformApolloConfigNotificationsToString(somePublicNamespace, -1), someDC);
+        transformApolloConfigNotificationsToString(somePublicNamespace, ConfigConsts.NOTIFICATION_ID_PLACEHOLDER),
+        someDC);
 
     stop.set(true);
 
@@ -220,6 +258,11 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     assertEquals(1, notifications.size());
     assertEquals(somePublicNamespace, notifications.get(0).getNamespaceName());
     assertNotEquals(0, notifications.get(0).getNotificationId());
+
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertNotEquals(ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, messages.get(key).longValue());
   }
 
   @Test(timeout = 5000L)
@@ -231,14 +274,15 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     String someDC = "someDC";
 
     AtomicBoolean stop = new AtomicBoolean();
-    periodicSendMessage(executorService, assembleKey(publicAppId, someDC, somePublicNamespace),
-        stop);
+    String key = assembleKey(publicAppId, someDC, somePublicNamespace);
+    periodicSendMessage(executorService, key, stop);
 
     ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
         "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}&dataCenter={dataCenter}",
         HttpMethod.GET, null, typeReference,
         getHostUrl(), someAppId, someCluster,
-        transformApolloConfigNotificationsToString(defaultNamespace, -1, somePublicNamespace, -1),
+        transformApolloConfigNotificationsToString(defaultNamespace, ConfigConsts.NOTIFICATION_ID_PLACEHOLDER,
+            somePublicNamespace, ConfigConsts.NOTIFICATION_ID_PLACEHOLDER),
         someDC);
 
     stop.set(true);
@@ -248,6 +292,11 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     assertEquals(1, notifications.size());
     assertEquals(somePublicNamespace, notifications.get(0).getNamespaceName());
     assertNotEquals(0, notifications.get(0).getNotificationId());
+
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertNotEquals(ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, messages.get(key).longValue());
   }
 
   @Test(timeout = 5000L)
@@ -258,15 +307,15 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     String someDC = "someDC";
 
     AtomicBoolean stop = new AtomicBoolean();
-    periodicSendMessage(executorService, assembleKey(publicAppId, someDC, somePublicNamespace),
-        stop);
+    String key = assembleKey(publicAppId, someDC, somePublicNamespace);
+    periodicSendMessage(executorService, key, stop);
 
     ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
         "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}&dataCenter={dataCenter}",
         HttpMethod.GET, null, typeReference,
         getHostUrl(), someAppId, someCluster,
-        transformApolloConfigNotificationsToString(somePublicNamespace + ".properties", -1),
-        someDC);
+        transformApolloConfigNotificationsToString(somePublicNamespace + ".properties",
+            ConfigConsts.NOTIFICATION_ID_PLACEHOLDER), someDC);
 
     stop.set(true);
 
@@ -275,6 +324,11 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     assertEquals(1, notifications.size());
     assertEquals(somePublicNamespace, notifications.get(0).getNamespaceName());
     assertNotEquals(0, notifications.get(0).getNotificationId());
+
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertNotEquals(ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, messages.get(key).longValue());
   }
 
   @Test(timeout = 5000L)
@@ -282,6 +336,7 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
   @Sql(scripts = "/integration-test/test-release-message.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
   @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
   public void testPollNotificationWithPublicNamespaceWithNotificationIdOutDated() throws Exception {
+    String publicAppId = "somePublicAppId";
     long someOutDatedNotificationId = 1;
 
     ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
@@ -291,11 +346,19 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
         transformApolloConfigNotificationsToString(somePublicNamespace,
             someOutDatedNotificationId));
 
+    long newNotificationId = 20;
+
     List<ApolloConfigNotification> notifications = result.getBody();
     assertEquals(HttpStatus.OK, result.getStatusCode());
     assertEquals(1, notifications.size());
     assertEquals(somePublicNamespace, notifications.get(0).getNamespaceName());
-    assertNotEquals(0, notifications.get(0).getNotificationId());
+    assertEquals(newNotificationId, notifications.get(0).getNotificationId());
+
+    String key = assembleKey(publicAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, somePublicNamespace);
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertEquals(newNotificationId, messages.get(key).longValue());
   }
 
   @Test(timeout = 5000L)
@@ -304,7 +367,10 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
   @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
   public void testPollNotificationWithMultipleNamespacesAndNotificationIdsOutDated()
       throws Exception {
+    String publicAppId = "somePublicAppId";
     long someOutDatedNotificationId = 1;
+    long newDefaultNamespaceNotificationId = 10;
+    long newPublicNamespaceNotification = 20;
 
     ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
         "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}",
@@ -318,11 +384,32 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     assertEquals(2, notifications.size());
 
     Set<String> outDatedNamespaces =
-        Sets.newHashSet(notifications.get(0).getNamespaceName(),
-            notifications.get(1).getNamespaceName());
+        Sets.newHashSet(notifications.get(0).getNamespaceName(), notifications.get(1).getNamespaceName());
     assertEquals(Sets.newHashSet(defaultNamespace, somePublicNamespace), outDatedNamespaces);
-    assertNotEquals(0, notifications.get(0).getNotificationId());
-    assertNotEquals(1, notifications.get(1).getNotificationId());
+
+    Set<Long> newNotificationIds = Sets.newHashSet(
+        notifications.get(0).getNotificationId(), notifications.get(1).getNotificationId());
+    assertEquals(Sets.newHashSet(newDefaultNamespaceNotificationId, newPublicNamespaceNotification),
+        newNotificationIds);
+
+    String defaultNamespaceKey = assembleKey(someAppId, ConfigConsts.CLUSTER_NAME_DEFAULT,
+        ConfigConsts.NAMESPACE_APPLICATION);
+    String publicNamespaceKey = assembleKey(publicAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, somePublicNamespace);
+
+    ApolloNotificationMessages firstMessages = notifications.get(0).getMessages();
+    ApolloNotificationMessages secondMessages = notifications.get(1).getMessages();
+
+    assertEquals(1, firstMessages.getDetails().size());
+    assertEquals(1, secondMessages.getDetails().size());
+
+    assertTrue(
+        (firstMessages.has(defaultNamespaceKey) && firstMessages.get(defaultNamespaceKey).equals(newDefaultNamespaceNotificationId)) ||
+            (firstMessages.has(publicNamespaceKey) && firstMessages.get(publicNamespaceKey).equals(newPublicNamespaceNotification))
+    );
+    assertTrue(
+        (secondMessages.has(defaultNamespaceKey) && secondMessages.get(defaultNamespaceKey).equals(newDefaultNamespaceNotificationId)) ||
+            (secondMessages.has(publicNamespaceKey) && secondMessages.get(publicNamespaceKey).equals(newPublicNamespaceNotification))
+    );
   }
 
   private String assembleKey(String appId, String cluster, String namespace) {
