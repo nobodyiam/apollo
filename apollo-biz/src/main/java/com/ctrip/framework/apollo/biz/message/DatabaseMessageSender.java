@@ -61,6 +61,7 @@ public class DatabaseMessageSender implements MessageSender {
     } catch (Throwable ex) {
       logger.error("Sending message to database failed", ex);
       transaction.setStatus(ex);
+      throw ex;
     } finally {
       transaction.complete();
     }

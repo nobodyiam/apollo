@@ -94,6 +94,7 @@ public class ReleaseController {
     return BeanUtils.transfrom(ReleaseDTO.class, release);
   }
 
+  @Transactional
   @RequestMapping(path = "/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/releases", method = RequestMethod.POST)
   public ReleaseDTO publish(@PathVariable("appId") String appId,
                             @PathVariable("clusterName") String clusterName,
@@ -160,6 +161,7 @@ public class ReleaseController {
 
   }
 
+  @Transactional
   @RequestMapping(path = "/releases/{releaseId}/rollback", method = RequestMethod.PUT)
   public void rollback(@PathVariable("releaseId") long releaseId,
                        @RequestParam("operator") String operator) {
