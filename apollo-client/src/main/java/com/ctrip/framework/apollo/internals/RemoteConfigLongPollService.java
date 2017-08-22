@@ -148,13 +148,14 @@ public class RemoteConfigLongPollService {
         }
       }
       Transaction transaction = Tracer.newTransaction("Apollo.ConfigService", "pollNotification");
+      String url = null;
       try {
         if (lastServiceDto == null) {
           List<ServiceDTO> configServices = getConfigServices();
           lastServiceDto = configServices.get(random.nextInt(configServices.size()));
         }
 
-        String url =
+        url =
             assembleLongPollRefreshUrl(lastServiceDto.getHomepageUrl(), appId, cluster, dataCenter,
                 m_notifications);
 
@@ -190,9 +191,8 @@ public class RemoteConfigLongPollService {
         transaction.setStatus(ex);
         long sleepTimeInSecond = m_longPollFailSchedulePolicyInSecond.fail();
         logger.warn(
-            "Long polling failed, will retry in {} seconds. appId: {}, cluster: {}, namespaces: {}, reason: {}",
-            sleepTimeInSecond, appId, cluster, assembleNamespaces(),
-            ExceptionUtil.getDetailMessage(ex));
+            "Long polling failed, will retry in {} seconds. appId: {}, cluster: {}, namespaces: {}, long polling url: {}, reason: {}",
+            sleepTimeInSecond, appId, cluster, assembleNamespaces(), url, ExceptionUtil.getDetailMessage(ex));
         try {
           TimeUnit.SECONDS.sleep(sleepTimeInSecond);
         } catch (InterruptedException ie) {
