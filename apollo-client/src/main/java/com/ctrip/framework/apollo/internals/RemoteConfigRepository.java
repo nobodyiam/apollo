@@ -173,6 +173,7 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
     Throwable exception = null;
 
     List<ServiceDTO> configServices = getConfigServices();
+    String url = null;
     for (int i = 0; i < maxRetries; i++) {
       List<ServiceDTO> randomConfigServices = Lists.newLinkedList(configServices);
       Collections.shuffle(randomConfigServices);
@@ -194,8 +195,7 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
           }
         }
 
-        String url =
-            assembleQueryConfigUrl(configService.getHomepageUrl(), appId, cluster, m_namespace,
+        url = assembleQueryConfigUrl(configService.getHomepageUrl(), appId, cluster, m_namespace,
                 dataCenter, m_remoteMessages.get(), m_configCache.get());
 
         logger.debug("Loading config from {}", url);
@@ -251,8 +251,8 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
 
     }
     String message = String.format(
-        "Load Apollo Config failed - appId: %s, cluster: %s, namespace: %s",
-        appId, cluster, m_namespace);
+        "Load Apollo Config failed - appId: %s, cluster: %s, namespace: %s, url: %s",
+        appId, cluster, m_namespace, url);
     throw new ApolloConfigException(message, exception);
   }
 
