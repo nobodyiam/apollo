@@ -15,6 +15,7 @@ import com.ctrip.framework.apollo.common.utils.BeanUtils;
 import com.ctrip.framework.apollo.common.utils.GrayReleaseRuleItemTransformer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,6 +71,7 @@ public class NamespaceBranchController {
     return ruleDTO;
   }
 
+  @Transactional
   @RequestMapping(value = "/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/branches/{branchName}/rules", method = RequestMethod.PUT)
   public void updateBranchGrayRules(@PathVariable String appId, @PathVariable String clusterName,
                                     @PathVariable String namespaceName, @PathVariable String branchName,
@@ -87,6 +89,7 @@ public class NamespaceBranchController {
                               Topics.APOLLO_RELEASE_TOPIC);
   }
 
+  @Transactional
   @RequestMapping(value = "/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/branches/{branchName}", method = RequestMethod.DELETE)
   public void deleteBranch(@PathVariable String appId, @PathVariable String clusterName,
                            @PathVariable String namespaceName, @PathVariable String branchName,
