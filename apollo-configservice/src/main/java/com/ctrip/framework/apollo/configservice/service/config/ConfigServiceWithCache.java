@@ -18,6 +18,7 @@ import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.ctrip.framework.apollo.tracer.Tracer;
 import com.ctrip.framework.apollo.tracer.spi.Transaction;
 
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -45,6 +46,8 @@ public class ConfigServiceWithCache extends AbstractConfigService {
   private ReleaseMessageService releaseMessageService;
 
   private LoadingCache<String, ConfigCacheEntry> configCache;
+
+  private LoadingCache<Long, Optional<Release>> configIdCache;
 
   private ConfigCacheEntry nullConfigCacheEntry;
 
@@ -91,12 +94,31 @@ public class ConfigServiceWithCache extends AbstractConfigService {
             }
           }
         });
+    configIdCache = CacheBuilder.newBuilder()
+        .expireAfterAccess(DEFAULT_EXPIRED_AFTER_ACCESS_IN_MINUTES, TimeUnit.MINUTES)
+        .build(new CacheLoader<Long, Optional<Release>>() {
+          @Override
+          public Optional<Release> load(Long key) throws Exception {
+            Transaction transaction = Tracer.newTransaction(CAT_EVENT_CACHE_LOAD, String.valueOf(key));
+            try {
+              Release release = releaseService.findActiveOne(key);
+
+              transaction.setStatus(Transaction.SUCCESS);
+
+              return Optional.ofNullable(release);
+            } catch (Throwable ex) {
+              transaction.setStatus(ex);
+              throw ex;
+            } finally {
+              transaction.complete();
+            }
+          }
+        });
   }
 
   @Override
   protected Release findActiveOne(long id, ApolloNotificationMessages clientMessages) {
-    //this is only used for gray releases, hit db for now
-    return releaseService.findActiveOne(id);
+    return configIdCache.getUnchecked(id).orElse(null);
   }
 
   @Override
