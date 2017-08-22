@@ -33,9 +33,11 @@ import javax.annotation.PostConstruct;
  */
 public class ConfigServiceWithCache extends AbstractConfigService {
   private static final long DEFAULT_EXPIRED_AFTER_ACCESS_IN_MINUTES = 60;//1 hour
-  private static final String CAT_EVENT_CACHE_INVALIDATE = "Cache.Invalidate";
-  private static final String CAT_EVENT_CACHE_LOAD = "Cache.LoadFromDB";
-  private static final String CAT_EVENT_CACHE_GET = "Cache.Get";
+  private static final String TRACER_EVENT_CACHE_INVALIDATE = "ConfigCache.Invalidate";
+  private static final String TRACER_EVENT_CACHE_LOAD = "ConfigCache.LoadFromDB";
+  private static final String TRACER_EVENT_CACHE_LOAD_ID = "ConfigCache.LoadFromDBById";
+  private static final String TRACER_EVENT_CACHE_GET = "ConfigCache.Get";
+  private static final String TRACER_EVENT_CACHE_GET_ID = "ConfigCache.GetById";
   private static final Splitter STRING_SPLITTER =
       Splitter.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR).omitEmptyStrings();
 
@@ -69,7 +71,7 @@ public class ConfigServiceWithCache extends AbstractConfigService {
               return nullConfigCacheEntry;
             }
 
-            Transaction transaction = Tracer.newTransaction(CAT_EVENT_CACHE_LOAD, key);
+            Transaction transaction = Tracer.newTransaction(TRACER_EVENT_CACHE_LOAD, key);
             try {
               ReleaseMessage latestReleaseMessage = releaseMessageService.findLatestReleaseMessageForMessages(Lists
                   .newArrayList(key));
@@ -99,7 +101,7 @@ public class ConfigServiceWithCache extends AbstractConfigService {
         .build(new CacheLoader<Long, Optional<Release>>() {
           @Override
           public Optional<Release> load(Long key) throws Exception {
-            Transaction transaction = Tracer.newTransaction(CAT_EVENT_CACHE_LOAD, String.valueOf(key));
+            Transaction transaction = Tracer.newTransaction(TRACER_EVENT_CACHE_LOAD_ID, String.valueOf(key));
             try {
               Release release = releaseService.findActiveOne(key);
 
@@ -118,6 +120,7 @@ public class ConfigServiceWithCache extends AbstractConfigService {
 
   @Override
   protected Release findActiveOne(long id, ApolloNotificationMessages clientMessages) {
+    Tracer.logEvent(TRACER_EVENT_CACHE_GET_ID, String.valueOf(id));
     return configIdCache.getUnchecked(id).orElse(null);
   }
 
@@ -126,7 +129,7 @@ public class ConfigServiceWithCache extends AbstractConfigService {
                                             ApolloNotificationMessages clientMessages) {
     String key = ReleaseMessageKeyGenerator.generate(appId, clusterName, namespaceName);
 
-    Tracer.logEvent(CAT_EVENT_CACHE_GET, key);
+    Tracer.logEvent(TRACER_EVENT_CACHE_GET, key);
 
     ConfigCacheEntry cacheEntry = configCache.getUnchecked(key);
 
@@ -143,7 +146,7 @@ public class ConfigServiceWithCache extends AbstractConfigService {
 
   private void invalidate(String key) {
     configCache.invalidate(key);
-    Tracer.logEvent(CAT_EVENT_CACHE_INVALIDATE, key);
+    Tracer.logEvent(TRACER_EVENT_CACHE_INVALIDATE, key);
   }
 
   @Override
