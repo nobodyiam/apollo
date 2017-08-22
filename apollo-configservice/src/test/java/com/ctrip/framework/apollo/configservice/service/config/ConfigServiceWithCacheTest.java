@@ -77,6 +77,51 @@ public class ConfigServiceWithCacheTest {
   }
 
   @Test
+  public void testFindActiveOneWithSameIdMultipleTimes() throws Exception {
+    long someId = 1;
+
+    when(releaseService.findActiveOne(someId)).thenReturn(someRelease);
+
+    assertEquals(someRelease, configServiceWithCache.findActiveOne(someId, someNotificationMessages));
+    assertEquals(someRelease, configServiceWithCache.findActiveOne(someId, someNotificationMessages));
+    assertEquals(someRelease, configServiceWithCache.findActiveOne(someId, someNotificationMessages));
+
+    verify(releaseService, times(1)).findActiveOne(someId);
+  }
+
+  @Test
+  public void testFindActiveOneWithMultipleIdMultipleTimes() throws Exception {
+    long someId = 1;
+    long anotherId = 2;
+    Release anotherRelease = mock(Release.class);
+
+    when(releaseService.findActiveOne(someId)).thenReturn(someRelease);
+    when(releaseService.findActiveOne(anotherId)).thenReturn(anotherRelease);
+
+    assertEquals(someRelease, configServiceWithCache.findActiveOne(someId, someNotificationMessages));
+    assertEquals(someRelease, configServiceWithCache.findActiveOne(someId, someNotificationMessages));
+
+    assertEquals(anotherRelease, configServiceWithCache.findActiveOne(anotherId, someNotificationMessages));
+    assertEquals(anotherRelease, configServiceWithCache.findActiveOne(anotherId, someNotificationMessages));
+
+    verify(releaseService, times(1)).findActiveOne(someId);
+    verify(releaseService, times(1)).findActiveOne(anotherId);
+  }
+
+  @Test
+  public void testFindActiveOneWithReleaseNotFoundMultipleTimes() throws Exception {
+    long someId = 1;
+
+    when(releaseService.findActiveOne(someId)).thenReturn(null);
+
+    assertNull(configServiceWithCache.findActiveOne(someId, someNotificationMessages));
+    assertNull(configServiceWithCache.findActiveOne(someId, someNotificationMessages));
+    assertNull(configServiceWithCache.findActiveOne(someId, someNotificationMessages));
+
+    verify(releaseService, times(1)).findActiveOne(someId);
+  }
+
+  @Test
   public void testFindLatestActiveRelease() throws Exception {
     when(releaseMessageService.findLatestReleaseMessageForMessages(Lists.newArrayList(someKey))).thenReturn
         (someReleaseMessage);
