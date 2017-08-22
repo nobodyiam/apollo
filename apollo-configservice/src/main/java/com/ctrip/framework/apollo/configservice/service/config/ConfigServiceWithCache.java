@@ -19,6 +19,9 @@ import com.ctrip.framework.apollo.tracer.Tracer;
 import com.ctrip.framework.apollo.tracer.spi.Transaction;
 
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -32,6 +35,7 @@ import javax.annotation.PostConstruct;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class ConfigServiceWithCache extends AbstractConfigService {
+  private static final Logger logger = LoggerFactory.getLogger(ConfigServiceWithCache.class);
   private static final long DEFAULT_EXPIRED_AFTER_ACCESS_IN_MINUTES = 60;//1 hour
   private static final String TRACER_EVENT_CACHE_INVALIDATE = "ConfigCache.Invalidate";
   private static final String TRACER_EVENT_CACHE_LOAD = "ConfigCache.LoadFromDB";
@@ -151,6 +155,7 @@ public class ConfigServiceWithCache extends AbstractConfigService {
 
   @Override
   public void handleMessage(ReleaseMessage message, String channel) {
+    logger.info("message received - channel: {}, message: {}", channel, message);
     if (!Topics.APOLLO_RELEASE_TOPIC.equals(channel) || Strings.isNullOrEmpty(message.getMessage())) {
       return;
     }
