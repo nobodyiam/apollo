@@ -215,12 +215,15 @@ public class NotificationControllerV2Test {
     String someWatchKey = "someKey";
     String anotherWatchKey = Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR)
         .join(someAppId, someCluster, somePublicNamespace);
+    String yetAnotherWatchKey = Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR)
+        .join(someAppId, defaultCluster, somePublicNamespace);
     long notificationId = someNotificationId + 1;
+    long yetAnotherNotificationId = someNotificationId;
 
     Multimap<String, String> watchKeysMap =
         assembleMultiMap(defaultNamespace, Lists.newArrayList(someWatchKey));
     watchKeysMap
-        .putAll(assembleMultiMap(somePublicNamespace, Lists.newArrayList(anotherWatchKey)));
+        .putAll(assembleMultiMap(somePublicNamespace, Lists.newArrayList(anotherWatchKey, yetAnotherWatchKey)));
 
     when(watchKeysUtil
         .assembleAllWatchKeys(someAppId, someCluster,
@@ -230,9 +233,12 @@ public class NotificationControllerV2Test {
     ReleaseMessage someReleaseMessage = mock(ReleaseMessage.class);
     when(someReleaseMessage.getId()).thenReturn(notificationId);
     when(someReleaseMessage.getMessage()).thenReturn(anotherWatchKey);
+    ReleaseMessage yetAnotherReleaseMessage = mock(ReleaseMessage.class);
+    when(yetAnotherReleaseMessage.getId()).thenReturn(yetAnotherNotificationId);
+    when(yetAnotherReleaseMessage.getMessage()).thenReturn(yetAnotherWatchKey);
     when(releaseMessageService
         .findLatestReleaseMessagesGroupByMessages(Sets.newHashSet(watchKeysMap.values())))
-        .thenReturn(Lists.newArrayList(someReleaseMessage));
+        .thenReturn(Lists.newArrayList(someReleaseMessage, yetAnotherReleaseMessage));
 
     String notificationAsString =
         transformApolloConfigNotificationsToString(defaultNamespace, someNotificationId,
@@ -252,8 +258,9 @@ public class NotificationControllerV2Test {
     assertEquals(notificationId, result.getBody().get(0).getNotificationId());
 
     ApolloNotificationMessages notificationMessages = result.getBody().get(0).getMessages();
-    assertEquals(1, notificationMessages.getDetails().size());
+    assertEquals(2, notificationMessages.getDetails().size());
     assertEquals(notificationId, notificationMessages.get(anotherWatchKey).longValue());
+    assertEquals(yetAnotherNotificationId, notificationMessages.get(yetAnotherWatchKey).longValue());
   }
 
   @Test

@@ -40,8 +40,8 @@ public class ApolloConfigNotification {
           this.messages = new ApolloNotificationMessages();
         }
       }
-      this.messages.put(key, notificationId);
     }
+    this.messages.put(key, notificationId);
   }
 
   @Override
