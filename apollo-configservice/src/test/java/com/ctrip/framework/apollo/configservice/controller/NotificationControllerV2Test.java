@@ -1,6 +1,6 @@
 package com.ctrip.framework.apollo.configservice.controller;
 
-import com.ctrip.framework.apollo.biz.utils.CaseInsensitiveMultimapWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.CaseInsensitiveMultimapWrapper;
 import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;

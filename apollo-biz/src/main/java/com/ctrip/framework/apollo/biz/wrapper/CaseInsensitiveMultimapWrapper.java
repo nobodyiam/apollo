@@ -1,4 +1,4 @@
-package com.ctrip.framework.apollo.biz.utils;
+package com.ctrip.framework.apollo.biz.wrapper;
 
 import com.google.common.collect.Multimap;
 

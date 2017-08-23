@@ -16,7 +16,7 @@ import com.ctrip.framework.apollo.biz.config.BizConfig;
 import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
 import com.ctrip.framework.apollo.biz.message.ReleaseMessageListener;
 import com.ctrip.framework.apollo.biz.message.Topics;
-import com.ctrip.framework.apollo.biz.utils.CaseInsensitiveMultimapWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.CaseInsensitiveMultimapWrapper;
 import com.ctrip.framework.apollo.biz.utils.EntityManagerUtil;
 import com.ctrip.framework.apollo.common.exception.BadRequestException;
 import com.ctrip.framework.apollo.configservice.service.ReleaseMessageServiceWithCache;

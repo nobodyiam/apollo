@@ -15,7 +15,7 @@ import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
 import com.ctrip.framework.apollo.biz.message.ReleaseMessageListener;
 import com.ctrip.framework.apollo.biz.message.Topics;
 import com.ctrip.framework.apollo.biz.repository.GrayReleaseRuleRepository;
-import com.ctrip.framework.apollo.biz.utils.CaseInsensitiveMultimapWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.CaseInsensitiveMultimapWrapper;
 import com.ctrip.framework.apollo.common.constants.NamespaceBranchStatus;
 import com.ctrip.framework.apollo.common.dto.GrayReleaseRuleItemDTO;
 import com.ctrip.framework.apollo.common.utils.GrayReleaseRuleItemTransformer;
