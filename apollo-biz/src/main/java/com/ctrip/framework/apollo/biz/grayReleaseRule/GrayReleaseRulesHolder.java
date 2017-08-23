@@ -15,6 +15,7 @@ import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
 import com.ctrip.framework.apollo.biz.message.ReleaseMessageListener;
 import com.ctrip.framework.apollo.biz.message.Topics;
 import com.ctrip.framework.apollo.biz.repository.GrayReleaseRuleRepository;
+import com.ctrip.framework.apollo.biz.utils.CaseInsensitiveMultimapWrapper;
 import com.ctrip.framework.apollo.common.constants.NamespaceBranchStatus;
 import com.ctrip.framework.apollo.common.dto.GrayReleaseRuleItemDTO;
 import com.ctrip.framework.apollo.common.utils.GrayReleaseRuleItemTransformer;
@@ -53,7 +54,7 @@ public class GrayReleaseRulesHolder implements ReleaseMessageListener, Initializ
   private int databaseScanInterval;
   private ScheduledExecutorService executorService;
   //store configAppId+configCluster+configNamespace -> GrayReleaseRuleCache map
-  private Multimap<String, GrayReleaseRuleCache> grayReleaseRuleCache;
+  private CaseInsensitiveMultimapWrapper<GrayReleaseRuleCache> grayReleaseRuleCache;
   //store clientAppId+clientNamespace+ip -> ruleId map
   private Multimap<String, Long> reversedGrayReleaseRuleCache;
   //an auto increment version to indicate the age of rules
@@ -61,7 +62,7 @@ public class GrayReleaseRulesHolder implements ReleaseMessageListener, Initializ
 
   public GrayReleaseRulesHolder() {
     loadVersion = new AtomicLong();
-    grayReleaseRuleCache = Multimaps.synchronizedSetMultimap(HashMultimap.create());
+    grayReleaseRuleCache = new CaseInsensitiveMultimapWrapper<>(Multimaps.synchronizedSetMultimap(HashMultimap.create()));
     reversedGrayReleaseRuleCache = Multimaps.synchronizedSetMultimap(HashMultimap.create());
     executorService = Executors.newScheduledThreadPool(1, ApolloThreadFactory
         .create("GrayReleaseRulesHolder", true));

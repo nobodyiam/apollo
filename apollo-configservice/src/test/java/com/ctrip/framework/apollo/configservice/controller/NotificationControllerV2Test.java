@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.configservice.controller;
 
+import com.ctrip.framework.apollo.biz.utils.CaseInsensitiveMultimapWrapper;
 import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
@@ -65,7 +66,7 @@ public class NotificationControllerV2Test {
 
   private Gson gson;
 
-  private Multimap<String, DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>
+  private CaseInsensitiveMultimapWrapper<DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>
       deferredResults;
 
   @Before
@@ -96,7 +97,7 @@ public class NotificationControllerV2Test {
     when(namespaceUtil.filterNamespaceName(somePublicNamespace)).thenReturn(somePublicNamespace);
 
     deferredResults =
-        (Multimap<String, DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>) ReflectionTestUtils
+        (CaseInsensitiveMultimapWrapper<DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>) ReflectionTestUtils
             .getField(controller, "deferredResults");
   }
 

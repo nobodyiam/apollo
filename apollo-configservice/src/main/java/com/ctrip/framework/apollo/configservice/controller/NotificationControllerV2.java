@@ -16,6 +16,7 @@ import com.ctrip.framework.apollo.biz.config.BizConfig;
 import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
 import com.ctrip.framework.apollo.biz.message.ReleaseMessageListener;
 import com.ctrip.framework.apollo.biz.message.Topics;
+import com.ctrip.framework.apollo.biz.utils.CaseInsensitiveMultimapWrapper;
 import com.ctrip.framework.apollo.biz.utils.EntityManagerUtil;
 import com.ctrip.framework.apollo.common.exception.BadRequestException;
 import com.ctrip.framework.apollo.configservice.service.ReleaseMessageServiceWithCache;
@@ -55,8 +56,8 @@ import java.util.concurrent.TimeUnit;
 public class NotificationControllerV2 implements ReleaseMessageListener {
   private static final Logger logger = LoggerFactory.getLogger(NotificationControllerV2.class);
   private static final long TIMEOUT = 30 * 1000;//30 seconds
-  private final Multimap<String, DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>
-      deferredResults = Multimaps.synchronizedSetMultimap(HashMultimap.create());
+  private final CaseInsensitiveMultimapWrapper<DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>
+      deferredResults = new CaseInsensitiveMultimapWrapper<>(Multimaps.synchronizedSetMultimap(HashMultimap.create()));
   private static final ResponseEntity<List<ApolloConfigNotification>>
       NOT_MODIFIED_RESPONSE_LIST = new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
   private static final Splitter STRING_SPLITTER =
