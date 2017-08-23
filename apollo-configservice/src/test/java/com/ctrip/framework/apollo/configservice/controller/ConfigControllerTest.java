@@ -9,9 +9,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import com.ctrip.framework.apollo.biz.entity.Release;
-import com.ctrip.framework.apollo.biz.grayReleaseRule.GrayReleaseRulesHolder;
-import com.ctrip.framework.apollo.biz.service.AppNamespaceService;
-import com.ctrip.framework.apollo.biz.service.ReleaseService;
 import com.ctrip.framework.apollo.common.entity.AppNamespace;
 import com.ctrip.framework.apollo.configservice.service.config.ConfigService;
 import com.ctrip.framework.apollo.configservice.util.InstanceConfigAuditUtil;
@@ -71,8 +68,6 @@ public class ConfigControllerTest {
   @Mock
   private InstanceConfigAuditUtil instanceConfigAuditUtil;
   @Mock
-  private GrayReleaseRulesHolder grayReleaseRulesHolder;
-  @Mock
   private HttpServletRequest someRequest;
   private Gson gson = new Gson();
 
@@ -83,7 +78,6 @@ public class ConfigControllerTest {
     ReflectionTestUtils.setField(configController, "appNamespaceService", appNamespaceService);
     ReflectionTestUtils.setField(configController, "namespaceUtil", namespaceUtil);
     ReflectionTestUtils.setField(configController, "instanceConfigAuditUtil", instanceConfigAuditUtil);
-    ReflectionTestUtils.setField(configController, "grayReleaseRulesHolder", grayReleaseRulesHolder);
     ReflectionTestUtils.setField(configController, "gson", gson);
 
     someAppId = "1";
@@ -103,8 +97,6 @@ public class ConfigControllerTest {
     when(namespaceUtil.filterNamespaceName(defaultNamespaceName)).thenReturn(defaultNamespaceName);
     when(namespaceUtil.filterNamespaceName(somePublicNamespaceName))
         .thenReturn(somePublicNamespaceName);
-    when(grayReleaseRulesHolder.findReleaseIdFromGrayReleaseRule(anyString(), anyString(),
-        anyString(), anyString(), anyString())).thenReturn(null);
 
     someMessagesAsString = "someValidJson";
     when(configController.transformMessages(someMessagesAsString)).thenReturn(someNotificationMessages);

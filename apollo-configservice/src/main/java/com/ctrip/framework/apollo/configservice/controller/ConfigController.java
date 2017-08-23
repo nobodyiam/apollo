@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ctrip.framework.apollo.biz.entity.Release;
-import com.ctrip.framework.apollo.biz.grayReleaseRule.GrayReleaseRulesHolder;
 import com.ctrip.framework.apollo.common.entity.AppNamespace;
 import com.ctrip.framework.apollo.configservice.service.AppNamespaceServiceWithCache;
 import com.ctrip.framework.apollo.configservice.service.config.ConfigService;
@@ -52,8 +51,6 @@ public class ConfigController {
   private NamespaceUtil namespaceUtil;
   @Autowired
   private InstanceConfigAuditUtil instanceConfigAuditUtil;
-  @Autowired
-  private GrayReleaseRulesHolder grayReleaseRulesHolder;
   @Autowired
   private Gson gson;
 
