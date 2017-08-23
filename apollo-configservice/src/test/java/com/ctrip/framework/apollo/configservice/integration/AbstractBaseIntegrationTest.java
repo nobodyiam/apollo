@@ -3,6 +3,7 @@ package com.ctrip.framework.apollo.configservice.integration;
 import com.google.gson.Gson;
 
 import com.ctrip.framework.apollo.ConfigServiceTestConfiguration;
+import com.ctrip.framework.apollo.biz.config.BizConfig;
 import com.ctrip.framework.apollo.biz.entity.Namespace;
 import com.ctrip.framework.apollo.biz.entity.Release;
 import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -61,6 +63,10 @@ public abstract class AbstractBaseIntegrationTest {
   @Configuration
   @Import(ConfigServiceTestConfiguration.class)
   protected static class TestConfiguration {
+    @Bean
+    public BizConfig bizConfig() {
+      return new TestBizConfig();
+    }
   }
 
   protected void sendReleaseMessage(String message) {
@@ -105,4 +111,15 @@ public abstract class AbstractBaseIntegrationTest {
     });
   }
 
+  private static class TestBizConfig extends BizConfig {
+    @Override
+    public int appNamespaceCacheScanInterval() {
+      return 50;
+    }
+
+    @Override
+    public TimeUnit appNamespaceCacheScanIntervalTimeUnit() {
+      return TimeUnit.MILLISECONDS;
+    }
+  }
 }
