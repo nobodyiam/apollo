@@ -5,6 +5,8 @@ import com.google.common.collect.Multimap;
 import java.util.Collection;
 
 /**
+ * A simple case insensitive wrapper which does not take locale into account.
+ *
  * @author Jason Song(song_s@ctrip.com)
  */
 public class CaseInsensitiveMultimapWrapper<T> {
