@@ -35,6 +35,7 @@ import java.util.Set;
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
+@Deprecated
 @RestController
 @RequestMapping("/notifications")
 public class NotificationController implements ReleaseMessageListener {

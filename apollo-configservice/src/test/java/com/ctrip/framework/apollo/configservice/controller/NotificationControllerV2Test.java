@@ -69,7 +69,6 @@ public class NotificationControllerV2Test {
   private WatchKeysUtil watchKeysUtil;
   @Mock
   private BizConfig bizConfig;
-  private Wrappers wrappers;
 
   private Gson gson;
 
@@ -78,7 +77,6 @@ public class NotificationControllerV2Test {
 
   @Before
   public void setUp() throws Exception {
-    wrappers = new CaseInsensitiveWrappers();
     controller = new NotificationControllerV2();
     gson = new Gson();
 
@@ -91,7 +89,7 @@ public class NotificationControllerV2Test {
     ReflectionTestUtils.setField(controller, "watchKeysUtil", watchKeysUtil);
     ReflectionTestUtils.setField(controller, "gson", gson);
     ReflectionTestUtils.setField(controller, "bizConfig", bizConfig);
-    ReflectionTestUtils.setField(controller, "wrappers", wrappers);
+    ReflectionTestUtils.setField(controller, "wrappers", new CaseInsensitiveWrappers());
 
     controller.initialize();
 

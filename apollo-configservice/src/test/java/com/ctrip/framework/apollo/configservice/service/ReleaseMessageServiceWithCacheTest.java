@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.configservice.service;
 
+import com.ctrip.framework.apollo.biz.wrapper.caseInsensitive.CaseInsensitiveWrappers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -46,13 +47,12 @@ public class ReleaseMessageServiceWithCacheTest {
   private TimeUnit scanIntervalTimeUnit;
 
   @Before
-
   public void setUp() throws Exception {
     releaseMessageServiceWithCache = new ReleaseMessageServiceWithCache();
 
-    ReflectionTestUtils.setField(releaseMessageServiceWithCache, "releaseMessageRepository",
-        releaseMessageRepository);
+    ReflectionTestUtils.setField(releaseMessageServiceWithCache, "releaseMessageRepository", releaseMessageRepository);
     ReflectionTestUtils.setField(releaseMessageServiceWithCache, "bizConfig", bizConfig);
+    ReflectionTestUtils.setField(releaseMessageServiceWithCache, "wrappers", new CaseInsensitiveWrappers());
 
     scanInterval = 10;
     scanIntervalTimeUnit = TimeUnit.MILLISECONDS;

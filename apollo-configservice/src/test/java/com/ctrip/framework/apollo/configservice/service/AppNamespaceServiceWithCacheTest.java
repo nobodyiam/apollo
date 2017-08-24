@@ -1,5 +1,7 @@
 package com.ctrip.framework.apollo.configservice.service;
 
+import com.ctrip.framework.apollo.biz.wrapper.Wrappers;
+import com.ctrip.framework.apollo.biz.wrapper.caseInsensitive.CaseInsensitiveWrappers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -50,6 +52,7 @@ public class AppNamespaceServiceWithCacheTest {
     ReflectionTestUtils.setField(appNamespaceServiceWithCache, "appNamespaceRepository",
         appNamespaceRepository);
     ReflectionTestUtils.setField(appNamespaceServiceWithCache, "bizConfig", bizConfig);
+    ReflectionTestUtils.setField(appNamespaceServiceWithCache, "wrappers", new CaseInsensitiveWrappers());
 
     scanInterval = 50;
     scanIntervalTimeUnit = TimeUnit.MILLISECONDS;

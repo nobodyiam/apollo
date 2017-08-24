@@ -1,5 +1,7 @@
 package com.ctrip.framework.apollo.configservice.service;
 
+import com.ctrip.framework.apollo.biz.wrapper.MapWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.Wrappers;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -13,6 +15,7 @@ import com.ctrip.framework.apollo.core.utils.ApolloThreadFactory;
 import com.ctrip.framework.apollo.tracer.Tracer;
 import com.ctrip.framework.apollo.tracer.spi.Transaction;
 
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -42,12 +45,15 @@ public class ReleaseMessageServiceWithCache implements ReleaseMessageListener, I
   @Autowired
   private BizConfig bizConfig;
 
+  @Autowired
+  private Wrappers wrappers;
+
   private int scanInterval;
   private TimeUnit scanIntervalTimeUnit;
 
   private volatile long maxIdScanned;
 
-  private ConcurrentMap<String, ReleaseMessage> releaseMessageCache;
+  private MapWrapper<ReleaseMessage> releaseMessageCache;
 
   private AtomicBoolean doScan;
   private ExecutorService executorService;
@@ -57,7 +63,6 @@ public class ReleaseMessageServiceWithCache implements ReleaseMessageListener, I
   }
 
   private void initialize() {
-    releaseMessageCache = Maps.newConcurrentMap();
     doScan = new AtomicBoolean(true);
     executorService = Executors.newSingleThreadExecutor(ApolloThreadFactory
         .create("ReleaseMessageServiceWithCache", true));
@@ -120,6 +125,8 @@ public class ReleaseMessageServiceWithCache implements ReleaseMessageListener, I
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    releaseMessageCache = wrappers.mapWrapper(Maps.newConcurrentMap());
+
     populateDataBaseInterval();
     //block the startup process until load finished
     //this should happen before ReleaseMessageScanner due to autowire

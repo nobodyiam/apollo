@@ -45,17 +45,15 @@ public class GrayReleaseRulesHolderTest {
   private BizConfig bizConfig;
   @Mock
   private GrayReleaseRuleRepository grayReleaseRuleRepository;
-  private Wrappers wrappers;
   private Gson gson = new Gson();
   private AtomicLong idCounter;
 
   @Before
   public void setUp() throws Exception {
-    wrappers = new CaseInsensitiveWrappers();
     grayReleaseRulesHolder = spy(new GrayReleaseRulesHolder());
     ReflectionTestUtils.setField(grayReleaseRulesHolder, "bizConfig", bizConfig);
     ReflectionTestUtils.setField(grayReleaseRulesHolder, "grayReleaseRuleRepository", grayReleaseRuleRepository);
-    ReflectionTestUtils.setField(grayReleaseRulesHolder, "wrappers", wrappers);
+    ReflectionTestUtils.setField(grayReleaseRulesHolder, "wrappers", new CaseInsensitiveWrappers());
     idCounter = new AtomicLong();
   }
 
