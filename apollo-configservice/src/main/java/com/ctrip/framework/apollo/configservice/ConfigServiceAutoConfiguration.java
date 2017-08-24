@@ -3,6 +3,10 @@ package com.ctrip.framework.apollo.configservice;
 import com.ctrip.framework.apollo.biz.config.BizConfig;
 import com.ctrip.framework.apollo.biz.grayReleaseRule.GrayReleaseRulesHolder;
 import com.ctrip.framework.apollo.biz.message.ReleaseMessageScanner;
+import com.ctrip.framework.apollo.biz.wrapper.Wrappers;
+import com.ctrip.framework.apollo.biz.wrapper.caseInsensitive.CaseInsensitiveMultimapWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.caseInsensitive.CaseInsensitiveWrappers;
+import com.ctrip.framework.apollo.biz.wrapper.caseSensitive.CaseSensitiveWrappers;
 import com.ctrip.framework.apollo.configservice.controller.ConfigFileController;
 import com.ctrip.framework.apollo.configservice.controller.NotificationController;
 import com.ctrip.framework.apollo.configservice.controller.NotificationControllerV2;
@@ -35,6 +39,14 @@ public class ConfigServiceAutoConfiguration {
       return new ConfigServiceWithCache();
     }
     return new DefaultConfigService();
+  }
+
+  @Bean
+  public Wrappers wrappers() {
+    if (bizConfig.isCacheCaseSensitive()) {
+      return new CaseSensitiveWrappers();
+    }
+    return new CaseInsensitiveWrappers();
   }
 
   @Configuration

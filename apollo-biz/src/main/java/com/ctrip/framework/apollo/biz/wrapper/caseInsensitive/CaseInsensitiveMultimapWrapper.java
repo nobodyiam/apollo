@@ -1,15 +1,16 @@
-package com.ctrip.framework.apollo.biz.wrapper;
-
-import com.google.common.collect.Multimap;
+package com.ctrip.framework.apollo.biz.wrapper.caseInsensitive;
 
 import java.util.Collection;
+
+import com.ctrip.framework.apollo.biz.wrapper.MultimapWrapper;
+import com.google.common.collect.Multimap;
 
 /**
  * A simple case insensitive wrapper which does not take locale into account.
  *
  * @author Jason Song(song_s@ctrip.com)
  */
-public class CaseInsensitiveMultimapWrapper<T> {
+public class CaseInsensitiveMultimapWrapper<T> implements MultimapWrapper<T> {
   private final Multimap<String, T> delegate;
 
   public CaseInsensitiveMultimapWrapper(Multimap<String, T> delegate) {

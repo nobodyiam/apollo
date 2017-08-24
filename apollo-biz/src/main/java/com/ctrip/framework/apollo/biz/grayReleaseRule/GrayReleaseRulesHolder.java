@@ -1,5 +1,7 @@
 package com.ctrip.framework.apollo.biz.grayReleaseRule;
 
+import com.ctrip.framework.apollo.biz.wrapper.MultimapWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.Wrappers;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -15,7 +17,6 @@ import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
 import com.ctrip.framework.apollo.biz.message.ReleaseMessageListener;
 import com.ctrip.framework.apollo.biz.message.Topics;
 import com.ctrip.framework.apollo.biz.repository.GrayReleaseRuleRepository;
-import com.ctrip.framework.apollo.biz.wrapper.CaseInsensitiveMultimapWrapper;
 import com.ctrip.framework.apollo.common.constants.NamespaceBranchStatus;
 import com.ctrip.framework.apollo.common.dto.GrayReleaseRuleItemDTO;
 import com.ctrip.framework.apollo.common.utils.GrayReleaseRuleItemTransformer;
@@ -50,11 +51,13 @@ public class GrayReleaseRulesHolder implements ReleaseMessageListener, Initializ
   private GrayReleaseRuleRepository grayReleaseRuleRepository;
   @Autowired
   private BizConfig bizConfig;
+  @Autowired
+  private Wrappers wrappers;
 
   private int databaseScanInterval;
   private ScheduledExecutorService executorService;
   //store configAppId+configCluster+configNamespace -> GrayReleaseRuleCache map
-  private CaseInsensitiveMultimapWrapper<GrayReleaseRuleCache> grayReleaseRuleCache;
+  private MultimapWrapper<GrayReleaseRuleCache> grayReleaseRuleCache;
   //store clientAppId+clientNamespace+ip -> ruleId map
   private Multimap<String, Long> reversedGrayReleaseRuleCache;
   //an auto increment version to indicate the age of rules
@@ -62,7 +65,6 @@ public class GrayReleaseRulesHolder implements ReleaseMessageListener, Initializ
 
   public GrayReleaseRulesHolder() {
     loadVersion = new AtomicLong();
-    grayReleaseRuleCache = new CaseInsensitiveMultimapWrapper<>(Multimaps.synchronizedSetMultimap(HashMultimap.create()));
     reversedGrayReleaseRuleCache = Multimaps.synchronizedSetMultimap(HashMultimap.create());
     executorService = Executors.newScheduledThreadPool(1, ApolloThreadFactory
         .create("GrayReleaseRulesHolder", true));
@@ -70,6 +72,7 @@ public class GrayReleaseRulesHolder implements ReleaseMessageListener, Initializ
 
   @Override
   public void afterPropertiesSet() throws Exception {
+    grayReleaseRuleCache = wrappers.multimapWrapper(Multimaps.synchronizedSetMultimap(HashMultimap.create()));
     populateDataBaseInterval();
     //force sync load for the first time
     periodicScanRules();

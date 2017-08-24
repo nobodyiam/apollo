@@ -140,6 +140,10 @@ public class BizConfig extends RefreshableConfig {
     return getBooleanProperty("config-service.cache.enabled", false);
   }
 
+  public boolean isCacheCaseSensitive() {
+    return getBooleanProperty("cache.case.sensitive", false);
+  }
+
   int checkInt(int value, int min, int max, int defaultValue) {
     if (value >= min && value <= max) {
       return value;

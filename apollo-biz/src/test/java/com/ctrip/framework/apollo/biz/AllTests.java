@@ -19,6 +19,7 @@ import com.ctrip.framework.apollo.biz.service.ReleaseServiceTest;
 import com.ctrip.framework.apollo.biz.service.BizDBPropertySourceTest;
 import com.ctrip.framework.apollo.biz.utils.ReleaseKeyGeneratorTest;
 
+import com.ctrip.framework.apollo.biz.wrapper.caseInsensitive.CaseInsensitiveMultimapWrapperTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -42,7 +43,8 @@ import org.junit.runners.Suite.SuiteClasses;
     NamespacePublishInfoTest.class,
     NamespaceServiceIntegrationTest.class,
     BizConfigTest.class,
-    NamespaceServiceTest.class
+    NamespaceServiceTest.class,
+    CaseInsensitiveMultimapWrapperTest.class
 })
 public class AllTests {
 

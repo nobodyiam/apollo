@@ -1,6 +1,8 @@
 package com.ctrip.framework.apollo.configservice.controller;
 
-import com.ctrip.framework.apollo.biz.wrapper.CaseInsensitiveMultimapWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.MultimapWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.Wrappers;
+import com.ctrip.framework.apollo.biz.wrapper.caseInsensitive.CaseInsensitiveWrappers;
 import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
@@ -23,7 +25,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -34,6 +38,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -63,14 +69,16 @@ public class NotificationControllerV2Test {
   private WatchKeysUtil watchKeysUtil;
   @Mock
   private BizConfig bizConfig;
+  private Wrappers wrappers;
 
   private Gson gson;
 
-  private CaseInsensitiveMultimapWrapper<DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>
+  private MultimapWrapper<DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>
       deferredResults;
 
   @Before
   public void setUp() throws Exception {
+    wrappers = new CaseInsensitiveWrappers();
     controller = new NotificationControllerV2();
     gson = new Gson();
 
@@ -83,6 +91,9 @@ public class NotificationControllerV2Test {
     ReflectionTestUtils.setField(controller, "watchKeysUtil", watchKeysUtil);
     ReflectionTestUtils.setField(controller, "gson", gson);
     ReflectionTestUtils.setField(controller, "bizConfig", bizConfig);
+    ReflectionTestUtils.setField(controller, "wrappers", wrappers);
+
+    controller.initialize();
 
     someAppId = "someAppId";
     someCluster = "someCluster";
@@ -97,7 +108,7 @@ public class NotificationControllerV2Test {
     when(namespaceUtil.filterNamespaceName(somePublicNamespace)).thenReturn(somePublicNamespace);
 
     deferredResults =
-        (CaseInsensitiveMultimapWrapper<DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>) ReflectionTestUtils
+        (MultimapWrapper<DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>) ReflectionTestUtils
             .getField(controller, "deferredResults");
   }
 

@@ -1,5 +1,7 @@
 package com.ctrip.framework.apollo.biz.grayReleaseRule;
 
+import com.ctrip.framework.apollo.biz.wrapper.Wrappers;
+import com.ctrip.framework.apollo.biz.wrapper.caseInsensitive.CaseInsensitiveWrappers;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -43,16 +45,17 @@ public class GrayReleaseRulesHolderTest {
   private BizConfig bizConfig;
   @Mock
   private GrayReleaseRuleRepository grayReleaseRuleRepository;
+  private Wrappers wrappers;
   private Gson gson = new Gson();
   private AtomicLong idCounter;
 
   @Before
   public void setUp() throws Exception {
+    wrappers = new CaseInsensitiveWrappers();
     grayReleaseRulesHolder = spy(new GrayReleaseRulesHolder());
-    ReflectionTestUtils.setField(grayReleaseRulesHolder, "bizConfig",
-                                 bizConfig);
-    ReflectionTestUtils.setField(grayReleaseRulesHolder, "grayReleaseRuleRepository",
-        grayReleaseRuleRepository);
+    ReflectionTestUtils.setField(grayReleaseRulesHolder, "bizConfig", bizConfig);
+    ReflectionTestUtils.setField(grayReleaseRulesHolder, "grayReleaseRuleRepository", grayReleaseRuleRepository);
+    ReflectionTestUtils.setField(grayReleaseRulesHolder, "wrappers", wrappers);
     idCounter = new AtomicLong();
   }
 

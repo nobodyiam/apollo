@@ -1,5 +1,7 @@
 package com.ctrip.framework.apollo.configservice.controller;
 
+import com.ctrip.framework.apollo.biz.wrapper.MultimapWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.Wrappers;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -16,7 +18,6 @@ import com.ctrip.framework.apollo.biz.config.BizConfig;
 import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
 import com.ctrip.framework.apollo.biz.message.ReleaseMessageListener;
 import com.ctrip.framework.apollo.biz.message.Topics;
-import com.ctrip.framework.apollo.biz.wrapper.CaseInsensitiveMultimapWrapper;
 import com.ctrip.framework.apollo.biz.utils.EntityManagerUtil;
 import com.ctrip.framework.apollo.common.exception.BadRequestException;
 import com.ctrip.framework.apollo.configservice.service.ReleaseMessageServiceWithCache;
@@ -27,6 +28,7 @@ import com.ctrip.framework.apollo.core.dto.ApolloConfigNotification;
 import com.ctrip.framework.apollo.core.utils.ApolloThreadFactory;
 import com.ctrip.framework.apollo.tracer.Tracer;
 
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,8 +58,7 @@ import java.util.concurrent.TimeUnit;
 public class NotificationControllerV2 implements ReleaseMessageListener {
   private static final Logger logger = LoggerFactory.getLogger(NotificationControllerV2.class);
   private static final long TIMEOUT = 30 * 1000;//30 seconds
-  private final CaseInsensitiveMultimapWrapper<DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>
-      deferredResults = new CaseInsensitiveMultimapWrapper<>(Multimaps.synchronizedSetMultimap(HashMultimap.create()));
+  private MultimapWrapper<DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>> deferredResults;
   private static final ResponseEntity<List<ApolloConfigNotification>>
       NOT_MODIFIED_RESPONSE_LIST = new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
   private static final Splitter STRING_SPLITTER =
@@ -86,9 +87,17 @@ public class NotificationControllerV2 implements ReleaseMessageListener {
   @Autowired
   private BizConfig bizConfig;
 
+  @Autowired
+  private Wrappers wrappers;
+
   public NotificationControllerV2() {
     largeNotificationBatchExecutorService = Executors.newSingleThreadExecutor(ApolloThreadFactory.create
         ("NotificationControllerV2", true));
+  }
+
+  @PostConstruct
+  void initialize() {
+    deferredResults = wrappers.multimapWrapper(Multimaps.synchronizedSetMultimap(HashMultimap.create()));
   }
 
   @RequestMapping(method = RequestMethod.GET)
