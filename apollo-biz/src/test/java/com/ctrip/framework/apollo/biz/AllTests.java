@@ -19,34 +19,28 @@ import com.ctrip.framework.apollo.biz.service.ReleaseServiceTest;
 import com.ctrip.framework.apollo.biz.service.BizDBPropertySourceTest;
 import com.ctrip.framework.apollo.biz.utils.ReleaseKeyGeneratorTest;
 
+import com.ctrip.framework.apollo.biz.wrapper.caseInsensitive.CaseInsensitiveLoadingCacheWrapperTest;
 import com.ctrip.framework.apollo.biz.wrapper.caseInsensitive.CaseInsensitiveMapWrapperTest;
 import com.ctrip.framework.apollo.biz.wrapper.caseInsensitive.CaseInsensitiveMultimapWrapperTest;
+import com.ctrip.framework.apollo.biz.wrapper.caseInsensitive.CaseInsensitiveWrappersTest;
+import com.ctrip.framework.apollo.biz.wrapper.caseSensitive.CaseSensitiveLoadingCacheWrapperTest;
+import com.ctrip.framework.apollo.biz.wrapper.caseSensitive.CaseSensitiveMapWrapperTest;
+import com.ctrip.framework.apollo.biz.wrapper.caseSensitive.CaseSensitiveMultimapWrapperTest;
+import com.ctrip.framework.apollo.biz.wrapper.caseSensitive.CaseSensitiveWrappersTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-    AppRepositoryTest.class,
-    AppNamespaceRepositoryTest.class,
-    AdminServiceTest.class,
-    AdminServiceTransactionTest.class,
-    DatabaseMessageSenderTest.class,
-    BizDBPropertySourceTest.class,
-    ReleaseServiceTest.class,
-    ReleaseMessageScannerTest.class,
-    ClusterServiceTest.class,
-    ReleaseKeyGeneratorTest.class,
-    InstanceServiceTest.class,
-    GrayReleaseRulesHolderTest.class,
-    NamespaceBranchServiceTest.class,
-    ReleaseCreationTest.class,
-    NamespacePublishInfoTest.class,
-    NamespaceServiceIntegrationTest.class,
-    BizConfigTest.class,
-    NamespaceServiceTest.class,
-    CaseInsensitiveMultimapWrapperTest.class,
-    CaseInsensitiveMapWrapperTest.class
+@SuiteClasses({AppRepositoryTest.class, AppNamespaceRepositoryTest.class, AdminServiceTest.class,
+    AdminServiceTransactionTest.class, DatabaseMessageSenderTest.class, BizDBPropertySourceTest.class,
+    ReleaseServiceTest.class, ReleaseMessageScannerTest.class, ClusterServiceTest.class, ReleaseKeyGeneratorTest.class,
+    InstanceServiceTest.class, GrayReleaseRulesHolderTest.class, NamespaceBranchServiceTest.class,
+    ReleaseCreationTest.class, NamespacePublishInfoTest.class, NamespaceServiceIntegrationTest.class,
+    BizConfigTest.class, NamespaceServiceTest.class, CaseInsensitiveMultimapWrapperTest.class,
+    CaseInsensitiveMapWrapperTest.class, CaseInsensitiveLoadingCacheWrapperTest.class,
+    CaseSensitiveMapWrapperTest.class, CaseSensitiveMultimapWrapperTest.class,
+    CaseSensitiveLoadingCacheWrapperTest.class, CaseSensitiveWrappersTest.class, CaseInsensitiveWrappersTest.class
 })
 public class AllTests {
 

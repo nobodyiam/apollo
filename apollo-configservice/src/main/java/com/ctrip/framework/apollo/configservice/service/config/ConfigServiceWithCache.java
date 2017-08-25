@@ -1,5 +1,7 @@
 package com.ctrip.framework.apollo.configservice.service.config;
 
+import com.ctrip.framework.apollo.biz.wrapper.LoadingCacheWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.Wrappers;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
@@ -51,7 +53,10 @@ public class ConfigServiceWithCache extends AbstractConfigService {
   @Autowired
   private ReleaseMessageService releaseMessageService;
 
-  private LoadingCache<String, ConfigCacheEntry> configCache;
+  @Autowired
+  private Wrappers wrappers;
+
+  private LoadingCacheWrapper<ConfigCacheEntry> configCache;
 
   private LoadingCache<Long, Optional<Release>> configIdCache;
 
@@ -63,7 +68,8 @@ public class ConfigServiceWithCache extends AbstractConfigService {
 
   @PostConstruct
   void initialize() {
-    configCache = CacheBuilder.newBuilder()
+    configCache = wrappers.loadingCacheWrapper(
+        CacheBuilder.newBuilder()
         .expireAfterAccess(DEFAULT_EXPIRED_AFTER_ACCESS_IN_MINUTES, TimeUnit.MINUTES)
         .build(new CacheLoader<String, ConfigCacheEntry>() {
           @Override
@@ -99,7 +105,8 @@ public class ConfigServiceWithCache extends AbstractConfigService {
               transaction.complete();
             }
           }
-        });
+        })
+    );
     configIdCache = CacheBuilder.newBuilder()
         .expireAfterAccess(DEFAULT_EXPIRED_AFTER_ACCESS_IN_MINUTES, TimeUnit.MINUTES)
         .build(new CacheLoader<Long, Optional<Release>>() {

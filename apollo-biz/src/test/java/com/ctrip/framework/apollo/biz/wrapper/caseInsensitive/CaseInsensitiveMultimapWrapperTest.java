@@ -1,6 +1,7 @@
 package com.ctrip.framework.apollo.biz.wrapper.caseInsensitive;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,9 +21,9 @@ import com.google.common.collect.Multimap;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseInsensitiveMultimapWrapperTest {
 
-  private CaseInsensitiveMultimapWrapper<String> caseInsensitiveMultimapWrapper;
+  private CaseInsensitiveMultimapWrapper<Object> caseInsensitiveMultimapWrapper;
   @Mock
-  private Multimap<String, String> someMultiMap;
+  private Multimap<String, Object> someMultiMap;
 
   @Before
   public void setUp() throws Exception {
@@ -44,7 +45,7 @@ public class CaseInsensitiveMultimapWrapperTest {
   @Test
   public void testGet() throws Exception {
     String someKey = "someKey";
-    Collection<String> someResult = Lists.newArrayList("someResult");
+    Collection<Object> someResult = Lists.newArrayList("someResult");
 
     when(someMultiMap.get(someKey.toLowerCase())).thenReturn(someResult);
 
@@ -56,7 +57,7 @@ public class CaseInsensitiveMultimapWrapperTest {
   @Test
   public void testPut() throws Exception {
     String someKey = "someKey";
-    String someValue = "someValue";
+    Object someValue = mock(Object.class);
     boolean someResult = true;
 
     when(someMultiMap.put(someKey.toLowerCase(), someValue)).thenReturn(someResult);
@@ -69,7 +70,7 @@ public class CaseInsensitiveMultimapWrapperTest {
   @Test
   public void testRemove() throws Exception {
     String someKey = "someKey";
-    String someValue = "someValue";
+    Object someValue = mock(Object.class);
     boolean someResult = true;
 
     when(someMultiMap.remove(someKey.toLowerCase(), someValue)).thenReturn(someResult);

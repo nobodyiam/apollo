@@ -1,14 +1,11 @@
 package com.ctrip.framework.apollo.configservice.service.config;
 
-import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
-import com.google.common.collect.Lists;
-
-import com.ctrip.framework.apollo.biz.entity.Release;
-import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
-import com.ctrip.framework.apollo.biz.message.Topics;
-import com.ctrip.framework.apollo.biz.service.ReleaseMessageService;
-import com.ctrip.framework.apollo.biz.service.ReleaseService;
-import com.ctrip.framework.apollo.biz.utils.ReleaseMessageKeyGenerator;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,12 +14,15 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.ctrip.framework.apollo.biz.entity.Release;
+import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
+import com.ctrip.framework.apollo.biz.message.Topics;
+import com.ctrip.framework.apollo.biz.service.ReleaseMessageService;
+import com.ctrip.framework.apollo.biz.service.ReleaseService;
+import com.ctrip.framework.apollo.biz.utils.ReleaseMessageKeyGenerator;
+import com.ctrip.framework.apollo.biz.wrapper.caseSensitive.CaseSensitiveWrappers;
+import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
+import com.google.common.collect.Lists;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
@@ -52,6 +52,7 @@ public class ConfigServiceWithCacheTest {
     configServiceWithCache = new ConfigServiceWithCache();
     ReflectionTestUtils.setField(configServiceWithCache, "releaseService", releaseService);
     ReflectionTestUtils.setField(configServiceWithCache, "releaseMessageService", releaseMessageService);
+    ReflectionTestUtils.setField(configServiceWithCache, "wrappers", new CaseSensitiveWrappers());
 
     configServiceWithCache.initialize();
 
