@@ -16,8 +16,18 @@ public class CaseSensitiveMultimapWrapper<T> implements MultimapWrapper<T> {
   }
 
   @Override
+  public boolean isEmpty() {
+    return delegate.isEmpty();
+  }
+
+  @Override
   public boolean containsKey(String key) {
     return delegate.containsKey(key);
+  }
+
+  @Override
+  public boolean containsEntry(String key, T value) {
+    return delegate.containsEntry(key, value);
   }
 
   @Override
@@ -31,8 +41,18 @@ public class CaseSensitiveMultimapWrapper<T> implements MultimapWrapper<T> {
   }
 
   @Override
+  public boolean putAll(String key, Iterable<? extends T> values) {
+    return delegate.putAll(key, values);
+  }
+
+  @Override
   public boolean remove(String key, T value) {
     return delegate.remove(key, value);
+  }
+
+  @Override
+  public Collection<T> removeAll(String key) {
+    return delegate.removeAll(key);
   }
 
   @Override

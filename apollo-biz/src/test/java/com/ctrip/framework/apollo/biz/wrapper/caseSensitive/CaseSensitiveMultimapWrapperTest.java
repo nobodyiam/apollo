@@ -31,6 +31,17 @@ public class CaseSensitiveMultimapWrapperTest {
   }
 
   @Test
+  public void testIsEmpty() throws Exception {
+    boolean someResult = true;
+
+    when(multimap.isEmpty()).thenReturn(someResult);
+
+    assertEquals(someResult, multimapWrapper.isEmpty());
+
+    verify(multimap, times(1)).isEmpty();
+  }
+
+  @Test
   public void testContainsKey() throws Exception {
     String someKey = "someKey";
     boolean someResult = true;
@@ -40,6 +51,19 @@ public class CaseSensitiveMultimapWrapperTest {
     assertEquals(someResult, multimapWrapper.containsKey(someKey));
 
     verify(multimap, times(1)).containsKey(someKey);
+  }
+
+  @Test
+  public void testContainsEntry() throws Exception {
+    String someKey = "someKey";
+    Object someValue = mock(Object.class);
+    boolean someResult = true;
+
+    when(multimap.containsEntry(someKey, someValue)).thenReturn(someResult);
+
+    assertEquals(someResult, multimapWrapper.containsEntry(someKey, someValue));
+
+    verify(multimap, times(1)).containsEntry(someKey, someValue);
   }
 
   @Test
@@ -68,6 +92,19 @@ public class CaseSensitiveMultimapWrapperTest {
   }
 
   @Test
+  public void testPutAll() throws Exception {
+    String someKey = "someKey";
+    Iterable<Object> someValue = Lists.newArrayList(mock(Object.class));
+    boolean someResult = true;
+
+    when(multimap.putAll(someKey, someValue)).thenReturn(someResult);
+
+    assertEquals(someResult, multimapWrapper.putAll(someKey, someValue));
+
+    verify(multimap, times(1)).putAll(someKey, someValue);
+  }
+
+  @Test
   public void testRemove() throws Exception {
     String someKey = "someKey";
     Object someValue = mock(Object.class);
@@ -78,6 +115,18 @@ public class CaseSensitiveMultimapWrapperTest {
     assertEquals(someResult, multimapWrapper.remove(someKey, someValue));
 
     verify(multimap, times(1)).remove(someKey, someValue);
+  }
+
+  @Test
+  public void testRemoveAll() throws Exception {
+    String someKey = "someKey";
+    Collection<Object> someResult = Lists.newArrayList(mock(Object.class));
+
+    when(multimap.removeAll(someKey)).thenReturn(someResult);
+
+    assertEquals(someResult, multimapWrapper.removeAll(someKey));
+
+    verify(multimap, times(1)).removeAll(someKey);
   }
 
   @Test

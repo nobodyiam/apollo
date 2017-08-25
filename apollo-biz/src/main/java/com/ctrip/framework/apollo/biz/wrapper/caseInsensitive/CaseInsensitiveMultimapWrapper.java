@@ -17,8 +17,18 @@ public class CaseInsensitiveMultimapWrapper<T> implements MultimapWrapper<T> {
     this.delegate = delegate;
   }
 
+  @Override
+  public boolean isEmpty() {
+    return delegate.isEmpty();
+  }
+
   public boolean containsKey(String key) {
     return delegate.containsKey(key.toLowerCase());
+  }
+
+  @Override
+  public boolean containsEntry(String key, T value) {
+    return delegate.containsEntry(key.toLowerCase(), value);
   }
 
   public Collection<T> get(String key) {
@@ -29,8 +39,18 @@ public class CaseInsensitiveMultimapWrapper<T> implements MultimapWrapper<T> {
     return delegate.put(key.toLowerCase(), value);
   }
 
+  @Override
+  public boolean putAll(String key, Iterable<? extends T> values) {
+    return delegate.putAll(key.toLowerCase(), values);
+  }
+
   public boolean remove(String key, T value) {
     return delegate.remove(key.toLowerCase(), value);
+  }
+
+  @Override
+  public Collection<T> removeAll(String key) {
+    return delegate.removeAll(key.toLowerCase());
   }
 
   public int size() {

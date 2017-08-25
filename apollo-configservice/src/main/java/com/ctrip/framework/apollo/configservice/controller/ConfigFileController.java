@@ -1,16 +1,17 @@
 package com.ctrip.framework.apollo.configservice.controller;
 
+import com.ctrip.framework.apollo.biz.wrapper.CacheWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.MultimapWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.Wrappers;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.cache.Weigher;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.gson.Gson;
 
@@ -25,6 +26,7 @@ import com.ctrip.framework.apollo.core.dto.ApolloConfig;
 import com.ctrip.framework.apollo.core.utils.PropertiesUtil;
 import com.ctrip.framework.apollo.tracer.Tracer;
 
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,11 +64,9 @@ public class ConfigFileController implements ReleaseMessageListener {
   private final HttpHeaders propertiesResponseHeaders;
   private final HttpHeaders jsonResponseHeaders;
   private final ResponseEntity<String> NOT_FOUND_RESPONSE;
-  private Cache<String, String> localCache;
-  private final Multimap<String, String>
-      watchedKeys2CacheKey = Multimaps.synchronizedSetMultimap(HashMultimap.create());
-  private final Multimap<String, String>
-      cacheKey2WatchedKeys = Multimaps.synchronizedSetMultimap(HashMultimap.create());
+  private CacheWrapper<String> localCache;
+  private MultimapWrapper<String> watchedKeys2CacheKey;
+  private MultimapWrapper<String> cacheKey2WatchedKeys;
   private static final Gson gson = new Gson();
 
   @Autowired
@@ -81,8 +81,23 @@ public class ConfigFileController implements ReleaseMessageListener {
   @Autowired
   private GrayReleaseRulesHolder grayReleaseRulesHolder;
 
+  @Autowired
+  private Wrappers wrappers;
+
   public ConfigFileController() {
-    localCache = CacheBuilder.newBuilder()
+    propertiesResponseHeaders = new HttpHeaders();
+    propertiesResponseHeaders.add("Content-Type", "text/plain;charset=UTF-8");
+    jsonResponseHeaders = new HttpHeaders();
+    jsonResponseHeaders.add("Content-Type", "application/json;charset=UTF-8");
+    NOT_FOUND_RESPONSE = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  }
+
+  @PostConstruct
+  void initialize() {
+    watchedKeys2CacheKey = wrappers.multimapWrapper(Multimaps.synchronizedSetMultimap(HashMultimap.create()));
+    cacheKey2WatchedKeys = wrappers.multimapWrapper(Multimaps.synchronizedSetMultimap(HashMultimap.create()));
+    localCache = wrappers.cacheWrapper(
+        CacheBuilder.newBuilder()
         .expireAfterWrite(EXPIRE_AFTER_WRITE, TimeUnit.MINUTES)
         .weigher(new Weigher<String, String>() {
           @Override
@@ -108,12 +123,8 @@ public class ConfigFileController implements ReleaseMessageListener {
             logger.debug("removed cache key: {}", cacheKey);
           }
         })
-        .build();
-    propertiesResponseHeaders = new HttpHeaders();
-    propertiesResponseHeaders.add("Content-Type", "text/plain;charset=UTF-8");
-    jsonResponseHeaders = new HttpHeaders();
-    jsonResponseHeaders.add("Content-Type", "application/json;charset=UTF-8");
-    NOT_FOUND_RESPONSE = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        .build()
+    );
   }
 
   @RequestMapping(value = "/{appId}/{clusterName}/{namespace:.+}", method = RequestMethod.GET)

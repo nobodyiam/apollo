@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.biz.wrapper;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Multimap;
 import java.util.Map;
@@ -13,4 +14,6 @@ public interface Wrappers {
   <T> MapWrapper<T> mapWrapper(Map<String, T> map);
 
   <T> LoadingCacheWrapper<T> loadingCacheWrapper(LoadingCache<String, T> loadingCache);
+
+  <T> CacheWrapper<T> cacheWrapper(Cache<String, T> cache);
 }

@@ -1,5 +1,8 @@
 package com.ctrip.framework.apollo.configservice.controller;
 
+import com.ctrip.framework.apollo.biz.wrapper.CacheWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.MultimapWrapper;
+import com.ctrip.framework.apollo.biz.wrapper.caseSensitive.CaseSensitiveWrappers;
 import com.google.common.cache.Cache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -62,8 +65,8 @@ public class ConfigFileControllerTest {
   private HttpServletResponse someResponse;
   @Mock
   private HttpServletRequest someRequest;
-  Multimap<String, String> watchedKeys2CacheKey;
-  Multimap<String, String> cacheKey2WatchedKeys;
+  MultimapWrapper<String> watchedKeys2CacheKey;
+  MultimapWrapper<String> cacheKey2WatchedKeys;
 
   @Before
   public void setUp() throws Exception {
@@ -72,6 +75,9 @@ public class ConfigFileControllerTest {
     ReflectionTestUtils.setField(configFileController, "watchKeysUtil", watchKeysUtil);
     ReflectionTestUtils.setField(configFileController, "namespaceUtil", namespaceUtil);
     ReflectionTestUtils.setField(configFileController, "grayReleaseRulesHolder", grayReleaseRulesHolder);
+    ReflectionTestUtils.setField(configFileController, "wrappers", new CaseSensitiveWrappers());
+
+    configFileController.initialize();
 
     someAppId = "someAppId";
     someClusterName = "someClusterName";
@@ -84,10 +90,10 @@ public class ConfigFileControllerTest {
         .thenReturn(false);
 
     watchedKeys2CacheKey =
-        (Multimap<String, String>) ReflectionTestUtils
+        (MultimapWrapper<String>) ReflectionTestUtils
             .getField(configFileController, "watchedKeys2CacheKey");
     cacheKey2WatchedKeys =
-        (Multimap<String, String>) ReflectionTestUtils
+        (MultimapWrapper<String>) ReflectionTestUtils
             .getField(configFileController, "cacheKey2WatchedKeys");
   }
 
@@ -225,8 +231,8 @@ public class ConfigFileControllerTest {
     ReleaseMessage someReleaseMessage = mock(ReleaseMessage.class);
     when(someReleaseMessage.getMessage()).thenReturn(someWatchKey);
 
-    Cache<String, String> cache =
-        (Cache<String, String>) ReflectionTestUtils.getField(configFileController, "localCache");
+    CacheWrapper<String> cache =
+        (CacheWrapper<String>) ReflectionTestUtils.getField(configFileController, "localCache");
     cache.put(someCacheKey, someValue);
     cache.put(anotherCacheKey, someValue);
 

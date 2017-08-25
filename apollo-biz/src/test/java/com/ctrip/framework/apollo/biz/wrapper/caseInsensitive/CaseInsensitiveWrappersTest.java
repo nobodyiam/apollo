@@ -6,6 +6,7 @@ import com.ctrip.framework.apollo.biz.wrapper.caseSensitive.CaseSensitiveLoading
 import com.ctrip.framework.apollo.biz.wrapper.caseSensitive.CaseSensitiveMapWrapper;
 import com.ctrip.framework.apollo.biz.wrapper.caseSensitive.CaseSensitiveMultimapWrapper;
 import com.ctrip.framework.apollo.biz.wrapper.caseSensitive.CaseSensitiveWrappers;
+import com.google.common.cache.Cache;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Multimap;
 import java.util.Map;
@@ -29,6 +30,8 @@ public class CaseInsensitiveWrappersTest {
   private Map<String, Object> someMap;
   @Mock
   private LoadingCache<String, Object> someLoadingCache;
+  @Mock
+  private Cache<String, Object> someCache;
 
   @Before
   public void setUp() throws Exception {
@@ -41,5 +44,6 @@ public class CaseInsensitiveWrappersTest {
     assertTrue(caseInsensitiveWrappers.mapWrapper(someMap) instanceof CaseInsensitiveMapWrapper);
     assertTrue(
         caseInsensitiveWrappers.loadingCacheWrapper(someLoadingCache) instanceof CaseInsensitiveLoadingCacheWrapper);
+    assertTrue(caseInsensitiveWrappers.cacheWrapper(someCache) instanceof CaseInsensitiveCacheWrapper);
   }
 }
