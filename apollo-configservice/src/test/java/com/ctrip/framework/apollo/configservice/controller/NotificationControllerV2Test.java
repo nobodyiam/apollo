@@ -1,8 +1,7 @@
 package com.ctrip.framework.apollo.configservice.controller;
 
 import com.ctrip.framework.apollo.biz.wrapper.MultimapWrapper;
-import com.ctrip.framework.apollo.biz.wrapper.Wrappers;
-import com.ctrip.framework.apollo.biz.wrapper.caseInsensitive.CaseInsensitiveWrappers;
+import com.ctrip.framework.apollo.biz.wrapper.caseSensitive.CaseSensitiveWrappers;
 import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
@@ -25,9 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -38,8 +35,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -89,7 +84,7 @@ public class NotificationControllerV2Test {
     ReflectionTestUtils.setField(controller, "watchKeysUtil", watchKeysUtil);
     ReflectionTestUtils.setField(controller, "gson", gson);
     ReflectionTestUtils.setField(controller, "bizConfig", bizConfig);
-    ReflectionTestUtils.setField(controller, "wrappers", new CaseInsensitiveWrappers());
+    ReflectionTestUtils.setField(controller, "wrappers", new CaseSensitiveWrappers());
 
     controller.initialize();
 
