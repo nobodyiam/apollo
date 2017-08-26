@@ -151,6 +151,21 @@ public class ConfigFileControllerIntegrationTest extends AbstractBaseIntegration
 
   @Test
   @Sql(scripts = "/integration-test/test-release.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+  public void testQueryConfigAsJsonWithIncorrectCase() throws Exception {
+    ResponseEntity<String> response =
+        restTemplate
+            .getForEntity("{baseurl}/configfiles/json/{appId}/{clusterName}/{namespace}", String.class,
+                getHostUrl(), someAppId, someCluster, someNamespace.toUpperCase());
+
+    Map<String, String> configs = gson.fromJson(response.getBody(), mapResponseType);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals("v2", configs.get("k2"));
+  }
+
+  @Test
+  @Sql(scripts = "/integration-test/test-release.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
   @Sql(scripts = "/integration-test/test-release-public-dc-override.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
   @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
   public void testQueryPublicConfigAsJson() throws Exception {
@@ -160,6 +175,25 @@ public class ConfigFileControllerIntegrationTest extends AbstractBaseIntegration
                 "{baseurl}/configfiles/json/{appId}/{clusterName}/{namespace}?dataCenter={dateCenter}",
                 String.class,
                 getHostUrl(), someAppId, someDefaultCluster, somePublicNamespace, someDC);
+
+    Map<String, String> configs = gson.fromJson(response.getBody(), mapResponseType);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals("override-someDC-v1", configs.get("k1"));
+    assertEquals("someDC-v2", configs.get("k2"));
+  }
+
+  @Test
+  @Sql(scripts = "/integration-test/test-release.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/test-release-public-dc-override.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+  public void testQueryPublicConfigAsJsonWithIncorrectCase() throws Exception {
+    ResponseEntity<String> response =
+        restTemplate
+            .getForEntity(
+                "{baseurl}/configfiles/json/{appId}/{clusterName}/{namespace}?dataCenter={dateCenter}",
+                String.class,
+                getHostUrl(), someAppId, someDefaultCluster, somePublicNamespace.toUpperCase(), someDC);
 
     Map<String, String> configs = gson.fromJson(response.getBody(), mapResponseType);
 
@@ -195,6 +229,47 @@ public class ConfigFileControllerIntegrationTest extends AbstractBaseIntegration
                 "{baseurl}/configfiles/json/{appId}/{clusterName}/{namespace}?ip={clientIp}",
                 String.class,
                 getHostUrl(), someAppId, someDefaultCluster, somePublicNamespace, nonGrayClientIp);
+
+    Map<String, String> configs = gson.fromJson(response.getBody(), mapResponseType);
+    Map<String, String> anotherConfigs = gson.fromJson(anotherResponse.getBody(), mapResponseType);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.OK, anotherResponse.getStatusCode());
+
+    assertEquals("override-v1", configs.get("k1"));
+    assertEquals("gray-v2", configs.get("k2"));
+
+    assertEquals("override-v1", anotherConfigs.get("k1"));
+    assertEquals("default-v2", anotherConfigs.get("k2"));
+  }
+
+  @Test
+  @Sql(scripts = "/integration-test/test-release.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/test-release-public-default-override.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/test-gray-release.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+  public void testQueryPublicConfigAsJsonWithGrayReleaseAndIncorrectCase() throws Exception {
+    AtomicBoolean stop = new AtomicBoolean();
+    periodicSendMessage(executorService, assembleKey(somePublicAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, somePublicNamespace),
+        stop);
+
+    TimeUnit.MILLISECONDS.sleep(500);
+
+    stop.set(true);
+
+    ResponseEntity<String> response =
+        restTemplate
+            .getForEntity(
+                "{baseurl}/configfiles/json/{appId}/{clusterName}/{namespace}?ip={clientIp}",
+                String.class,
+                getHostUrl(), someAppId, someDefaultCluster, somePublicNamespace.toUpperCase(), grayClientIp);
+
+    ResponseEntity<String> anotherResponse =
+        restTemplate
+            .getForEntity(
+                "{baseurl}/configfiles/json/{appId}/{clusterName}/{namespace}?ip={clientIp}",
+                String.class,
+                getHostUrl(), someAppId, someDefaultCluster, somePublicNamespace.toUpperCase(), nonGrayClientIp);
 
     Map<String, String> configs = gson.fromJson(response.getBody(), mapResponseType);
     Map<String, String> anotherConfigs = gson.fromJson(anotherResponse.getBody(), mapResponseType);

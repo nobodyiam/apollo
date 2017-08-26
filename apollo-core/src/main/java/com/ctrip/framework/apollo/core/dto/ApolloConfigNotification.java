@@ -25,6 +25,10 @@ public class ApolloConfigNotification {
     return notificationId;
   }
 
+  public void setNamespaceName(String namespaceName) {
+    this.namespaceName = namespaceName;
+  }
+
   public ApolloNotificationMessages getMessages() {
     return messages;
   }

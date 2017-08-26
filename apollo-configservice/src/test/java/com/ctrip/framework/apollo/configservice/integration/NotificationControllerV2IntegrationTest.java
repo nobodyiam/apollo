@@ -145,6 +145,39 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     assertNotEquals(ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, messages.get(key).longValue());
   }
 
+  @Test
+  @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+  public void testPollNotificationWithMultipleNamespacesAndIncorrectCase() throws Exception {
+    AtomicBoolean stop = new AtomicBoolean();
+    String key = assembleKey(someAppId, someCluster, somePublicNamespace);
+    periodicSendMessage(executorService, key, stop);
+
+    String someDefaultNamespaceWithIncorrectCase = defaultNamespace.toUpperCase();
+    String somePublicNamespaceWithIncorrectCase = somePublicNamespace.toUpperCase();
+
+    ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
+        "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}",
+        HttpMethod.GET, null, typeReference,
+        getHostUrl(), someAppId, someCluster,
+        transformApolloConfigNotificationsToString(defaultNamespace + ".properties",
+            ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, someDefaultNamespaceWithIncorrectCase,
+            ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, somePublicNamespaceWithIncorrectCase,
+            ConfigConsts.NOTIFICATION_ID_PLACEHOLDER));
+
+    stop.set(true);
+
+    List<ApolloConfigNotification> notifications = result.getBody();
+    assertEquals(HttpStatus.OK, result.getStatusCode());
+    assertEquals(1, notifications.size());
+    assertEquals(somePublicNamespaceWithIncorrectCase, notifications.get(0).getNamespaceName());
+    assertNotEquals(0, notifications.get(0).getNotificationId());
+
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertNotEquals(ConfigConsts.NOTIFICATION_ID_PLACEHOLDER, messages.get(key).longValue());
+  }
+
   @Test(timeout = 5000L)
   @Sql(scripts = "/integration-test/test-release.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
   @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -386,6 +419,61 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
     Set<String> outDatedNamespaces =
         Sets.newHashSet(notifications.get(0).getNamespaceName(), notifications.get(1).getNamespaceName());
     assertEquals(Sets.newHashSet(defaultNamespace, somePublicNamespace), outDatedNamespaces);
+
+    Set<Long> newNotificationIds = Sets.newHashSet(
+        notifications.get(0).getNotificationId(), notifications.get(1).getNotificationId());
+    assertEquals(Sets.newHashSet(newDefaultNamespaceNotificationId, newPublicNamespaceNotification),
+        newNotificationIds);
+
+    String defaultNamespaceKey = assembleKey(someAppId, ConfigConsts.CLUSTER_NAME_DEFAULT,
+        ConfigConsts.NAMESPACE_APPLICATION);
+    String publicNamespaceKey = assembleKey(publicAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, somePublicNamespace);
+
+    ApolloNotificationMessages firstMessages = notifications.get(0).getMessages();
+    ApolloNotificationMessages secondMessages = notifications.get(1).getMessages();
+
+    assertEquals(1, firstMessages.getDetails().size());
+    assertEquals(1, secondMessages.getDetails().size());
+
+    assertTrue(
+        (firstMessages.has(defaultNamespaceKey) && firstMessages.get(defaultNamespaceKey).equals(newDefaultNamespaceNotificationId)) ||
+            (firstMessages.has(publicNamespaceKey) && firstMessages.get(publicNamespaceKey).equals(newPublicNamespaceNotification))
+    );
+    assertTrue(
+        (secondMessages.has(defaultNamespaceKey) && secondMessages.get(defaultNamespaceKey).equals(newDefaultNamespaceNotificationId)) ||
+            (secondMessages.has(publicNamespaceKey) && secondMessages.get(publicNamespaceKey).equals(newPublicNamespaceNotification))
+    );
+  }
+
+  @Test(timeout = 5000L)
+  @Sql(scripts = "/integration-test/test-release.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/test-release-message.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+  public void testPollNotificationWithMultipleNamespacesAndNotificationIdsOutDatedAndIncorrectCase()
+      throws Exception {
+    String publicAppId = "somePublicAppId";
+    long someOutDatedNotificationId = 1;
+    long newDefaultNamespaceNotificationId = 10;
+    long newPublicNamespaceNotification = 20;
+
+    String someDefaultNamespaceWithIncorrectCase = defaultNamespace.toUpperCase();
+    String somePublicNamespaceWithIncorrectCase = somePublicNamespace.toUpperCase();
+
+    ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
+        "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}",
+        HttpMethod.GET, null, typeReference,
+        getHostUrl(), someAppId, someCluster,
+        transformApolloConfigNotificationsToString(somePublicNamespaceWithIncorrectCase,
+            someOutDatedNotificationId, someDefaultNamespaceWithIncorrectCase, someOutDatedNotificationId));
+
+    List<ApolloConfigNotification> notifications = result.getBody();
+    assertEquals(HttpStatus.OK, result.getStatusCode());
+    assertEquals(2, notifications.size());
+
+    Set<String> outDatedNamespaces =
+        Sets.newHashSet(notifications.get(0).getNamespaceName(), notifications.get(1).getNamespaceName());
+    assertEquals(Sets.newHashSet(someDefaultNamespaceWithIncorrectCase, somePublicNamespaceWithIncorrectCase),
+        outDatedNamespaces);
 
     Set<Long> newNotificationIds = Sets.newHashSet(
         notifications.get(0).getNotificationId(), notifications.get(1).getNotificationId());

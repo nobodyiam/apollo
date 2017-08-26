@@ -80,6 +80,7 @@ public class ConfigFileControllerTest {
     someClientIp = "10.1.1.1";
 
     when(namespaceUtil.filterNamespaceName(someNamespace)).thenReturn(someNamespace);
+    when(namespaceUtil.normalizeNamespace(someAppId, someNamespace)).thenReturn(someNamespace);
     when(grayReleaseRulesHolder.hasGrayReleaseRule(anyString(), anyString(), anyString()))
         .thenReturn(false);
 

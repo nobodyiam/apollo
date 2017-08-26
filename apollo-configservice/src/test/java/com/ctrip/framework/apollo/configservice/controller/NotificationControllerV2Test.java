@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.configservice.controller;
 
+import com.ctrip.framework.apollo.configservice.wrapper.DeferredResultWrapper;
 import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
@@ -28,7 +29,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
@@ -65,8 +68,7 @@ public class NotificationControllerV2Test {
 
   private Gson gson;
 
-  private Multimap<String, DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>
-      deferredResults;
+  private Multimap<String, DeferredResultWrapper> deferredResults;
 
   @Before
   public void setUp() throws Exception {
@@ -94,10 +96,11 @@ public class NotificationControllerV2Test {
 
     when(namespaceUtil.filterNamespaceName(defaultNamespace)).thenReturn(defaultNamespace);
     when(namespaceUtil.filterNamespaceName(somePublicNamespace)).thenReturn(somePublicNamespace);
+    when(namespaceUtil.normalizeNamespace(someAppId, defaultNamespace)).thenReturn(defaultNamespace);
+    when(namespaceUtil.normalizeNamespace(someAppId, somePublicNamespace)).thenReturn(somePublicNamespace);
 
     deferredResults =
-        (Multimap<String, DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>>) ReflectionTestUtils
-            .getField(controller, "deferredResults");
+        (Multimap<String, DeferredResultWrapper>) ReflectionTestUtils.getField(controller, "deferredResults");
   }
 
   @Test
@@ -123,9 +126,7 @@ public class NotificationControllerV2Test {
 
     assertEquals(watchKeysMap.size(), deferredResults.size());
 
-    for (String watchKey : watchKeysMap.values()) {
-      assertTrue(deferredResults.get(watchKey).contains(deferredResult));
-    }
+    assertWatchKeys(watchKeysMap, deferredResult);
   }
 
   @Test
@@ -154,9 +155,7 @@ public class NotificationControllerV2Test {
 
     assertEquals(watchKeysMap.size(), deferredResults.size());
 
-    for (String watchKey : watchKeysMap.values()) {
-      assertTrue(deferredResults.get(watchKey).contains(deferredResult));
-    }
+    assertWatchKeys(watchKeysMap, deferredResult);
   }
 
 
@@ -166,8 +165,8 @@ public class NotificationControllerV2Test {
     String somePublicNamespaceAsFile = somePublicNamespace + ".xml";
 
     when(namespaceUtil.filterNamespaceName(defaultNamespaceAsFile)).thenReturn(defaultNamespace);
-    when(namespaceUtil.filterNamespaceName(somePublicNamespaceAsFile))
-        .thenReturn(somePublicNamespaceAsFile);
+    when(namespaceUtil.filterNamespaceName(somePublicNamespaceAsFile)).thenReturn(somePublicNamespaceAsFile);
+    when(namespaceUtil.normalizeNamespace(someAppId, somePublicNamespaceAsFile)).thenReturn(somePublicNamespaceAsFile);
 
     String someWatchKey = "someKey";
     String anotherWatchKey = "anotherKey";
@@ -200,9 +199,7 @@ public class NotificationControllerV2Test {
 
     assertEquals(watchKeysMap.size(), deferredResults.size());
 
-    for (String watchKey : watchKeysMap.values()) {
-      assertTrue(deferredResults.get(watchKey).contains(deferredResult));
-    }
+    assertWatchKeys(watchKeysMap, deferredResult);
 
     verify(watchKeysUtil, times(1)).assembleAllWatchKeys(someAppId, someCluster,
         Sets.newHashSet(defaultNamespace, somePublicNamespace, somePublicNamespaceAsFile),
@@ -390,5 +387,18 @@ public class NotificationControllerV2Test {
     Multimap<String, String> multimap = HashMultimap.create();
     multimap.putAll(key, values);
     return multimap;
+  }
+
+  private void assertWatchKeys(Multimap<String, String> watchKeysMap, DeferredResult deferredResult) {
+    for (String watchKey : watchKeysMap.values()) {
+      Collection<DeferredResultWrapper> deferredResultWrappers = deferredResults.get(watchKey);
+      boolean found = false;
+      for (DeferredResultWrapper wrapper: deferredResultWrappers) {
+        if (Objects.equals(wrapper.getResult(), deferredResult)) {
+          found = true;
+        }
+      }
+      assertTrue(found);
+    }
   }
 }
