@@ -69,6 +69,8 @@ public class ConfigController {
     String originalNamespace = namespace;
     //strip out .properties suffix
     namespace = namespaceUtil.filterNamespaceName(namespace);
+    //fix the character case issue, such as FX.apollo <-> fx.apollo
+    namespace = namespaceUtil.normalizeNamespace(appId, namespace);
 
     if (Strings.isNullOrEmpty(clientIp)) {
       clientIp = tryToGetClientIp(request);

@@ -15,6 +15,7 @@ import com.ctrip.framework.apollo.configservice.service.config.DefaultConfigServ
 import com.ctrip.framework.apollo.configservice.util.InstanceConfigAuditUtilTest;
 import com.ctrip.framework.apollo.configservice.util.NamespaceUtilTest;
 import com.ctrip.framework.apollo.configservice.util.WatchKeysUtilTest;
+import com.ctrip.framework.apollo.configservice.wrapper.CaseInsensitiveMapWrapperTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -27,7 +28,8 @@ import org.junit.runners.Suite.SuiteClasses;
     ConfigFileControllerIntegrationTest.class, WatchKeysUtilTest.class,
     NotificationControllerV2Test.class, NotificationControllerV2IntegrationTest.class,
     InstanceConfigAuditUtilTest.class, AppNamespaceServiceWithCacheTest.class,
-    ReleaseMessageServiceWithCacheTest.class, DefaultConfigServiceTest.class, ConfigServiceWithCacheTest.class
+    ReleaseMessageServiceWithCacheTest.class, DefaultConfigServiceTest.class, ConfigServiceWithCacheTest.class,
+    CaseInsensitiveMapWrapperTest.class
 })
 public class AllTests {
 

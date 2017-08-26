@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.configservice.service;
 
+import com.ctrip.framework.apollo.configservice.wrapper.CaseInsensitiveMapWrapper;
 import com.ctrip.framework.apollo.core.utils.StringUtils;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
@@ -53,10 +54,10 @@ public class AppNamespaceServiceWithCache implements InitializingBean {
   private long maxIdScanned;
 
   //store namespaceName -> AppNamespace
-  private Map<String, AppNamespace> publicAppNamespaceCache;
+  private CaseInsensitiveMapWrapper<AppNamespace> publicAppNamespaceCache;
 
   //store appId+namespaceName -> AppNamespace
-  private Map<String, AppNamespace> appNamespaceCache;
+  private CaseInsensitiveMapWrapper<AppNamespace> appNamespaceCache;
 
   //store id -> AppNamespace
   private Map<Long, AppNamespace> appNamespaceIdCache;
@@ -67,8 +68,8 @@ public class AppNamespaceServiceWithCache implements InitializingBean {
 
   private void initialize() {
     maxIdScanned = 0;
-    publicAppNamespaceCache = Maps.newConcurrentMap();
-    appNamespaceCache = Maps.newConcurrentMap();
+    publicAppNamespaceCache = new CaseInsensitiveMapWrapper<>(Maps.newConcurrentMap());
+    appNamespaceCache = new CaseInsensitiveMapWrapper<>(Maps.newConcurrentMap());
     appNamespaceIdCache = Maps.newConcurrentMap();
     scheduledExecutorService = Executors.newScheduledThreadPool(1, ApolloThreadFactory
         .create("AppNamespaceServiceWithCache", true));
