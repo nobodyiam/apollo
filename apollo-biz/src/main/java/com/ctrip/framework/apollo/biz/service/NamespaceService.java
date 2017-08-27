@@ -8,7 +8,10 @@ import com.ctrip.framework.apollo.biz.entity.Cluster;
 import com.ctrip.framework.apollo.biz.entity.Item;
 import com.ctrip.framework.apollo.biz.entity.Namespace;
 import com.ctrip.framework.apollo.biz.entity.Release;
+import com.ctrip.framework.apollo.biz.message.MessageSender;
+import com.ctrip.framework.apollo.biz.message.Topics;
 import com.ctrip.framework.apollo.biz.repository.NamespaceRepository;
+import com.ctrip.framework.apollo.biz.utils.ReleaseMessageKeyGenerator;
 import com.ctrip.framework.apollo.common.constants.GsonType;
 import com.ctrip.framework.apollo.common.constants.NamespaceBranchStatus;
 import com.ctrip.framework.apollo.common.entity.AppNamespace;
@@ -59,6 +62,8 @@ public class NamespaceService {
   private NamespaceLockService namespaceLockService;
   @Autowired
   private InstanceService instanceService;
+  @Autowired
+  private MessageSender messageSender;
 
 
   public Namespace findOne(Long namespaceId) {
@@ -282,7 +287,13 @@ public class NamespaceService {
 
     auditService.audit(Namespace.class.getSimpleName(), namespace.getId(), Audit.OP.DELETE, operator);
 
-    return namespaceRepository.save(namespace);
+    Namespace deleted = namespaceRepository.save(namespace);
+
+    //Publish release message to do some clean up in config service, such as updating the cache
+    messageSender.sendMessage(ReleaseMessageKeyGenerator.generate(appId, clusterName, namespaceName),
+        Topics.APOLLO_RELEASE_TOPIC);
+
+    return deleted;
   }
 
   @Transactional
