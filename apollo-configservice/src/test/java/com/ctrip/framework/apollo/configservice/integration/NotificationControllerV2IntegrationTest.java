@@ -398,6 +398,138 @@ public class NotificationControllerV2IntegrationTest extends AbstractBaseIntegra
   @Sql(scripts = "/integration-test/test-release.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
   @Sql(scripts = "/integration-test/test-release-message.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
   @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+  public void testPollNotificationWithMultiplePublicNamespaceWithIncorrectCaseWithNotificationIdOutDated() throws Exception {
+    String publicAppId = "somePublicAppId";
+    long someOutDatedNotificationId = 1;
+    long newNotificationId = 20;
+
+    String somePublicNameWithIncorrectCase = somePublicNamespace.toUpperCase();
+
+    //the same namespace with difference character case, and difference notification id
+    ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
+        "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}",
+        HttpMethod.GET, null, typeReference,
+        getHostUrl(), someAppId, someCluster,
+        transformApolloConfigNotificationsToString(somePublicNamespace, newNotificationId,
+            somePublicNameWithIncorrectCase, someOutDatedNotificationId));
+
+
+    List<ApolloConfigNotification> notifications = result.getBody();
+    assertEquals(HttpStatus.OK, result.getStatusCode());
+    assertEquals(1, notifications.size());
+    assertEquals(somePublicNameWithIncorrectCase, notifications.get(0).getNamespaceName());
+    assertEquals(newNotificationId, notifications.get(0).getNotificationId());
+
+    String key = assembleKey(publicAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, somePublicNamespace);
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertEquals(newNotificationId, messages.get(key).longValue());
+  }
+
+  @Test(timeout = 5000L)
+  @Sql(scripts = "/integration-test/test-release.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/test-release-message.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+  public void testPollNotificationWithMultiplePublicNamespaceWithIncorrectCase2WithNotificationIdOutDated() throws Exception {
+    String publicAppId = "somePublicAppId";
+    long someOutDatedNotificationId = 1;
+    long newNotificationId = 20;
+
+    String somePublicNameWithIncorrectCase = somePublicNamespace.toUpperCase();
+
+    //the same namespace with difference character case, and difference notification id
+    ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
+        "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}",
+        HttpMethod.GET, null, typeReference,
+        getHostUrl(), someAppId, someCluster,
+        transformApolloConfigNotificationsToString(somePublicNameWithIncorrectCase, someOutDatedNotificationId,
+            somePublicNamespace, newNotificationId));
+
+
+    List<ApolloConfigNotification> notifications = result.getBody();
+    assertEquals(HttpStatus.OK, result.getStatusCode());
+    assertEquals(1, notifications.size());
+    assertEquals(somePublicNameWithIncorrectCase, notifications.get(0).getNamespaceName());
+    assertEquals(newNotificationId, notifications.get(0).getNotificationId());
+
+    String key = assembleKey(publicAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, somePublicNamespace);
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertEquals(newNotificationId, messages.get(key).longValue());
+  }
+
+  @Test(timeout = 5000L)
+  @Sql(scripts = "/integration-test/test-release.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/test-release-message.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+  public void testPollNotificationWithMultiplePublicNamespaceWithIncorrectCase3WithNotificationIdOutDated() throws Exception {
+    String publicAppId = "somePublicAppId";
+    long someOutDatedNotificationId = 1;
+    long newNotificationId = 20;
+
+    String somePublicNameWithIncorrectCase = somePublicNamespace.toUpperCase();
+
+    //the same namespace with difference character case, and difference notification id
+    ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
+        "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}",
+        HttpMethod.GET, null, typeReference,
+        getHostUrl(), someAppId, someCluster,
+        transformApolloConfigNotificationsToString(somePublicNameWithIncorrectCase, newNotificationId,
+            somePublicNamespace, someOutDatedNotificationId));
+
+
+    List<ApolloConfigNotification> notifications = result.getBody();
+    assertEquals(HttpStatus.OK, result.getStatusCode());
+    assertEquals(1, notifications.size());
+    assertEquals(somePublicNamespace, notifications.get(0).getNamespaceName());
+    assertEquals(newNotificationId, notifications.get(0).getNotificationId());
+
+    String key = assembleKey(publicAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, somePublicNamespace);
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertEquals(newNotificationId, messages.get(key).longValue());
+  }
+
+  @Test(timeout = 5000L)
+  @Sql(scripts = "/integration-test/test-release.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/test-release-message.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+  public void testPollNotificationWithMultiplePublicNamespaceWithIncorrectCase4WithNotificationIdOutDated() throws Exception {
+    String publicAppId = "somePublicAppId";
+    long someOutDatedNotificationId = 1;
+    long newNotificationId = 20;
+
+    String somePublicNameWithIncorrectCase = somePublicNamespace.toUpperCase();
+
+    //the same namespace with difference character case, and difference notification id
+    ResponseEntity<List<ApolloConfigNotification>> result = restTemplate.exchange(
+        "{baseurl}/notifications/v2?appId={appId}&cluster={clusterName}&notifications={notifications}",
+        HttpMethod.GET, null, typeReference,
+        getHostUrl(), someAppId, someCluster,
+        transformApolloConfigNotificationsToString(somePublicNamespace, someOutDatedNotificationId,
+            somePublicNameWithIncorrectCase, newNotificationId));
+
+
+    List<ApolloConfigNotification> notifications = result.getBody();
+    assertEquals(HttpStatus.OK, result.getStatusCode());
+    assertEquals(1, notifications.size());
+    assertEquals(somePublicNamespace, notifications.get(0).getNamespaceName());
+    assertEquals(newNotificationId, notifications.get(0).getNotificationId());
+
+    String key = assembleKey(publicAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, somePublicNamespace);
+    ApolloNotificationMessages messages = result.getBody().get(0).getMessages();
+    assertEquals(1, messages.getDetails().size());
+    assertTrue(messages.has(key));
+    assertEquals(newNotificationId, messages.get(key).longValue());
+  }
+
+  @Test(timeout = 5000L)
+  @Sql(scripts = "/integration-test/test-release.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/test-release-message.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+  @Sql(scripts = "/integration-test/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
   public void testPollNotificationWithMultipleNamespacesAndNotificationIdsOutDated()
       throws Exception {
     String publicAppId = "somePublicAppId";

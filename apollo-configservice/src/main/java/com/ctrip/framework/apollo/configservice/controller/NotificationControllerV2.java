@@ -111,19 +111,16 @@ public class NotificationControllerV2 implements ReleaseMessageListener {
     DeferredResultWrapper deferredResultWrapper = new DeferredResultWrapper();
     Set<String> namespaces = Sets.newHashSet();
     Map<String, Long> clientSideNotifications = Maps.newHashMap();
-    for (ApolloConfigNotification notification : notifications) {
-      if (Strings.isNullOrEmpty(notification.getNamespaceName())) {
-        continue;
-      }
-      //strip out .properties suffix
-      String originalNamespace = namespaceUtil.filterNamespaceName(notification.getNamespaceName());
-      String normalizedNamespace = namespaceUtil.normalizeNamespace(appId, originalNamespace);
+    Map<String, ApolloConfigNotification> filteredNotifications = filterNotifications(appId, notifications);
 
-      if (!Objects.equals(originalNamespace, normalizedNamespace)) {
-        deferredResultWrapper.recordNamespaceNameNormalizedResult(originalNamespace, normalizedNamespace);
-      }
+    for (Map.Entry<String, ApolloConfigNotification> notificationEntry : filteredNotifications.entrySet()) {
+      String normalizedNamespace = notificationEntry.getKey();
+      ApolloConfigNotification notification = notificationEntry.getValue();
       namespaces.add(normalizedNamespace);
       clientSideNotifications.put(normalizedNamespace, notification.getNotificationId());
+      if (!Objects.equals(notification.getNamespaceName(), normalizedNamespace)) {
+        deferredResultWrapper.recordNamespaceNameNormalizedResult(notification.getNamespaceName(), normalizedNamespace);
+      }
     }
 
     if (CollectionUtils.isEmpty(namespaces)) {
@@ -175,6 +172,32 @@ public class NotificationControllerV2 implements ReleaseMessageListener {
     }
 
     return deferredResultWrapper.getResult();
+  }
+
+  private Map<String, ApolloConfigNotification> filterNotifications(String appId,
+                                                                    List<ApolloConfigNotification> notifications) {
+    Map<String, ApolloConfigNotification> filteredNotifications = Maps.newHashMap();
+    for (ApolloConfigNotification notification : notifications) {
+      if (Strings.isNullOrEmpty(notification.getNamespaceName())) {
+        continue;
+      }
+      //strip out .properties suffix
+      String originalNamespace = namespaceUtil.filterNamespaceName(notification.getNamespaceName());
+      notification.setNamespaceName(originalNamespace);
+      //fix the character case issue, such as FX.apollo <-> fx.apollo
+      String normalizedNamespace = namespaceUtil.normalizeNamespace(appId, originalNamespace);
+
+      // in case client side namespace name has character case issue and has difference notification ids
+      // such as FX.apollo = 1 but fx.apollo = 2, we should let FX.apollo have the chance to update its notification id
+      // which means we should record FX.apollo = 1 here and ignore fx.apollo = 2
+      if (filteredNotifications.containsKey(normalizedNamespace) &&
+          filteredNotifications.get(normalizedNamespace).getNotificationId() < notification.getNotificationId()) {
+        continue;
+      }
+
+      filteredNotifications.put(normalizedNamespace, notification);
+    }
+    return filteredNotifications;
   }
 
   private List<ApolloConfigNotification> getApolloConfigNotifications(Set<String> namespaces,
