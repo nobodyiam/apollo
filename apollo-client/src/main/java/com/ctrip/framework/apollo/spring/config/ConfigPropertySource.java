@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.spring.config;
 
+import com.ctrip.framework.apollo.ConfigChangeListener;
 import java.util.Set;
 
 import org.springframework.core.env.EnumerablePropertySource;
@@ -30,5 +31,9 @@ public class ConfigPropertySource extends EnumerablePropertySource<Config> {
   @Override
   public Object getProperty(String name) {
     return this.source.getProperty(name, null);
+  }
+
+  public void addChangeListener(ConfigChangeListener listener) {
+    this.source.addChangeListener(listener);
   }
 }

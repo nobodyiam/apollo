@@ -23,6 +23,6 @@ public class ConfigPropertySourcesProcessor extends PropertySourcesProcessor
         PropertySourcesPlaceholderConfigurer.class);
     BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry, ApolloAnnotationProcessor.class.getName(),
         ApolloAnnotationProcessor.class);
-    BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry, SpringValueProcessor.class.getName(),SpringValueProcessor.class);
+    BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry, SpringValueProcessor.class.getName(), SpringValueProcessor.class);
   }
 }

@@ -1,45 +1,52 @@
 package com.ctrip.framework.apollo.spring.auto;
 
 import java.lang.reflect.Method;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Spring @Value method info
+ *
  * @author github.com/zhegexiaohuozi  seimimaster@gmail.com
  * @since 2018/2/6.
  */
 public class SpringMethodValue extends SpringValue {
-    private Method method;
+  private static final Logger logger = LoggerFactory.getLogger(SpringMethodValue.class);
 
-    private SpringMethodValue(String key, Object ins, Method method) {
-        this.bean = ins;
-        this.method = method;
-        this.className = ins.getClass().getName();
-        this.fieldName = method.getName() + "(*)";
-        Class<?>[] paramTps = method.getParameterTypes();
-        if (paramTps.length != 1) {
-            logger.error("invalid setter,can not update in {}.{}", className, fieldName);
-            return;
-        }
-        this.parser = findParser(paramTps[0]);
-        this.valKey = key;
-    }
+  private Method method;
+  private Object bean;
+  private String className;
+  private String fieldName;
+  private String valKey;
 
-    public static SpringMethodValue create(String key, Object ins, Method method) {
-        return new SpringMethodValue(key, ins, method);
-    }
+  private SpringMethodValue(String key, Object bean, Method method) {
+    this.bean = bean;
+    this.method = method;
+    this.className = bean.getClass().getName();
+    this.fieldName = method.getName() + "(*)";
+    Class<?>[] paramTps = method.getParameterTypes();
+    this.parser = findParser(paramTps[0]);
+    this.valKey = key;
+  }
 
-    @Override
-    public void updateVal(String newVal) {
-        try {
-            Class<?>[] paramTps = method.getParameterTypes();
-            if (paramTps.length != 1) {
-                logger.error("invalid setter ,can not update key={} val={} in {}.{}", valKey, newVal, className, fieldName);
-                return;
-            }
-            method.invoke(bean, parseVal(newVal));
-            logger.info("auto update apollo changed value, key={}, newVal={} in {}.{}", valKey, newVal, className, fieldName);
-        } catch (Exception e) {
-            logger.error("update field {}.{} fail with new val={},key = {}, msg = {}", className, fieldName, newVal, valKey, e.getMessage());
-        }
+  public static SpringMethodValue create(String key, Object bean, Method method) {
+    if (method.getParameterTypes().length != 1) {
+      logger.error("ignore @Value setter {}.{}, expecting one parameter, actual {} parameters",
+          bean.getClass().getName(), method.getName(), method.getParameterTypes().length);
+      return null;
     }
+    return new SpringMethodValue(key, bean, method);
+  }
+
+  @Override
+  public void updateVal(String newVal) {
+    try {
+      method.invoke(bean, parseVal(newVal));
+      logger.info("auto update apollo changed value successfully, key={}, newVal={} for field {}.{}",
+          valKey, newVal, className, fieldName);
+    } catch (Throwable ex) {
+      logger.error("auto update apollo changed value failed, key={}, newVal={} for field {}.{}",
+          valKey, newVal, className, fieldName, ex);
+    }
+  }
 }
