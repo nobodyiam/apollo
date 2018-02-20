@@ -1,4 +1,4 @@
-package com.ctrip.framework.apollo.spring.auto;
+package com.ctrip.framework.apollo.spring.property;
 
 import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.model.ConfigChange;
@@ -31,7 +31,7 @@ public class SpringValueTest {
         Field field = ConfigChange.class.getDeclaredField("newValue");
         field.setAccessible(true);
         testTarget = new ConfigChange("test","test","testO","testN", PropertyChangeType.MODIFIED);
-        defaultVal = SpringFieldValue.create("test",testTarget,field);
+        defaultVal = SpringValueFactory.create("test",testTarget,field);
     }
 
     /**

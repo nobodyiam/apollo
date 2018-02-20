@@ -1,19 +1,19 @@
 package com.ctrip.framework.apollo.spring.annotation;
 
 import com.ctrip.framework.apollo.ConfigChangeListener;
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.model.ConfigChange;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
-import com.ctrip.framework.apollo.spring.auto.SpringFieldValue;
-import com.ctrip.framework.apollo.spring.auto.SpringMethodValue;
-import com.ctrip.framework.apollo.spring.auto.SpringValue;
 import com.ctrip.framework.apollo.spring.config.ConfigPropertySource;
-import com.ctrip.framework.foundation.Foundation;
+import com.ctrip.framework.apollo.spring.property.SpringValue;
+import com.ctrip.framework.apollo.spring.property.SpringValueFactory;
+import com.ctrip.framework.apollo.util.ConfigUtil;
+import com.google.common.base.Strings;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -23,8 +23,13 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.TypeConverter;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
@@ -41,22 +46,26 @@ import org.springframework.util.ReflectionUtils;
  * @author github.com/zhegexiaohuozi  seimimaster@gmail.com
  * @since 2017/12/20.
  */
-public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered, EnvironmentAware {
+public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered, EnvironmentAware,
+    BeanFactoryAware {
 
   private static final Logger logger = LoggerFactory.getLogger(SpringValueProcessor.class);
-  private static final Pattern pattern = Pattern.compile("\\$\\{([^:]*)\\}:?(.*)");
+  private static final Pattern pattern = Pattern.compile("\\$\\{([^:]*)}:?(.*)");
 
   private final Multimap<String, SpringValue> monitor = LinkedListMultimap.create();
   private ConfigurableEnvironment environment;
+  private ConfigurableBeanFactory beanFactory;
+  private final boolean autoUpdateInjectedSpringProperties;
 
-  public boolean enable() {
-    return Foundation.app().isAutoUpdateEnable();
+  public SpringValueProcessor() {
+    autoUpdateInjectedSpringProperties = ApolloInjector.getInstance(ConfigUtil.class)
+        .isAutoUpdateInjectedSpringProperties();
   }
 
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName)
       throws BeansException {
-    if (enable()) {
+    if (autoUpdateInjectedSpringProperties) {
       Class clazz = bean.getClass();
       processFields(bean, findAllField(clazz));
       processMethods(bean, findAllMethod(clazz));
@@ -76,16 +85,15 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
       if (value == null) {
         continue;
       }
-      Matcher matcher = pattern.matcher(value.value());
-      if (matcher.matches()) {
-        String key = matcher.group(1);
-        SpringValue springValue = SpringFieldValue.create(key, bean, field);
-        if (springValue == null) {
-          continue;
-        }
-        monitor.put(key, springValue);
-        logger.info("Listening apollo key = {}", key);
+      String key = extractPropertyKey(value.value());
+
+      if (Strings.isNullOrEmpty(key)) {
+        continue;
       }
+
+      SpringValue springValue = SpringValueFactory.create(key, bean, field);
+      monitor.put(key, springValue);
+      logger.debug("Monitoring {}", springValue);
     }
   }
 
@@ -96,17 +104,32 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
       if (value == null) {
         continue;
       }
-      Matcher matcher = pattern.matcher(value.value());
-      if (matcher.matches()) {
-        String key = matcher.group(1);
-        SpringValue springValue = SpringMethodValue.create(key, bean, method);
-        if (springValue == null) {
-          continue;
-        }
-        monitor.put(key, springValue);
-        logger.info("Listening apollo key = {}", key);
+      if (method.getParameterTypes().length != 1) {
+        logger.error("Ignore @Value setter {}.{}, expecting one parameter, actual {} parameters",
+            bean.getClass().getName(), method.getName(), method.getParameterTypes().length);
+        continue;
       }
+
+      String key = extractPropertyKey(value.value());
+
+      if (Strings.isNullOrEmpty(key)) {
+        continue;
+      }
+
+      SpringValue springValue = SpringValueFactory.create(key, bean, method);
+      monitor.put(key, springValue);
+      logger.debug("Monitoring {}", springValue);
     }
+  }
+
+  String extractPropertyKey(String propertyString) {
+    Matcher matcher = pattern.matcher(propertyString);
+
+    if (matcher.matches()) {
+      return matcher.group(1);
+    }
+
+    return null;
   }
 
   @Override
@@ -140,7 +163,7 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
   @Override
   public void setEnvironment(Environment env) {
     this.environment = (ConfigurableEnvironment) env;
-    if (enable()) {
+    if (autoUpdateInjectedSpringProperties) {
       registerConfigChangeListener();
     }
   }
@@ -153,27 +176,28 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
         if (CollectionUtils.isEmpty(keys)) {
           return;
         }
-        for (String k : keys) {
-          ConfigChange configChange = changeEvent.getChange(k);
-          if (!Objects.equals(environment.getProperty(k), configChange.getNewValue())) {
-            continue;
-          }
-          Collection<SpringValue> targetValues = monitor.get(k);
+        for (String key : keys) {
+          // 1. check whether the changed key is relevant
+          Collection<SpringValue> targetValues = monitor.get(key);
           if (targetValues == null || targetValues.isEmpty()) {
             continue;
           }
+
+          // 2. check whether the value is really changed or not (since spring property sources have hierarchies)
+          ConfigChange configChange = changeEvent.getChange(key);
+          if (!Objects.equals(environment.getProperty(key), configChange.getNewValue())) {
+            continue;
+          }
+
+          // 3. update the value
           for (SpringValue val : targetValues) {
-            val.updateVal(environment.getProperty(k));
+            val.updateVal(environment.getProperty(key));
           }
         }
       }
     };
 
-    Iterator<PropertySource<?>> propertySourceIterator = environment.getPropertySources()
-        .iterator();
-
-    while (propertySourceIterator.hasNext()) {
-      PropertySource<?> propertySource = propertySourceIterator.next();
+    for (PropertySource<?> propertySource : environment.getPropertySources()) {
       if (!(propertySource instanceof CompositePropertySource)) {
         continue;
       }
@@ -185,5 +209,10 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
         }
       }
     }
+  }
+
+  @Override
+  public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+    this.beanFactory = (ConfigurableBeanFactory) beanFactory;
   }
 }

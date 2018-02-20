@@ -73,4 +73,10 @@ public interface Functions {
       }
     }
   };
+  Function<String, String> NO_OP_FUNCTION = new Function<String, String>() {
+    @Override
+    public String apply(String input) {
+      return input;
+    }
+  };
 }
