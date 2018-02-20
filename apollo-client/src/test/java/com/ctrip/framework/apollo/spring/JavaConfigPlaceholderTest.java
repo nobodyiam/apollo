@@ -7,15 +7,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
@@ -148,6 +152,25 @@ public class JavaConfigPlaceholderTest extends AbstractSpringIntegrationTest {
     AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig5.class);
 
     TestJavaConfigBean2 bean = context.getBean(TestJavaConfigBean2.class);
+
+    assertEquals(someTimeout, bean.getTimeout());
+    assertEquals(someBatch, bean.getBatch());
+  }
+
+  @Test
+  public void testApplicationPropertySourceWithValueInjectedAsConstructorArgs() throws Exception {
+    int someTimeout = 1000;
+    int someBatch = 2000;
+
+    Config config = mock(Config.class);
+    when(config.getProperty(eq(TIMEOUT_PROPERTY), anyString())).thenReturn(String.valueOf(someTimeout));
+    when(config.getProperty(eq(BATCH_PROPERTY), anyString())).thenReturn(String.valueOf(someBatch));
+
+    mockConfig(ConfigConsts.NAMESPACE_APPLICATION, config);
+
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig7.class);
+
+    TestJavaConfigBean3 bean = context.getBean(TestJavaConfigBean3.class);
 
     assertEquals(someTimeout, bean.getTimeout());
     assertEquals(someBatch, bean.getBatch());
@@ -324,6 +347,14 @@ public class JavaConfigPlaceholderTest extends AbstractSpringIntegrationTest {
   }
 
   @Configuration
+  @ComponentScan(
+      includeFilters = {@Filter(type = FilterType.ANNOTATION, value = {Component.class})},
+      excludeFilters = {@Filter(type = FilterType.ANNOTATION, value = {Configuration.class})})
+  @EnableApolloConfig
+  static class AppConfig7 {
+  }
+
+  @Configuration
   @EnableApolloConfig
   static class NestedPropertyConfig1 {
     @Bean
@@ -332,8 +363,6 @@ public class JavaConfigPlaceholderTest extends AbstractSpringIntegrationTest {
     }
   }
 
-
-  @Component
   static class TestJavaConfigBean {
     @Value("${timeout:100}")
     private int timeout;
@@ -371,6 +400,27 @@ public class JavaConfigPlaceholderTest extends AbstractSpringIntegrationTest {
 
     public void setBatch(int batch) {
       this.batch = batch;
+    }
+  }
+
+  @Component
+  static class TestJavaConfigBean3 {
+    private final int timeout;
+    private final int batch;
+
+    @Autowired
+    public TestJavaConfigBean3(@Value("${timeout:100}") int timeout,
+        @Value("${batch:200}") int batch) {
+      this.timeout = timeout;
+      this.batch = batch;
+    }
+
+    public int getTimeout() {
+      return timeout;
+    }
+
+    public int getBatch() {
+      return batch;
     }
   }
 

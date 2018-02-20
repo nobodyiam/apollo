@@ -6,7 +6,6 @@ import com.ctrip.framework.apollo.model.ConfigChange;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.ctrip.framework.apollo.spring.config.ConfigPropertySource;
 import com.ctrip.framework.apollo.spring.property.SpringValue;
-import com.ctrip.framework.apollo.spring.property.SpringValueFactory;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.LinkedListMultimap;
@@ -18,8 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -29,7 +26,6 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
@@ -39,6 +35,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.SystemPropertyUtils;
 
 /**
  * Spring value processor of field or method which has @Value.
@@ -50,16 +47,31 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
     BeanFactoryAware {
 
   private static final Logger logger = LoggerFactory.getLogger(SpringValueProcessor.class);
-  private static final Pattern pattern = Pattern.compile("\\$\\{([^:]*)}:?(.*)");
 
   private final Multimap<String, SpringValue> monitor = LinkedListMultimap.create();
+  private final boolean autoUpdateInjectedSpringProperties;
+
   private ConfigurableEnvironment environment;
   private ConfigurableBeanFactory beanFactory;
-  private final boolean autoUpdateInjectedSpringProperties;
+  private TypeConverter typeConverter;
 
   public SpringValueProcessor() {
     autoUpdateInjectedSpringProperties = ApolloInjector.getInstance(ConfigUtil.class)
         .isAutoUpdateInjectedSpringProperties();
+  }
+
+  @Override
+  public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+    this.beanFactory = (ConfigurableBeanFactory) beanFactory;
+    this.typeConverter = this.beanFactory.getTypeConverter();
+  }
+
+  @Override
+  public void setEnvironment(Environment env) {
+    this.environment = (ConfigurableEnvironment) env;
+    if (autoUpdateInjectedSpringProperties) {
+      registerConfigChangeListener();
+    }
   }
 
   @Override
@@ -91,7 +103,7 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
         continue;
       }
 
-      SpringValue springValue = SpringValueFactory.create(key, bean, field);
+      SpringValue springValue = new SpringValue(key, value.value(), bean, field);
       monitor.put(key, springValue);
       logger.debug("Monitoring {}", springValue);
     }
@@ -105,7 +117,7 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
         continue;
       }
       if (method.getParameterTypes().length != 1) {
-        logger.error("Ignore @Value setter {}.{}, expecting one parameter, actual {} parameters",
+        logger.error("Ignore @Value setter {}.{}, expecting 1 parameter, actual {} parameters",
             bean.getClass().getName(), method.getName(), method.getParameterTypes().length);
         continue;
       }
@@ -116,26 +128,33 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
         continue;
       }
 
-      SpringValue springValue = SpringValueFactory.create(key, bean, method);
+      SpringValue springValue = new SpringValue(key, value.value(), bean, method);
       monitor.put(key, springValue);
       logger.debug("Monitoring {}", springValue);
     }
   }
 
   String extractPropertyKey(String propertyString) {
-    Matcher matcher = pattern.matcher(propertyString);
-
-    if (matcher.matches()) {
-      return matcher.group(1);
+    if (!propertyString.startsWith(SystemPropertyUtils.PLACEHOLDER_PREFIX) ||
+        !propertyString.endsWith(SystemPropertyUtils.PLACEHOLDER_SUFFIX)) {
+      return null;
     }
 
-    return null;
-  }
+    int startIndex = propertyString.indexOf(SystemPropertyUtils.PLACEHOLDER_PREFIX);
+    int endIndex = propertyString.indexOf(SystemPropertyUtils.VALUE_SEPARATOR);
+    if (endIndex == -1) {
+      endIndex = propertyString.lastIndexOf(SystemPropertyUtils.PLACEHOLDER_SUFFIX);
+    }
 
-  @Override
-  public int getOrder() {
-    //make it as late as possible
-    return Ordered.LOWEST_PRECEDENCE;
+    String propertyKey = propertyString
+        .substring(startIndex + SystemPropertyUtils.PLACEHOLDER_PREFIX.length(), endIndex);
+
+    // we don't support nested property key
+    if (propertyKey.contains(SystemPropertyUtils.PLACEHOLDER_PREFIX)) {
+      return null;
+    }
+
+    return propertyKey;
   }
 
   private List<Field> findAllField(Class clazz) {
@@ -158,14 +177,6 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
       }
     });
     return res;
-  }
-
-  @Override
-  public void setEnvironment(Environment env) {
-    this.environment = (ConfigurableEnvironment) env;
-    if (autoUpdateInjectedSpringProperties) {
-      registerConfigChangeListener();
-    }
   }
 
   private void registerConfigChangeListener() {
@@ -191,7 +202,7 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
 
           // 3. update the value
           for (SpringValue val : targetValues) {
-            val.updateVal(environment.getProperty(key));
+            updateSpringValue(val);
           }
         }
       }
@@ -211,8 +222,31 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
     }
   }
 
+  private void updateSpringValue(SpringValue springValue) {
+    try {
+      String strVal = beanFactory.resolveEmbeddedValue(springValue.getPlaceholder());
+      Object value;
+
+      if (springValue.isField()) {
+        value = this.typeConverter
+            .convertIfNecessary(strVal, springValue.getTargetType(), springValue.getField());
+      } else {
+        value = this.typeConverter.convertIfNecessary(strVal, springValue.getTargetType(),
+            springValue.getMethodParameter());
+      }
+
+      springValue.update(value);
+
+      logger.debug("Auto update apollo changed value successfully, new value: {}, {}", strVal,
+          springValue.toString());
+    } catch (Throwable ex) {
+      logger.error("Auto update apollo changed value failed, {}", springValue.toString(), ex);
+    }
+  }
+
   @Override
-  public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-    this.beanFactory = (ConfigurableBeanFactory) beanFactory;
+  public int getOrder() {
+    //make it as late as possible
+    return Ordered.LOWEST_PRECEDENCE;
   }
 }

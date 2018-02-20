@@ -1,85 +1,93 @@
 package com.ctrip.framework.apollo.spring.property;
 
-import com.ctrip.framework.apollo.util.function.Functions;
-import com.google.common.base.Function;
-import java.util.Date;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.MethodParameter;
 
 /**
- * Spring @Value field and method common info
+ * Spring @Value method info
  *
  * @author github.com/zhegexiaohuozi  seimimaster@gmail.com
- * @since 2017/12/20.
+ * @since 2018/2/6.
  */
-public abstract class SpringValue {
+public class SpringValue {
 
   private static final Logger logger = LoggerFactory.getLogger(SpringValue.class);
 
-  private volatile Function<String, ?> parser;
+  private MethodParameter methodParameter;
+  private Field field;
+  private Object bean;
+  private String key;
+  private String placeholder;
+  private Class<?> targetType;
 
-  public synchronized void updateVal(String newVal) {
-    Object parsedValue;
-    try {
-      parsedValue = parseVal(newVal);
-    } catch (Throwable ex) {
-      logger.error("Parse apollo changed value failed, new value: {}, {}", newVal,
-          this.toString(), ex);
-      return;
-    }
+  public SpringValue(String key, String placeholder, Object bean, Field field) {
+    this.bean = bean;
+    this.field = field;
+    this.key = key;
+    this.placeholder = placeholder;
+    this.targetType = field.getType();
+  }
 
-    try {
-      doUpdateVal(parsedValue);
-      logger.debug("Auto update apollo changed value successfully, new value: {}, {}", newVal,
-          this.toString());
-    } catch (Throwable ex) {
-      logger.error("Auto update apollo changed value failed, new value: {}, {}", newVal,
-          this.toString(), ex);
+  public SpringValue(String key, String placeholder, Object bean, Method method) {
+    this.bean = bean;
+    this.methodParameter = new MethodParameter(method, 0);
+    this.key = key;
+    this.placeholder = placeholder;
+    Class<?>[] paramTps = method.getParameterTypes();
+    this.targetType = paramTps[0];
+  }
+
+  public void update(Object newVal) throws IllegalAccessException, InvocationTargetException {
+    if (isField()) {
+      injectField(newVal);
+    } else {
+      injectMethod(newVal);
     }
   }
 
-  protected abstract void doUpdateVal(Object newVal) throws Exception;
-
-  protected abstract Class<?> getTargetType();
-
-  private Object parseVal(String newVal) {
-    // It's OK to initialize parser multiple times, so no need to lock and check
-    if (parser == null) {
-      parser = findParser(getTargetType());
-    }
-
-    return parser.apply(newVal);
+  private void injectField(Object newVal) throws IllegalAccessException {
+    boolean accessible = field.isAccessible();
+    field.setAccessible(true);
+    field.set(bean, newVal);
+    field.setAccessible(accessible);
   }
 
-  private Function<String, ?> findParser(Class<?> targetType) {
-    if (targetType.equals(String.class)) {
-      return Functions.NO_OP_FUNCTION;
-    }
-    if (targetType.equals(int.class) || targetType.equals(Integer.class)) {
-      return Functions.TO_INT_FUNCTION;
-    }
-    if (targetType.equals(long.class) || targetType.equals(Long.class)) {
-      return Functions.TO_LONG_FUNCTION;
-    }
-    if (targetType.equals(boolean.class) || targetType.equals(Boolean.class)) {
-      return Functions.TO_BOOLEAN_FUNCTION;
-    }
-    if (targetType.equals(Date.class)) {
-      return Functions.TO_DATE_FUNCTION;
-    }
-    if (targetType.equals(short.class) || targetType.equals(Short.class)) {
-      return Functions.TO_SHORT_FUNCTION;
-    }
-    if (targetType.equals(double.class) || targetType.equals(Double.class)) {
-      return Functions.TO_DOUBLE_FUNCTION;
-    }
-    if (targetType.equals(float.class) || targetType.equals(Float.class)) {
-      return Functions.TO_FLOAT_FUNCTION;
-    }
-    if (targetType.equals(byte.class) || targetType.equals(Byte.class)) {
-      return Functions.TO_BYTE_FUNCTION;
-    }
-    return Functions.NO_OP_FUNCTION;
+  private void injectMethod(Object newVal)
+      throws InvocationTargetException, IllegalAccessException {
+    methodParameter.getMethod().invoke(bean, newVal);
   }
 
+  public Class<?> getTargetType() {
+    return targetType;
+  }
+
+  public String getPlaceholder() {
+    return this.placeholder;
+  }
+
+  public MethodParameter getMethodParameter() {
+    return methodParameter;
+  }
+
+  public boolean isField() {
+    return this.field != null;
+  }
+
+  public Field getField() {
+    return field;
+  }
+
+  @Override
+  public String toString() {
+    if (isField()) {
+      return String
+          .format("key: %s, field: %s.%s", key, bean.getClass().getName(), field.getName());
+    }
+    return String.format("key: %s, method: %s.%s", key, bean.getClass().getName(),
+        methodParameter.getMember().getName());
+  }
 }
