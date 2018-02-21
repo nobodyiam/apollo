@@ -5,23 +5,15 @@ import static org.junit.Assert.assertEquals;
 import com.ctrip.framework.apollo.build.MockInjector;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.internals.SimpleConfig;
-import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
+import com.ctrip.framework.apollo.spring.XmlConfigPlaceholderTest.TestXmlBean;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.stereotype.Component;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrationTest {
-
+public class XmlConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrationTest {
   private static final String TIMEOUT_PROPERTY = "timeout";
   private static final int DEFAULT_TIMEOUT = 100;
   private static final String BATCH_PROPERTY = "batch";
@@ -40,10 +32,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-        AppConfig1.class);
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/XmlConfigPlaceholderTest1.xml");
 
-    TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
+    TestXmlBean bean = context.getBean(TestXmlBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(initialBatch, bean.getBatch());
@@ -76,10 +67,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-        AppConfig1.class);
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/XmlConfigPlaceholderTest1.xml");
 
-    TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
+    TestXmlBean bean = context.getBean(TestXmlBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(initialBatch, bean.getBatch());
@@ -111,10 +101,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
         applicationProperties);
     SimpleConfig fxApolloConfig = prepareConfig(FX_APOLLO_NAMESPACE, fxApolloProperties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-        AppConfig2.class);
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/XmlConfigPlaceholderTest3.xml");
 
-    TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
+    TestXmlBean bean = context.getBean(TestXmlBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(initialBatch, bean.getBatch());
@@ -157,10 +146,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
         applicationProperties);
     SimpleConfig fxApolloConfig = prepareConfig(FX_APOLLO_NAMESPACE, fxApolloProperties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-        AppConfig2.class);
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/XmlConfigPlaceholderTest3.xml");
 
-    TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
+    TestXmlBean bean = context.getBean(TestXmlBean.class);
 
     assertEquals(someTimeout, bean.getTimeout());
     assertEquals(someBatch, bean.getBatch());
@@ -188,10 +176,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     SimpleConfig applicationConfig = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION,
         applicationProperties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-        AppConfig1.class);
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/XmlConfigPlaceholderTest1.xml");
 
-    TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
+    TestXmlBean bean = context.getBean(TestXmlBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(DEFAULT_BATCH, bean.getBatch());
@@ -224,10 +211,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     SimpleConfig applicationConfig = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION,
         applicationProperties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-        AppConfig1.class);
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/XmlConfigPlaceholderTest1.xml");
 
-    TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
+    TestXmlBean bean = context.getBean(TestXmlBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(DEFAULT_BATCH, bean.getBatch());
@@ -254,10 +240,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-        AppConfig1.class);
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/XmlConfigPlaceholderTest1.xml");
 
-    TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
+    TestXmlBean bean = context.getBean(TestXmlBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(initialBatch, bean.getBatch());
@@ -283,10 +268,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-        AppConfig6.class);
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/XmlConfigPlaceholderTest7.xml");
 
-    TestJavaConfigBean5 bean = context.getBean(TestJavaConfigBean5.class);
+    TestXmlBean bean = context.getBean(TestXmlBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(initialBatch, bean.getBatch());
@@ -313,10 +297,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-        AppConfig1.class);
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/XmlConfigPlaceholderTest1.xml");
 
-    TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
+    TestXmlBean bean = context.getBean(TestXmlBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(initialBatch, bean.getBatch());
@@ -333,38 +316,6 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   }
 
   @Test
-  public void testAutoUpdateWithValueInjectedAsParameter() throws Exception {
-    int initialTimeout = 1000;
-    int initialBatch = 2000;
-    int newTimeout = 1001;
-    int newBatch = 2001;
-
-    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
-        BATCH_PROPERTY, String.valueOf(initialBatch));
-
-    SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
-
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-        AppConfig3.class);
-
-    TestJavaConfigBean2 bean = context.getBean(TestJavaConfigBean2.class);
-
-    assertEquals(initialTimeout, bean.getTimeout());
-    assertEquals(initialBatch, bean.getBatch());
-
-    Properties newProperties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout),
-        BATCH_PROPERTY, String.valueOf(newBatch));
-
-    config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
-
-    TimeUnit.MILLISECONDS.sleep(50);
-
-    // Does not support this scenario
-    assertEquals(initialTimeout, bean.getTimeout());
-    assertEquals(initialBatch, bean.getBatch());
-  }
-
-  @Test
   public void testAutoUpdateWithValueInjectedAsConstructorArgs() throws Exception {
     int initialTimeout = 1000;
     int initialBatch = 2000;
@@ -376,10 +327,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-        AppConfig4.class);
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/XmlConfigPlaceholderTest8.xml");
 
-    TestJavaConfigBean3 bean = context.getBean(TestJavaConfigBean3.class);
+    TestXmlBeanWithConstructorArgs bean = context.getBean(TestXmlBeanWithConstructorArgs.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(initialBatch, bean.getBatch());
@@ -397,7 +347,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   }
 
   @Test
-  public void testAutoUpdateWithInvalidSetter() throws Exception {
+  public void testAutoUpdateWithValueAndProperty() throws Exception {
     int initialTimeout = 1000;
     int initialBatch = 2000;
     int newTimeout = 1001;
@@ -408,10 +358,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-        AppConfig5.class);
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/XmlConfigPlaceholderTest9.xml");
 
-    TestJavaConfigBean4 bean = context.getBean(TestJavaConfigBean4.class);
+    TestXmlBeanWithInjectedValue bean = context.getBean(TestXmlBeanWithInjectedValue.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(initialBatch, bean.getBatch());
@@ -423,124 +372,15 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     TimeUnit.MILLISECONDS.sleep(50);
 
-    // Does not support this scenario
-    assertEquals(initialTimeout, bean.getTimeout());
-    assertEquals(initialBatch, bean.getBatch());
+    assertEquals(newTimeout, bean.getTimeout());
+    assertEquals(newBatch, bean.getBatch());
   }
 
-  @Configuration
-  @EnableApolloConfig
-  static class AppConfig1 {
-    @Bean
-    TestJavaConfigBean testJavaConfigBean() {
-      return new TestJavaConfigBean();
-    }
-  }
-
-  @Configuration
-  @EnableApolloConfig({"application", "FX.apollo"})
-  static class AppConfig2 {
-    @Bean
-    TestJavaConfigBean testJavaConfigBean() {
-      return new TestJavaConfigBean();
-    }
-  }
-
-  @Configuration
-  @EnableApolloConfig
-  static class AppConfig3 {
-    /**
-     * This case won't get auto updated
-     */
-    @Bean
-    TestJavaConfigBean2 testJavaConfigBean2(@Value("${timeout:100}") int timeout, @Value("${batch:200}") int batch) {
-      TestJavaConfigBean2 bean = new TestJavaConfigBean2();
-
-      bean.setTimeout(timeout);
-      bean.setBatch(batch);
-
-      return bean;
-    }
-  }
-
-  @Configuration
-  @ComponentScan(
-      includeFilters = {@Filter(type = FilterType.ANNOTATION, value = {Component.class})},
-      excludeFilters = {@Filter(type = FilterType.ANNOTATION, value = {Configuration.class})})
-  @EnableApolloConfig
-  static class AppConfig4 {
-  }
-
-  @Configuration
-  @EnableApolloConfig
-  static class AppConfig5 {
-    @Bean
-    TestJavaConfigBean4 testJavaConfigBean() {
-      return new TestJavaConfigBean4();
-    }
-  }
-
-  @Configuration
-  @EnableApolloConfig
-  static class AppConfig6 {
-    @Bean
-    TestJavaConfigBean5 testJavaConfigBean() {
-      return new TestJavaConfigBean5();
-    }
-  }
-
-  static class TestJavaConfigBean {
-
-    @Value("${timeout:100}")
-    private int timeout;
-    private int batch;
-
-    @Value("${batch:200}")
-    public void setBatch(int batch) {
-      this.batch = batch;
-    }
-
-    public int getTimeout() {
-      return timeout;
-    }
-
-    public int getBatch() {
-      return batch;
-    }
-  }
-
-  static class TestJavaConfigBean2 {
-    private int timeout;
-    private int batch;
-
-    public int getTimeout() {
-      return timeout;
-    }
-
-    public void setTimeout(int timeout) {
-      this.timeout = timeout;
-    }
-
-    public int getBatch() {
-      return batch;
-    }
-
-    public void setBatch(int batch) {
-      this.batch = batch;
-    }
-  }
-
-  /**
-   * This case won't get auto updated
-   */
-  @Component
-  static class TestJavaConfigBean3 {
+  public static class TestXmlBeanWithConstructorArgs {
     private final int timeout;
     private final int batch;
 
-    @Autowired
-    public TestJavaConfigBean3(@Value("${timeout:100}") int timeout,
-        @Value("${batch:200}") int batch) {
+    public TestXmlBeanWithConstructorArgs(int timeout, int batch) {
       this.timeout = timeout;
       this.batch = batch;
     }
@@ -554,36 +394,11 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     }
   }
 
-  /**
-   * This case won't get auto updated
-   */
-  static class TestJavaConfigBean4 {
-
-    private int timeout;
-    private int batch;
-
-    @Value("${batch:200}")
-    public void setValues(int batch, @Value("${timeout:100}") int timeout) {
-      this.batch = batch;
-      this.timeout = timeout;
-    }
-
-    public int getTimeout() {
-      return timeout;
-    }
-
-    public int getBatch() {
-      return batch;
-    }
-  }
-
-  static class TestJavaConfigBean5 {
-
+  public static class TestXmlBeanWithInjectedValue {
     @Value("${timeout}")
     private int timeout;
     private int batch;
 
-    @Value("${batch}")
     public void setBatch(int batch) {
       this.batch = batch;
     }

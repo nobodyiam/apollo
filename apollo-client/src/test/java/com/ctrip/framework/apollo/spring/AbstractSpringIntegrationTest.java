@@ -1,8 +1,16 @@
 package com.ctrip.framework.apollo.spring;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import com.ctrip.framework.apollo.core.ConfigConsts;
+import com.ctrip.framework.apollo.internals.ConfigRepository;
+import com.ctrip.framework.apollo.internals.SimpleConfig;
+import com.ctrip.framework.apollo.util.ConfigUtil;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.util.ReflectionUtils;
@@ -45,6 +53,33 @@ public abstract class AbstractSpringIntegrationTest {
     doTearDown();
   }
 
+  protected SimpleConfig prepareConfig(String namespaceName, Properties properties) {
+    ConfigRepository configRepository = mock(ConfigRepository.class);
+
+    when(configRepository.getConfig()).thenReturn(properties);
+
+    SimpleConfig config = new SimpleConfig(ConfigConsts.NAMESPACE_APPLICATION, configRepository);
+
+    mockConfig(namespaceName, config);
+
+    return config;
+  }
+
+  protected Properties assembleProperties(String key, String value) {
+    Properties properties = new Properties();
+    properties.setProperty(key, value);
+
+    return properties;
+  }
+
+  protected Properties assembleProperties(String key, String value, String key2, String value2) {
+    Properties properties = new Properties();
+    properties.setProperty(key, value);
+    properties.setProperty(key2, value2);
+
+    return properties;
+  }
+
   protected static void mockConfig(String namespace, Config config) {
     CONFIG_REGISTRY.put(namespace, config);
   }
@@ -62,7 +97,7 @@ public abstract class AbstractSpringIntegrationTest {
     CONFIG_REGISTRY.clear();
   }
 
-  public static class MockConfigManager implements ConfigManager {
+  private static class MockConfigManager implements ConfigManager {
 
     @Override
     public Config getConfig(String namespace) {
@@ -72,6 +107,20 @@ public abstract class AbstractSpringIntegrationTest {
     @Override
     public ConfigFile getConfigFile(String namespace, ConfigFileFormat configFileFormat) {
       return null;
+    }
+  }
+
+  protected static class MockConfigUtil extends ConfigUtil {
+
+    private boolean isAutoUpdateInjectedSpringProperties;
+
+    public void setAutoUpdateInjectedSpringProperties(boolean autoUpdateInjectedSpringProperties) {
+      isAutoUpdateInjectedSpringProperties = autoUpdateInjectedSpringProperties;
+    }
+
+    @Override
+    public boolean isAutoUpdateInjectedSpringProperties() {
+      return isAutoUpdateInjectedSpringProperties;
     }
   }
 }

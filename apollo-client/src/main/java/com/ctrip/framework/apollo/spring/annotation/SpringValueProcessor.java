@@ -6,10 +6,12 @@ import com.ctrip.framework.apollo.model.ConfigChange;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.ctrip.framework.apollo.spring.config.ConfigPropertySource;
 import com.ctrip.framework.apollo.spring.property.SpringValue;
+import com.ctrip.framework.apollo.spring.property.SpringValueDefinition;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -17,15 +19,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.PropertyValue;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.TypedStringValue;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
@@ -44,12 +55,15 @@ import org.springframework.util.SystemPropertyUtils;
  * @since 2017/12/20.
  */
 public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered, EnvironmentAware,
-    BeanFactoryAware {
+    BeanFactoryAware, BeanDefinitionRegistryPostProcessor {
 
   private static final Logger logger = LoggerFactory.getLogger(SpringValueProcessor.class);
 
   private final Multimap<String, SpringValue> monitor = LinkedListMultimap.create();
+  private final Multimap<String, SpringValueDefinition> beanName2SpringValueDefinitions =
+      LinkedListMultimap.create();
   private final boolean autoUpdateInjectedSpringProperties;
+  private AtomicBoolean configChangeListenerRegistered = new AtomicBoolean(false);
 
   private ConfigurableEnvironment environment;
   private ConfigurableBeanFactory beanFactory;
@@ -69,18 +83,32 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
   @Override
   public void setEnvironment(Environment env) {
     this.environment = (ConfigurableEnvironment) env;
+  }
+
+  @Override
+  public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
+      throws BeansException {
     if (autoUpdateInjectedSpringProperties) {
-      registerConfigChangeListener();
+      processPropertyValues(registry);
     }
+  }
+
+  @Override
+  public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+      throws BeansException {
   }
 
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName)
       throws BeansException {
     if (autoUpdateInjectedSpringProperties) {
+      if (configChangeListenerRegistered.compareAndSet(false, true)) {
+        registerConfigChangeListener();
+      }
       Class clazz = bean.getClass();
       processFields(bean, findAllField(clazz));
       processMethods(bean, findAllMethod(clazz));
+      processBeanPropertyValues(bean, beanName);
     }
     return bean;
   }
@@ -88,6 +116,30 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
   @Override
   public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
     return bean;
+  }
+
+  private void processPropertyValues(BeanDefinitionRegistry beanRegistry) {
+    String[] beanNames = beanRegistry.getBeanDefinitionNames();
+    for (String beanName : beanNames) {
+      BeanDefinition beanDefinition = beanRegistry.getBeanDefinition(beanName);
+      MutablePropertyValues mutablePropertyValues = beanDefinition.getPropertyValues();
+      List<PropertyValue> propertyValues = mutablePropertyValues.getPropertyValueList();
+      for (PropertyValue propertyValue : propertyValues) {
+        Object value = propertyValue.getValue();
+        if (!(value instanceof TypedStringValue)) {
+          continue;
+        }
+        String placeholder = ((TypedStringValue) value).getValue();
+        String key = extractPropertyKey(placeholder);
+
+        if (Strings.isNullOrEmpty(key)) {
+          continue;
+        }
+
+        beanName2SpringValueDefinitions
+            .put(beanName, new SpringValueDefinition(key, placeholder, propertyValue.getName()));
+      }
+    }
   }
 
   private void processFields(Object bean, List<Field> declaredFields) {
@@ -132,6 +184,34 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
       monitor.put(key, springValue);
       logger.debug("Monitoring {}", springValue);
     }
+  }
+
+  private void processBeanPropertyValues(Object bean, String beanName) {
+    Collection<SpringValueDefinition> propertySpringValues = beanName2SpringValueDefinitions.get(beanName);
+    if (propertySpringValues == null || propertySpringValues.isEmpty()) {
+      return;
+    }
+
+    for (SpringValueDefinition definition : propertySpringValues) {
+      try {
+        PropertyDescriptor pd = BeanUtils
+            .getPropertyDescriptor(bean.getClass(), definition.getPropertyName());
+        Method method = pd.getWriteMethod();
+        if (method == null) {
+          continue;
+        }
+        SpringValue springValue = new SpringValue(definition.getKey(), definition.getPlaceholder(),
+            bean, method);
+        monitor.put(definition.getKey(), springValue);
+        logger.debug("Monitoring {}", springValue);
+      } catch (Throwable ex) {
+        logger.error("Failed to enable auto update feature for {}.{}", bean.getClass(),
+            definition.getPropertyName());
+      }
+    }
+
+    // clear
+    beanName2SpringValueDefinitions.removeAll(beanName);
   }
 
   String extractPropertyKey(String propertyString) {
