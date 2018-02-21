@@ -38,6 +38,7 @@ import org.springframework.beans.factory.config.TypedStringValue;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.env.CompositePropertySource;
@@ -166,6 +167,10 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
       //register @Value on method
       Value value = method.getAnnotation(Value.class);
       if (value == null) {
+        continue;
+      }
+      //skip Configuration bean methods
+      if (method.getAnnotation(Bean.class) != null) {
         continue;
       }
       if (method.getParameterTypes().length != 1) {

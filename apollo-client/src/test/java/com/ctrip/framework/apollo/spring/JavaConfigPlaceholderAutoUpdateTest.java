@@ -365,6 +365,37 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   }
 
   @Test
+  public void testApplicationPropertySourceWithValueInjectedInConfiguration() throws Exception {
+    int initialTimeout = 1000;
+    int initialBatch = 2000;
+    int newTimeout = 1001;
+    int newBatch = 2001;
+
+    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+        BATCH_PROPERTY, String.valueOf(initialBatch));
+
+    SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
+
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig7.class);
+
+    TestJavaConfigBean2 bean = context.getBean(TestJavaConfigBean2.class);
+
+    assertEquals(initialTimeout, bean.getTimeout());
+    assertEquals(initialBatch, bean.getBatch());
+
+    Properties newProperties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout),
+        BATCH_PROPERTY, String.valueOf(newBatch));
+
+    config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
+
+    TimeUnit.MILLISECONDS.sleep(50);
+
+    // Does not support this scenario
+    assertEquals(initialTimeout, bean.getTimeout());
+    assertEquals(initialBatch, bean.getBatch());
+  }
+
+  @Test
   public void testAutoUpdateWithValueInjectedAsConstructorArgs() throws Exception {
     int initialTimeout = 1000;
     int initialBatch = 2000;
@@ -486,6 +517,25 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     @Bean
     TestJavaConfigBean5 testJavaConfigBean() {
       return new TestJavaConfigBean5();
+    }
+  }
+
+  @Configuration
+  @EnableApolloConfig
+  static class AppConfig7 {
+
+    @Value("${batch}")
+    private int batch;
+
+    @Bean
+    @Value("${timeout}")
+    TestJavaConfigBean2 testJavaConfigBean2(int timeout) {
+      TestJavaConfigBean2 bean = new TestJavaConfigBean2();
+
+      bean.setTimeout(timeout);
+      bean.setBatch(batch);
+
+      return bean;
     }
   }
 
