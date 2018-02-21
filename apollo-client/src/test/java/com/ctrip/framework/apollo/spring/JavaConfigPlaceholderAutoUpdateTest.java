@@ -459,6 +459,93 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     assertEquals(initialBatch, bean.getBatch());
   }
 
+  @Test
+  public void testAutoUpdateWithNestedProperty() throws Exception {
+    String a = "a";
+    String b = "b";
+    String newA = "newA";
+    int someValue = 1234;
+    int someNewValue = 2345;
+
+    Properties properties = assembleProperties(a, a, b, b, String.format("%s.%s", a, b),
+        String.valueOf(someValue));
+
+    SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
+
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        NestedPropertyConfig1.class);
+
+    TestNestedPropertyBean bean = context.getBean(TestNestedPropertyBean.class);
+
+    assertEquals(someValue, bean.getNestedProperty());
+
+    Properties newProperties = assembleProperties(a, newA, b, b, String.format("%s.%s", newA, b),
+        String.valueOf(someNewValue));
+
+    config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
+
+    TimeUnit.MILLISECONDS.sleep(50);
+
+    assertEquals(someNewValue, bean.getNestedProperty());
+  }
+
+  @Test
+  public void testAutoUpdateWithNotSupportedNestedProperty() throws Exception {
+    String a = "a";
+    String b = "b";
+    int someValue = 1234;
+    int someNewValue = 2345;
+
+    Properties properties = assembleProperties(a, a, b, b, String.format("%s.%s", a, b),
+        String.valueOf(someValue));
+
+    SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
+
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        NestedPropertyConfig1.class);
+
+    TestNestedPropertyBean bean = context.getBean(TestNestedPropertyBean.class);
+
+    assertEquals(someValue, bean.getNestedProperty());
+
+    Properties newProperties = assembleProperties(a, a, b, b, String.format("%s.%s", a, b),
+        String.valueOf(someNewValue));
+
+    config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
+
+    TimeUnit.MILLISECONDS.sleep(50);
+
+    // Does not support this scenario
+    assertEquals(someValue, bean.getNestedProperty());
+  }
+
+  @Test
+  public void testAutoUpdateWithDefaultValue() throws Exception {
+    String b = "b";
+    int someValue = 1234;
+    int someNewValue = 2345;
+
+    Properties properties = assembleProperties(b, String.valueOf(someValue));
+
+    SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
+
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        NestedPropertyConfig2.class);
+
+    TestNestedPropertyBeanWithDefaultValue bean = context.getBean(TestNestedPropertyBeanWithDefaultValue.class);
+
+    assertEquals(someValue, bean.getNestedProperty());
+
+    Properties newProperties = assembleProperties(b, String.valueOf(someNewValue));
+
+    config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
+
+    TimeUnit.MILLISECONDS.sleep(50);
+
+    // Does not support this scenario
+    assertEquals(someNewValue, bean.getNestedProperty());
+  }
+
   @Configuration
   @EnableApolloConfig
   static class AppConfig1 {
@@ -536,6 +623,24 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
       bean.setBatch(batch);
 
       return bean;
+    }
+  }
+
+  @Configuration
+  @EnableApolloConfig
+  static class NestedPropertyConfig1 {
+    @Bean
+    TestNestedPropertyBean testNestedPropertyBean() {
+      return new TestNestedPropertyBean();
+    }
+  }
+
+  @Configuration
+  @EnableApolloConfig
+  static class NestedPropertyConfig2 {
+    @Bean
+    TestNestedPropertyBeanWithDefaultValue testNestedPropertyBean() {
+      return new TestNestedPropertyBeanWithDefaultValue();
     }
   }
 
@@ -644,6 +749,26 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     public int getBatch() {
       return batch;
+    }
+  }
+
+  static class TestNestedPropertyBean {
+
+    @Value("${${a}.${b}}")
+    private int nestedProperty;
+
+    public int getNestedProperty() {
+      return nestedProperty;
+    }
+  }
+
+  static class TestNestedPropertyBeanWithDefaultValue {
+
+    @Value("${a:${b}}")
+    private int nestedProperty;
+
+    public int getNestedProperty() {
+      return nestedProperty;
     }
   }
 }

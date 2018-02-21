@@ -80,6 +80,17 @@ public abstract class AbstractSpringIntegrationTest {
     return properties;
   }
 
+  protected Properties assembleProperties(String key, String value, String key2, String value2,
+      String key3, String value3) {
+
+    Properties properties = new Properties();
+    properties.setProperty(key, value);
+    properties.setProperty(key2, value2);
+    properties.setProperty(key3, value3);
+
+    return properties;
+  }
+
   protected static void mockConfig(String namespace, Config config) {
     CONFIG_REGISTRY.put(namespace, config);
   }

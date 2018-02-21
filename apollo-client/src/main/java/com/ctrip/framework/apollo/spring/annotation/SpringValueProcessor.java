@@ -5,12 +5,14 @@ import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.model.ConfigChange;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.ctrip.framework.apollo.spring.config.ConfigPropertySource;
+import com.ctrip.framework.apollo.spring.property.PlaceholderHelper;
 import com.ctrip.framework.apollo.spring.property.SpringValue;
 import com.ctrip.framework.apollo.spring.property.SpringValueDefinition;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.google.common.base.Strings;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -19,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +50,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.util.SystemPropertyUtils;
 
 /**
@@ -63,8 +67,9 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
   private final Multimap<String, SpringValue> monitor = LinkedListMultimap.create();
   private final Multimap<String, SpringValueDefinition> beanName2SpringValueDefinitions =
       LinkedListMultimap.create();
+  private final AtomicBoolean configChangeListenerRegistered = new AtomicBoolean(false);
   private final boolean autoUpdateInjectedSpringProperties;
-  private AtomicBoolean configChangeListenerRegistered = new AtomicBoolean(false);
+  private final PlaceholderHelper placeholderHelper;
 
   private ConfigurableEnvironment environment;
   private ConfigurableBeanFactory beanFactory;
@@ -73,6 +78,7 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
   public SpringValueProcessor() {
     autoUpdateInjectedSpringProperties = ApolloInjector.getInstance(ConfigUtil.class)
         .isAutoUpdateInjectedSpringProperties();
+    placeholderHelper = ApolloInjector.getInstance(PlaceholderHelper.class);
   }
 
   @Override
@@ -131,14 +137,16 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
           continue;
         }
         String placeholder = ((TypedStringValue) value).getValue();
-        String key = extractPropertyKey(placeholder);
+        Set<String> keys = placeholderHelper.extractPlaceholderKeys(placeholder);
 
-        if (Strings.isNullOrEmpty(key)) {
+        if (keys.isEmpty()) {
           continue;
         }
 
-        beanName2SpringValueDefinitions
-            .put(beanName, new SpringValueDefinition(key, placeholder, propertyValue.getName()));
+        for (String key : keys) {
+          beanName2SpringValueDefinitions
+              .put(beanName, new SpringValueDefinition(key, placeholder, propertyValue.getName()));
+        }
       }
     }
   }
@@ -150,15 +158,17 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
       if (value == null) {
         continue;
       }
-      String key = extractPropertyKey(value.value());
+      Set<String> keys = placeholderHelper.extractPlaceholderKeys(value.value());
 
-      if (Strings.isNullOrEmpty(key)) {
+      if (keys.isEmpty()) {
         continue;
       }
 
-      SpringValue springValue = new SpringValue(key, value.value(), bean, field);
-      monitor.put(key, springValue);
-      logger.debug("Monitoring {}", springValue);
+      for (String key : keys) {
+        SpringValue springValue = new SpringValue(key, value.value(), bean, field);
+        monitor.put(key, springValue);
+        logger.debug("Monitoring {}", springValue);
+      }
     }
   }
 
@@ -179,20 +189,23 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
         continue;
       }
 
-      String key = extractPropertyKey(value.value());
+      Set<String> keys = placeholderHelper.extractPlaceholderKeys(value.value());
 
-      if (Strings.isNullOrEmpty(key)) {
+      if (keys.isEmpty()) {
         continue;
       }
 
-      SpringValue springValue = new SpringValue(key, value.value(), bean, method);
-      monitor.put(key, springValue);
-      logger.debug("Monitoring {}", springValue);
+      for (String key : keys) {
+        SpringValue springValue = new SpringValue(key, value.value(), bean, method);
+        monitor.put(key, springValue);
+        logger.debug("Monitoring {}", springValue);
+      }
     }
   }
 
   private void processBeanPropertyValues(Object bean, String beanName) {
-    Collection<SpringValueDefinition> propertySpringValues = beanName2SpringValueDefinitions.get(beanName);
+    Collection<SpringValueDefinition> propertySpringValues = beanName2SpringValueDefinitions
+        .get(beanName);
     if (propertySpringValues == null || propertySpringValues.isEmpty()) {
       return;
     }
@@ -217,29 +230,6 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
 
     // clear
     beanName2SpringValueDefinitions.removeAll(beanName);
-  }
-
-  String extractPropertyKey(String propertyString) {
-    if (!propertyString.startsWith(SystemPropertyUtils.PLACEHOLDER_PREFIX) ||
-        !propertyString.endsWith(SystemPropertyUtils.PLACEHOLDER_SUFFIX)) {
-      return null;
-    }
-
-    int startIndex = propertyString.indexOf(SystemPropertyUtils.PLACEHOLDER_PREFIX);
-    int endIndex = propertyString.indexOf(SystemPropertyUtils.VALUE_SEPARATOR);
-    if (endIndex == -1) {
-      endIndex = propertyString.lastIndexOf(SystemPropertyUtils.PLACEHOLDER_SUFFIX);
-    }
-
-    String propertyKey = propertyString
-        .substring(startIndex + SystemPropertyUtils.PLACEHOLDER_PREFIX.length(), endIndex);
-
-    // we don't support nested property key
-    if (propertyKey.contains(SystemPropertyUtils.PLACEHOLDER_PREFIX)) {
-      return null;
-    }
-
-    return propertyKey;
   }
 
   private List<Field> findAllField(Class clazz) {

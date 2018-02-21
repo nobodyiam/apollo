@@ -22,6 +22,7 @@ public class ConfigUtilTest {
     System.clearProperty("apollo.longPollQPS");
     System.clearProperty("apollo.configCacheSize");
     System.clearProperty("apollo.longPollingInitialDelayInMills");
+    System.clearProperty("apollo.autoUpdateInjectedSpringProperties");
   }
 
   @Test
@@ -172,5 +173,17 @@ public class ConfigUtilTest {
     ConfigUtil configUtil = new ConfigUtil();
 
     assertTrue(configUtil.getLongPollingInitialDelayInMills() > 0);
+  }
+
+  @Test
+  public void testCustomizeAutoUpdateInjectedSpringProperties() throws Exception {
+    boolean someAutoUpdateInjectedSpringProperties = false;
+    System.setProperty("apollo.autoUpdateInjectedSpringProperties",
+        String.valueOf(someAutoUpdateInjectedSpringProperties));
+
+    ConfigUtil configUtil = new ConfigUtil();
+
+    assertEquals(someAutoUpdateInjectedSpringProperties,
+        configUtil.isAutoUpdateInjectedSpringProperties());
   }
 }
