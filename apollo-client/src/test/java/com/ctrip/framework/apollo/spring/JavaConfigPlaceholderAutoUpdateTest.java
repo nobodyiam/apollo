@@ -27,6 +27,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   private static final String BATCH_PROPERTY = "batch";
   private static final int DEFAULT_BATCH = 200;
   private static final String FX_APOLLO_NAMESPACE = "FX.apollo";
+  private static final String SOME_KEY_PROPERTY = "someKey";
+  private static final String ANOTHER_KEY_PROPERTY = "anotherKey";
 
   @Test
   public void testAutoUpdateWithOneNamespace() throws Exception {
@@ -461,14 +463,15 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
   @Test
   public void testAutoUpdateWithNestedProperty() throws Exception {
-    String a = "a";
-    String b = "b";
-    String newA = "newA";
+    String someKeyValue = "someKeyValue";
+    String anotherKeyValue = "anotherKeyValue";
+    String newKeyValue = "newKeyValue";
     int someValue = 1234;
     int someNewValue = 2345;
 
-    Properties properties = assembleProperties(a, a, b, b, String.format("%s.%s", a, b),
-        String.valueOf(someValue));
+    Properties properties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue,
+        ANOTHER_KEY_PROPERTY, anotherKeyValue,
+        String.format("%s.%s", someKeyValue, anotherKeyValue), String.valueOf(someValue));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
@@ -479,8 +482,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     assertEquals(someValue, bean.getNestedProperty());
 
-    Properties newProperties = assembleProperties(a, newA, b, b, String.format("%s.%s", newA, b),
-        String.valueOf(someNewValue));
+    Properties newProperties = assembleProperties(SOME_KEY_PROPERTY, newKeyValue,
+        ANOTHER_KEY_PROPERTY, anotherKeyValue,
+        String.format("%s.%s", newKeyValue, anotherKeyValue), String.valueOf(someNewValue));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
 
@@ -491,13 +495,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
   @Test
   public void testAutoUpdateWithNotSupportedNestedProperty() throws Exception {
-    String a = "a";
-    String b = "b";
+    String someKeyValue = "someKeyValue";
+    String anotherKeyValue = "anotherKeyValue";
     int someValue = 1234;
     int someNewValue = 2345;
 
-    Properties properties = assembleProperties(a, a, b, b, String.format("%s.%s", a, b),
-        String.valueOf(someValue));
+    Properties properties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue,
+        ANOTHER_KEY_PROPERTY, anotherKeyValue,
+        String.format("%s.%s", someKeyValue, anotherKeyValue), String.valueOf(someValue));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
@@ -508,8 +513,9 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     assertEquals(someValue, bean.getNestedProperty());
 
-    Properties newProperties = assembleProperties(a, a, b, b, String.format("%s.%s", a, b),
-        String.valueOf(someNewValue));
+    Properties newProperties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue,
+        ANOTHER_KEY_PROPERTY, anotherKeyValue,
+        String.format("%s.%s", someKeyValue, anotherKeyValue), String.valueOf(someNewValue));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
 
@@ -520,12 +526,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   }
 
   @Test
-  public void testAutoUpdateWithDefaultValue() throws Exception {
-    String b = "b";
+  public void testAutoUpdateWithNestedPropertyWithDefaultValue() throws Exception {
+    String someKeyValue = "someKeyValue";
+    String someNewKeyValue = "someNewKeyValue";
     int someValue = 1234;
     int someNewValue = 2345;
 
-    Properties properties = assembleProperties(b, String.valueOf(someValue));
+    Properties properties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue,
+        ANOTHER_KEY_PROPERTY, String.valueOf(someValue));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
@@ -536,13 +544,51 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     assertEquals(someValue, bean.getNestedProperty());
 
-    Properties newProperties = assembleProperties(b, String.valueOf(someNewValue));
+    Properties newProperties = assembleProperties(SOME_KEY_PROPERTY, someNewKeyValue,
+        ANOTHER_KEY_PROPERTY, String.valueOf(someValue), someNewKeyValue, String.valueOf(someNewValue));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
 
     TimeUnit.MILLISECONDS.sleep(50);
 
-    // Does not support this scenario
+    assertEquals(someNewValue, bean.getNestedProperty());
+  }
+
+  @Test
+  public void testAutoUpdateWithMultipleNestedProperty() throws Exception {
+    String someKeyValue = "someKeyValue";
+    String someNewKeyValue = "someNewKeyValue";
+    String anotherKeyValue = "anotherKeyValue";
+    String someNestedKey = "someNestedKey";
+    String someNestedPlaceholder = String.format("${%s}", someNestedKey);
+    String anotherNestedKey = "anotherNestedKey";
+    String anotherNestedPlaceholder = String.format("${%s}", anotherNestedKey);
+    int someValue = 1234;
+    int someNewValue = 2345;
+
+    Properties properties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue,
+        ANOTHER_KEY_PROPERTY, anotherKeyValue, someKeyValue, someNestedPlaceholder);
+
+    properties.setProperty(someNestedKey, String.valueOf(someValue));
+
+    SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
+
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        NestedPropertyConfig2.class);
+
+    TestNestedPropertyBeanWithDefaultValue bean = context.getBean(TestNestedPropertyBeanWithDefaultValue.class);
+
+    assertEquals(someValue, bean.getNestedProperty());
+
+    Properties newProperties = assembleProperties(SOME_KEY_PROPERTY, someNewKeyValue,
+        ANOTHER_KEY_PROPERTY, anotherKeyValue, someNewKeyValue, anotherNestedPlaceholder);
+
+    newProperties.setProperty(anotherNestedKey, String.valueOf(someNewValue));
+
+    config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
+
+    TimeUnit.MILLISECONDS.sleep(50);
+
     assertEquals(someNewValue, bean.getNestedProperty());
   }
 
@@ -754,7 +800,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
   static class TestNestedPropertyBean {
 
-    @Value("${${a}.${b}}")
+    @Value("${${someKey}.${anotherKey}}")
     private int nestedProperty;
 
     public int getNestedProperty() {
@@ -764,7 +810,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
   static class TestNestedPropertyBeanWithDefaultValue {
 
-    @Value("${a:${b}}")
+    @Value("${${someKey}:${anotherKey}}")
     private int nestedProperty;
 
     public int getNestedProperty() {

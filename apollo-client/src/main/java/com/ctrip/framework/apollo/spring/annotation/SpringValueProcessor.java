@@ -9,10 +9,8 @@ import com.ctrip.framework.apollo.spring.property.PlaceholderHelper;
 import com.ctrip.framework.apollo.spring.property.SpringValue;
 import com.ctrip.framework.apollo.spring.property.SpringValueDefinition;
 import com.ctrip.framework.apollo.util.ConfigUtil;
-import com.google.common.base.Strings;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -21,7 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +47,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.util.SystemPropertyUtils;
 
 /**
  * Spring value processor of field or method which has @Value.
