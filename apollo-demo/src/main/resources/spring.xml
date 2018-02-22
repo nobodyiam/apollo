@@ -15,5 +15,4 @@
     </bean>
 
     <context:annotation-config />
-    <context:component-scan base-package="com.ctrip.framework.apollo.demo.spring.common.bean"/>
 </beans>
