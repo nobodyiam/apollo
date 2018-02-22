@@ -3,7 +3,6 @@ package com.ctrip.framework.apollo.util;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -184,6 +183,6 @@ public class ConfigUtilTest {
     ConfigUtil configUtil = new ConfigUtil();
 
     assertEquals(someAutoUpdateInjectedSpringProperties,
-        configUtil.isAutoUpdateInjectedSpringProperties());
+        configUtil.isAutoUpdateInjectedSpringPropertiesEnabled());
   }
 }

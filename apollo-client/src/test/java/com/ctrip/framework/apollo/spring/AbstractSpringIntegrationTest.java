@@ -130,7 +130,7 @@ public abstract class AbstractSpringIntegrationTest {
     }
 
     @Override
-    public boolean isAutoUpdateInjectedSpringProperties() {
+    public boolean isAutoUpdateInjectedSpringPropertiesEnabled() {
       return isAutoUpdateInjectedSpringProperties;
     }
   }

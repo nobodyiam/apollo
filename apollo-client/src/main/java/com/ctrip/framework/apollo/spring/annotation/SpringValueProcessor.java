@@ -8,6 +8,7 @@ import com.ctrip.framework.apollo.spring.config.ConfigPropertySource;
 import com.ctrip.framework.apollo.spring.property.PlaceholderHelper;
 import com.ctrip.framework.apollo.spring.property.SpringValue;
 import com.ctrip.framework.apollo.spring.property.SpringValueDefinition;
+import com.ctrip.framework.apollo.spring.property.SpringValueDefinitionProcessor;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
@@ -19,24 +20,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.PropertyValue;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.config.TypedStringValue;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
@@ -49,30 +44,28 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Spring value processor of field or method which has @Value.
+ * Spring value processor of field or method which has @Value and xml config placeholders.
  *
  * @author github.com/zhegexiaohuozi  seimimaster@gmail.com
  * @since 2017/12/20.
  */
 public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered, EnvironmentAware,
-    BeanFactoryAware, BeanDefinitionRegistryPostProcessor {
+    BeanFactoryAware, BeanFactoryPostProcessor {
 
   private static final Logger logger = LoggerFactory.getLogger(SpringValueProcessor.class);
 
   private final Multimap<String, SpringValue> monitor = LinkedListMultimap.create();
-  private final Multimap<String, SpringValueDefinition> beanName2SpringValueDefinitions =
-      LinkedListMultimap.create();
-  private final AtomicBoolean configChangeListenerRegistered = new AtomicBoolean(false);
-  private final boolean autoUpdateInjectedSpringProperties;
+  private final ConfigUtil configUtil;
   private final PlaceholderHelper placeholderHelper;
 
   private ConfigurableEnvironment environment;
   private ConfigurableBeanFactory beanFactory;
   private TypeConverter typeConverter;
 
+  private static Multimap<String, SpringValueDefinition> beanName2SpringValueDefinitions = LinkedListMultimap.create();
+
   public SpringValueProcessor() {
-    autoUpdateInjectedSpringProperties = ApolloInjector.getInstance(ConfigUtil.class)
-        .isAutoUpdateInjectedSpringProperties();
+    configUtil = ApolloInjector.getInstance(ConfigUtil.class);
     placeholderHelper = ApolloInjector.getInstance(PlaceholderHelper.class);
   }
 
@@ -88,25 +81,17 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
   }
 
   @Override
-  public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-      throws BeansException {
-    if (autoUpdateInjectedSpringProperties) {
-      processPropertyValues(registry);
+  public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+    if (configUtil.isAutoUpdateInjectedSpringPropertiesEnabled()) {
+      beanName2SpringValueDefinitions = SpringValueDefinitionProcessor.getBeanName2SpringValueDefinitions();
+      registerConfigChangeListener();
     }
-  }
-
-  @Override
-  public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-      throws BeansException {
   }
 
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName)
       throws BeansException {
-    if (autoUpdateInjectedSpringProperties) {
-      if (configChangeListenerRegistered.compareAndSet(false, true)) {
-        registerConfigChangeListener();
-      }
+    if (configUtil.isAutoUpdateInjectedSpringPropertiesEnabled()) {
       Class clazz = bean.getClass();
       processFields(bean, findAllField(clazz));
       processMethods(bean, findAllMethod(clazz));
@@ -118,32 +103,6 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
   @Override
   public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
     return bean;
-  }
-
-  private void processPropertyValues(BeanDefinitionRegistry beanRegistry) {
-    String[] beanNames = beanRegistry.getBeanDefinitionNames();
-    for (String beanName : beanNames) {
-      BeanDefinition beanDefinition = beanRegistry.getBeanDefinition(beanName);
-      MutablePropertyValues mutablePropertyValues = beanDefinition.getPropertyValues();
-      List<PropertyValue> propertyValues = mutablePropertyValues.getPropertyValueList();
-      for (PropertyValue propertyValue : propertyValues) {
-        Object value = propertyValue.getValue();
-        if (!(value instanceof TypedStringValue)) {
-          continue;
-        }
-        String placeholder = ((TypedStringValue) value).getValue();
-        Set<String> keys = placeholderHelper.extractPlaceholderKeys(placeholder);
-
-        if (keys.isEmpty()) {
-          continue;
-        }
-
-        for (String key : keys) {
-          beanName2SpringValueDefinitions
-              .put(beanName, new SpringValueDefinition(key, placeholder, propertyValue.getName()));
-        }
-      }
-    }
   }
 
   private void processFields(Object bean, List<Field> declaredFields) {

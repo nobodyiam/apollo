@@ -6,6 +6,16 @@ import java.util.Set;
 import java.util.Stack;
 import org.springframework.util.StringUtils;
 
+/**
+ * Extract keys from placeholder, e.g.
+ * <ul>
+ *   <li>${some.key} => "some.key"</li>
+ *   <li>${some.key:${some.other.key:100}} => "some.key", "some.other.key"</li>
+ *   <li>${${some.key}} => "some.key"</li>
+ *   <li>${${some.key:other.key}} => "some.key"</li>
+ *   <li>${${some.key}:${another.key}} => "some.key", "another.key"</li>
+ * </ul>
+ */
 public class PlaceholderHelper {
 
   private static final String PLACEHOLDER_PREFIX = "${";
@@ -36,8 +46,7 @@ public class PlaceholderHelper {
         continue;
       }
 
-      String placeholderCandidate = strVal
-          .substring(startIndex + PLACEHOLDER_PREFIX.length(), endIndex);
+      String placeholderCandidate = strVal.substring(startIndex + PLACEHOLDER_PREFIX.length(), endIndex);
 
       // ${some.key:other.key}
       if (placeholderCandidate.startsWith(PLACEHOLDER_PREFIX)) {
@@ -50,8 +59,8 @@ public class PlaceholderHelper {
           stack.push(placeholderCandidate);
         } else {
           stack.push(placeholderCandidate.substring(0, separatorIndex));
-          String defaultValuePart = normalizeToPlaceholder(placeholderCandidate
-              .substring(separatorIndex + VALUE_SEPARATOR.length()));
+          String defaultValuePart =
+              normalizeToPlaceholder(placeholderCandidate.substring(separatorIndex + VALUE_SEPARATOR.length()));
           if (!Strings.isNullOrEmpty(defaultValuePart)) {
             stack.push(defaultValuePart);
           }
@@ -60,8 +69,7 @@ public class PlaceholderHelper {
 
       // has remaining part, e.g. ${a}.${b}
       if (endIndex + PLACEHOLDER_SUFFIX.length() < strVal.length() - 1) {
-        String remainingPart = normalizeToPlaceholder(strVal
-            .substring(endIndex + PLACEHOLDER_SUFFIX.length()));
+        String remainingPart = normalizeToPlaceholder(strVal.substring(endIndex + PLACEHOLDER_SUFFIX.length()));
         if (!Strings.isNullOrEmpty(remainingPart)) {
           stack.push(remainingPart);
         }
@@ -72,8 +80,7 @@ public class PlaceholderHelper {
   }
 
   private boolean isNormalizedPlaceholder(String propertyString) {
-    return propertyString.startsWith(PLACEHOLDER_PREFIX) && propertyString
-        .endsWith(PLACEHOLDER_SUFFIX);
+    return propertyString.startsWith(PLACEHOLDER_PREFIX) && propertyString.endsWith(PLACEHOLDER_SUFFIX);
   }
 
   private String normalizeToPlaceholder(String strVal) {
@@ -97,16 +104,13 @@ public class PlaceholderHelper {
         if (withinNestedPlaceholder > 0) {
           withinNestedPlaceholder--;
           index = index + PLACEHOLDER_SUFFIX.length();
-        }
-        else {
+        } else {
           return index;
         }
-      }
-      else if (StringUtils.substringMatch(buf, index, SIMPLE_PLACEHOLDER_PREFIX)) {
+      } else if (StringUtils.substringMatch(buf, index, SIMPLE_PLACEHOLDER_PREFIX)) {
         withinNestedPlaceholder++;
         index = index + SIMPLE_PLACEHOLDER_PREFIX.length();
-      }
-      else {
+      } else {
         index++;
       }
     }

@@ -9,8 +9,7 @@ import java.util.Scanner;
  */
 public class AnnotationApplication {
   public static void main(String[] args) {
-    new AnnotationConfigApplicationContext("com.ctrip.framework.apollo.demo.spring.common",
-        "com.ctrip.framework.apollo.demo.spring.javaConfigDemo");
+    new AnnotationConfigApplicationContext("com.ctrip.framework.apollo.demo.spring.common");
     onKeyExit();
   }
 

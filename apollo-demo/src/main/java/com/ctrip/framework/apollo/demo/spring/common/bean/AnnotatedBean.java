@@ -1,17 +1,15 @@
 package com.ctrip.framework.apollo.demo.spring.common.bean;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
-@RefreshScope
 @Component("annotatedBean")
 public class AnnotatedBean {
   private static final Logger logger = LoggerFactory.getLogger(AnnotatedBean.class);

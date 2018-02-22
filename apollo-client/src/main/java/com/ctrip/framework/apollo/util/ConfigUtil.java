@@ -278,7 +278,7 @@ public class ConfigUtil {
     }
   }
 
-  public boolean isAutoUpdateInjectedSpringProperties() {
+  public boolean isAutoUpdateInjectedSpringPropertiesEnabled() {
     return autoUpdateInjectedSpringProperties;
   }
 }
