@@ -58,6 +58,7 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
   private final ConfigUtil configUtil;
   private final PlaceholderHelper placeholderHelper;
   private final ConfigPropertySourceFactory configPropertySourceFactory;
+  private final boolean typeConverterHasConvertIfNecessaryWithFieldParameter;
 
   private Environment environment;
   private ConfigurableBeanFactory beanFactory;
@@ -69,6 +70,7 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
     configUtil = ApolloInjector.getInstance(ConfigUtil.class);
     placeholderHelper = ApolloInjector.getInstance(PlaceholderHelper.class);
     configPropertySourceFactory = ApolloInjector.getInstance(ConfigPropertySourceFactory.class);
+    typeConverterHasConvertIfNecessaryWithFieldParameter = testTypeConverterHasConvertIfNecessaryWithFieldParameter();
   }
 
   @Override
@@ -252,8 +254,13 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
       Object value;
 
       if (springValue.isField()) {
-        value = this.typeConverter
-            .convertIfNecessary(strVal, springValue.getTargetType(), springValue.getField());
+        // org.springframework.beans.TypeConverter#convertIfNecessary(java.lang.Object, java.lang.Class, java.lang.reflect.Field) is available from Spring 3.2.0+
+        if (typeConverterHasConvertIfNecessaryWithFieldParameter) {
+          value = this.typeConverter
+              .convertIfNecessary(strVal, springValue.getTargetType(), springValue.getField());
+        } else {
+          value = this.typeConverter.convertIfNecessary(strVal, springValue.getTargetType());
+        }
       } else {
         value = this.typeConverter.convertIfNecessary(strVal, springValue.getTargetType(),
             springValue.getMethodParameter());
@@ -266,6 +273,16 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
     } catch (Throwable ex) {
       logger.error("Auto update apollo changed value failed, {}", springValue.toString(), ex);
     }
+  }
+
+  private boolean testTypeConverterHasConvertIfNecessaryWithFieldParameter() {
+    try {
+      TypeConverter.class.getMethod("convertIfNecessary", Object.class, Class.class, Field.class);
+    } catch (Throwable ex) {
+      return false;
+    }
+
+    return true;
   }
 
   @Override

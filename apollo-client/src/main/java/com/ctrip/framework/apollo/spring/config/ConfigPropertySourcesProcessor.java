@@ -30,8 +30,9 @@ public class ConfigPropertySourcesProcessor extends PropertySourcesProcessor
   }
 
   /**
-   * For some old spring versions, the BeanDefinitionRegistryPostProcessor would not be instantiated if it is added in
-   * postProcessBeanDefinitionRegistry phase
+   * For some Spring 3.x versions, the BeanDefinitionRegistryPostProcessor would not be
+   * instantiated if it is added in postProcessBeanDefinitionRegistry phase, so we have to manually
+   * call the postProcessBeanDefinitionRegistry method of SpringValueDefinitionProcessor here...
    */
   private void processSpringValueDefinition(BeanDefinitionRegistry registry) {
     SpringValueDefinitionProcessor springValueDefinitionProcessor = new SpringValueDefinitionProcessor();
