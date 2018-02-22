@@ -15,7 +15,7 @@ import com.ctrip.framework.apollo.Config;
 public class ConfigPropertySource extends EnumerablePropertySource<Config> {
   private static final String[] EMPTY_ARRAY = new String[0];
 
-  public ConfigPropertySource(String name, Config source) {
+  ConfigPropertySource(String name, Config source) {
     super(name, source);
   }
 

@@ -2,7 +2,9 @@ package com.ctrip.framework.apollo.spring.boot;
 
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigService;
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.core.ConfigConsts;
+import com.ctrip.framework.apollo.spring.config.ConfigPropertySourceFactory;
 import com.ctrip.framework.apollo.spring.config.PropertySourcesConstants;
 import com.ctrip.framework.apollo.spring.config.ConfigPropertySource;
 import com.google.common.base.Splitter;
@@ -39,6 +41,9 @@ public class ApolloSpringApplicationRunListener implements SpringApplicationRunL
   private static final Logger logger = LoggerFactory.getLogger(ApolloSpringApplicationRunListener.class);
   private static final Splitter NAMESPACE_SPLITTER = Splitter.on(",").omitEmptyStrings().trimResults();
 
+  private final ConfigPropertySourceFactory configPropertySourceFactory = ApolloInjector
+      .getInstance(ConfigPropertySourceFactory.class);
+
   public ApolloSpringApplicationRunListener(SpringApplication application, String[] args) {
     //ignore
   }
@@ -74,7 +79,7 @@ public class ApolloSpringApplicationRunListener implements SpringApplicationRunL
     for (String namespace : namespaceList) {
       Config config = ConfigService.getConfig(namespace);
 
-      composite.addPropertySource(new ConfigPropertySource(namespace, config));
+      composite.addPropertySource(configPropertySourceFactory.getConfigPropertySource(namespace, config));
     }
 
     environment.getPropertySources().addFirst(composite);

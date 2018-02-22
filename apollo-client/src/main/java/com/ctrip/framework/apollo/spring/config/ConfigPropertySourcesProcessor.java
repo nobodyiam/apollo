@@ -25,6 +25,17 @@ public class ConfigPropertySourcesProcessor extends PropertySourcesProcessor
     BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry, ApolloAnnotationProcessor.class.getName(),
         ApolloAnnotationProcessor.class);
     BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry, SpringValueProcessor.class.getName(), SpringValueProcessor.class);
-    BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry, SpringValueDefinitionProcessor.class.getName(), SpringValueDefinitionProcessor.class);
+
+    processSpringValueDefinition(registry);
+  }
+
+  /**
+   * For some old spring versions, the BeanDefinitionRegistryPostProcessor would not be instantiated if it is added in
+   * postProcessBeanDefinitionRegistry phase
+   */
+  private void processSpringValueDefinition(BeanDefinitionRegistry registry) {
+    SpringValueDefinitionProcessor springValueDefinitionProcessor = new SpringValueDefinitionProcessor();
+
+    springValueDefinitionProcessor.postProcessBeanDefinitionRegistry(registry);
   }
 }

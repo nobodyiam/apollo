@@ -1,11 +1,8 @@
 package com.ctrip.framework.apollo.spring.property;
 
-import com.ctrip.framework.apollo.build.ApolloInjector;
-import com.ctrip.framework.apollo.util.ConfigUtil;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import java.util.List;
 import java.util.Set;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
@@ -15,8 +12,14 @@ import org.springframework.beans.factory.config.TypedStringValue;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 
+import com.ctrip.framework.apollo.build.ApolloInjector;
+import com.ctrip.framework.apollo.util.ConfigUtil;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
+
 /**
  * To process xml config placeholders, e.g.
+ * 
  * <pre>
  *  &lt;bean class=&quot;com.ctrip.framework.apollo.demo.spring.xmlConfigDemo.bean.XmlBean&quot;&gt;
  *    &lt;property name=&quot;timeout&quot; value=&quot;${timeout:200}&quot;/&gt;
@@ -53,6 +56,11 @@ public class SpringValueDefinitionProcessor implements BeanDefinitionRegistryPos
   }
 
   private void processPropertyValues(BeanDefinitionRegistry beanRegistry) {
+    if (!beanName2SpringValueDefinitions.isEmpty()) {
+      // already initialized
+      return;
+    }
+
     String[] beanNames = beanRegistry.getBeanDefinitionNames();
     for (String beanName : beanNames) {
       BeanDefinition beanDefinition = beanRegistry.getBeanDefinition(beanName);
@@ -71,8 +79,8 @@ public class SpringValueDefinitionProcessor implements BeanDefinitionRegistryPos
         }
 
         for (String key : keys) {
-          beanName2SpringValueDefinitions
-              .put(beanName, new SpringValueDefinition(key, placeholder, propertyValue.getName()));
+          beanName2SpringValueDefinitions.put(beanName,
+              new SpringValueDefinition(key, placeholder, propertyValue.getName()));
         }
       }
     }

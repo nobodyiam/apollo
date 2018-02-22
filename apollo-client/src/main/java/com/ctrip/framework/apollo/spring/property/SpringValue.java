@@ -84,6 +84,6 @@ public class SpringValue {
           .format("key: %s, field: %s.%s", key, bean.getClass().getName(), field.getName());
     }
     return String.format("key: %s, method: %s.%s", key, bean.getClass().getName(),
-        methodParameter.getMember().getName());
+        methodParameter.getMethod().getName());
   }
 }

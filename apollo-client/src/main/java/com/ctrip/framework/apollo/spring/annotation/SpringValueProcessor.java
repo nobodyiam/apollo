@@ -1,17 +1,5 @@
 package com.ctrip.framework.apollo.spring.annotation;
 
-import com.ctrip.framework.apollo.ConfigChangeListener;
-import com.ctrip.framework.apollo.build.ApolloInjector;
-import com.ctrip.framework.apollo.model.ConfigChange;
-import com.ctrip.framework.apollo.model.ConfigChangeEvent;
-import com.ctrip.framework.apollo.spring.config.ConfigPropertySource;
-import com.ctrip.framework.apollo.spring.property.PlaceholderHelper;
-import com.ctrip.framework.apollo.spring.property.SpringValue;
-import com.ctrip.framework.apollo.spring.property.SpringValueDefinition;
-import com.ctrip.framework.apollo.spring.property.SpringValueDefinitionProcessor;
-import com.ctrip.framework.apollo.util.ConfigUtil;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -20,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -36,12 +25,23 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
-import org.springframework.core.env.CompositePropertySource;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertySource;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
+
+import com.ctrip.framework.apollo.ConfigChangeListener;
+import com.ctrip.framework.apollo.build.ApolloInjector;
+import com.ctrip.framework.apollo.model.ConfigChange;
+import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import com.ctrip.framework.apollo.spring.config.ConfigPropertySource;
+import com.ctrip.framework.apollo.spring.config.ConfigPropertySourceFactory;
+import com.ctrip.framework.apollo.spring.property.PlaceholderHelper;
+import com.ctrip.framework.apollo.spring.property.SpringValue;
+import com.ctrip.framework.apollo.spring.property.SpringValueDefinition;
+import com.ctrip.framework.apollo.spring.property.SpringValueDefinitionProcessor;
+import com.ctrip.framework.apollo.util.ConfigUtil;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * Spring value processor of field or method which has @Value and xml config placeholders.
@@ -57,8 +57,9 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
   private final Multimap<String, SpringValue> monitor = LinkedListMultimap.create();
   private final ConfigUtil configUtil;
   private final PlaceholderHelper placeholderHelper;
+  private final ConfigPropertySourceFactory configPropertySourceFactory;
 
-  private ConfigurableEnvironment environment;
+  private Environment environment;
   private ConfigurableBeanFactory beanFactory;
   private TypeConverter typeConverter;
 
@@ -67,6 +68,7 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
   public SpringValueProcessor() {
     configUtil = ApolloInjector.getInstance(ConfigUtil.class);
     placeholderHelper = ApolloInjector.getInstance(PlaceholderHelper.class);
+    configPropertySourceFactory = ApolloInjector.getInstance(ConfigPropertySourceFactory.class);
   }
 
   @Override
@@ -77,7 +79,7 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
 
   @Override
   public void setEnvironment(Environment env) {
-    this.environment = (ConfigurableEnvironment) env;
+    this.environment = env;
   }
 
   @Override
@@ -237,17 +239,10 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
       }
     };
 
-    for (PropertySource<?> propertySource : environment.getPropertySources()) {
-      if (!(propertySource instanceof CompositePropertySource)) {
-        continue;
-      }
-      Collection<PropertySource<?>> compositePropertySources = ((CompositePropertySource) propertySource)
-          .getPropertySources();
-      for (PropertySource<?> compositePropertySource : compositePropertySources) {
-        if (compositePropertySource instanceof ConfigPropertySource) {
-          ((ConfigPropertySource) compositePropertySource).addChangeListener(changeListener);
-        }
-      }
+    List<ConfigPropertySource> configPropertySources = configPropertySourceFactory.getAllConfigPropertySources();
+
+    for (ConfigPropertySource configPropertySource : configPropertySources) {
+      configPropertySource.addChangeListener(changeListener);
     }
   }
 
