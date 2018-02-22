@@ -34,10 +34,12 @@ public class SpringBootApolloRefreshConfig {
         break;
       }
     }
-    if (redisCacheKeysChanged) {
-      logger.info("before refresh {}", sampleRedisConfig.toString());
-      refreshScope.refresh("sampleRedisConfig");
-      logger.info("after refresh {}", sampleRedisConfig.toString());
+    if (!redisCacheKeysChanged) {
+      return;
     }
+
+    logger.info("before refresh {}", sampleRedisConfig.toString());
+    refreshScope.refresh("sampleRedisConfig");
+    logger.info("after refresh {}", sampleRedisConfig.toString());
   }
 }
