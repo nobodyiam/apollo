@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.internals.ConfigRepository;
 import com.ctrip.framework.apollo.internals.SimpleConfig;
+import com.ctrip.framework.apollo.spring.property.SpringValueDefinitionProcessor;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -30,12 +31,15 @@ import com.google.common.collect.Maps;
 public abstract class AbstractSpringIntegrationTest {
   private static final Map<String, Config> CONFIG_REGISTRY = Maps.newHashMap();
   private static Method PROPERTY_SOURCES_PROCESSOR_CLEAR;
+  private static Method SPRING_VALUE_DEFINITION_PROCESS_CLEAR;
   private static Method CONFIG_SERVICE_RESET;
 
   static {
     try {
       PROPERTY_SOURCES_PROCESSOR_CLEAR = PropertySourcesProcessor.class.getDeclaredMethod("reset");
       ReflectionUtils.makeAccessible(PROPERTY_SOURCES_PROCESSOR_CLEAR);
+      SPRING_VALUE_DEFINITION_PROCESS_CLEAR = SpringValueDefinitionProcessor.class.getDeclaredMethod("reset");
+      ReflectionUtils.makeAccessible(SPRING_VALUE_DEFINITION_PROCESS_CLEAR);
       CONFIG_SERVICE_RESET = ConfigService.class.getDeclaredMethod("reset");
       ReflectionUtils.makeAccessible(CONFIG_SERVICE_RESET);
     } catch (NoSuchMethodException e) {
@@ -98,6 +102,8 @@ public abstract class AbstractSpringIntegrationTest {
   protected static void doSetUp() {
     //as PropertySourcesProcessor has some static states, so we must manually clear its state
     ReflectionUtils.invokeMethod(PROPERTY_SOURCES_PROCESSOR_CLEAR, null);
+    //as SpringValueDefinitionProcessor has some static states, so we must manually clear its state
+    ReflectionUtils.invokeMethod(SPRING_VALUE_DEFINITION_PROCESS_CLEAR, null);
     //as ConfigService is singleton, so we must manually clear its container
     ReflectionUtils.invokeMethod(CONFIG_SERVICE_RESET, null);
     MockInjector.reset();

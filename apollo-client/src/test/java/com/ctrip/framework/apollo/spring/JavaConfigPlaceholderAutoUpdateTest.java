@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import com.ctrip.framework.apollo.build.MockInjector;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.internals.SimpleConfig;
+import com.ctrip.framework.apollo.spring.XmlConfigPlaceholderTest.TestXmlBean;
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import java.util.Properties;
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 
 public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrationTest {
@@ -59,6 +61,42 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     assertEquals(newTimeout, bean.getTimeout());
     assertEquals(newBatch, bean.getBatch());
+  }
+
+  @Test
+  public void testAutoUpdateWithValueAndXmlProperty() throws Exception {
+    int initialTimeout = 1000;
+    int initialBatch = 2000;
+    int newTimeout = 1001;
+    int newBatch = 2001;
+
+    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+        BATCH_PROPERTY, String.valueOf(initialBatch));
+
+    SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
+
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig8.class);
+
+    TestJavaConfigBean javaConfigBean = context.getBean(TestJavaConfigBean.class);
+    TestXmlBean xmlBean = context.getBean(TestXmlBean.class);
+
+    assertEquals(initialTimeout, javaConfigBean.getTimeout());
+    assertEquals(initialBatch, javaConfigBean.getBatch());
+    assertEquals(initialTimeout, xmlBean.getTimeout());
+    assertEquals(initialBatch, xmlBean.getBatch());
+
+    Properties newProperties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout),
+        BATCH_PROPERTY, String.valueOf(newBatch));
+
+    config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
+
+    TimeUnit.MILLISECONDS.sleep(50);
+
+    assertEquals(newTimeout, javaConfigBean.getTimeout());
+    assertEquals(newBatch, javaConfigBean.getBatch());
+    assertEquals(newTimeout, xmlBean.getTimeout());
+    assertEquals(newBatch, xmlBean.getBatch());
   }
 
   @Test
@@ -669,6 +707,16 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
       bean.setBatch(batch);
 
       return bean;
+    }
+  }
+
+  @Configuration
+  @EnableApolloConfig
+  @ImportResource("spring/XmlConfigPlaceholderTest1.xml")
+  static class AppConfig8 {
+    @Bean
+    TestJavaConfigBean testJavaConfigBean() {
+      return new TestJavaConfigBean();
     }
   }
 

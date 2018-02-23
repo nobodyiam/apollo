@@ -3,6 +3,7 @@ package com.ctrip.framework.apollo.spring.property;
 import java.util.List;
 import java.util.Set;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
@@ -30,6 +31,7 @@ import com.google.common.collect.Multimap;
 public class SpringValueDefinitionProcessor implements BeanDefinitionRegistryPostProcessor {
   private static final Multimap<String, SpringValueDefinition> beanName2SpringValueDefinitions =
       LinkedListMultimap.create();
+  private static final AtomicBoolean initialized = new AtomicBoolean(false);
 
   private final ConfigUtil configUtil;
   private final PlaceholderHelper placeholderHelper;
@@ -56,7 +58,7 @@ public class SpringValueDefinitionProcessor implements BeanDefinitionRegistryPos
   }
 
   private void processPropertyValues(BeanDefinitionRegistry beanRegistry) {
-    if (!beanName2SpringValueDefinitions.isEmpty()) {
+    if (!initialized.compareAndSet(false, true)) {
       // already initialized
       return;
     }
@@ -84,5 +86,11 @@ public class SpringValueDefinitionProcessor implements BeanDefinitionRegistryPos
         }
       }
     }
+  }
+
+  //only for test
+  private static void reset() {
+    initialized.set(false);
+    beanName2SpringValueDefinitions.clear();
   }
 }
