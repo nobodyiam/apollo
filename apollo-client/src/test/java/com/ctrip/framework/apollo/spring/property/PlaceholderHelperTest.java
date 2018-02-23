@@ -39,6 +39,18 @@ public class PlaceholderHelperTest {
   }
 
   @Test
+  public void testExtractPlaceholderKeysFromExpression() throws Exception {
+    check("#{new java.text.SimpleDateFormat('${some.key}').parse('${another.key}')}", "some.key", "another.key");
+    check("#{new java.text.SimpleDateFormat('${some.key:abc}').parse('${another.key:100}')}", "some.key", "another.key");
+    check("#{new java.text.SimpleDateFormat('${some.key:${some.other.key}}').parse('${another.key}')}", "some.key", "another.key", "some.other.key");
+    check("#{new java.text.SimpleDateFormat('${some.key:${some.other.key:abc}}').parse('${another.key}')}", "some.key", "another.key", "some.other.key");
+    check("#{new java.text.SimpleDateFormat('${${some.key}}').parse('${${another.key:other.key}}')}", "some.key", "another.key");
+
+    assertTrue(placeholderHelper.extractPlaceholderKeys("#{systemProperties[some.key] ?: 123}").isEmpty());
+    assertTrue(placeholderHelper.extractPlaceholderKeys("#{ T(java.lang.Math).random() * 100.0 }").isEmpty());
+  }
+
+  @Test
   public void testExtractInvalidPlaceholderKeys() throws Exception {
     assertTrue(placeholderHelper.extractPlaceholderKeys("some.key").isEmpty());
     assertTrue(placeholderHelper.extractPlaceholderKeys("some.key:100").isEmpty());

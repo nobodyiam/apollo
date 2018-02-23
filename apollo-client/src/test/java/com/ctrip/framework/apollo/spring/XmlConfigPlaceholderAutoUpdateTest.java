@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.spring;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import com.ctrip.framework.apollo.build.MockInjector;
@@ -7,6 +8,10 @@ import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.internals.SimpleConfig;
 import com.ctrip.framework.apollo.spring.XmlConfigPlaceholderTest.TestXmlBean;
 import com.ctrip.framework.apollo.util.ConfigUtil;
+import com.google.common.primitives.Ints;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
@@ -376,6 +381,90 @@ public class XmlConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegratio
     assertEquals(newBatch, bean.getBatch());
   }
 
+  @Test
+  public void testAutoUpdateWithAllKindsOfDataTypes() throws Exception {
+    int someInt = 1000;
+    int someNewInt = 1001;
+    int[] someIntArray = {1, 2, 3, 4};
+    int[] someNewIntArray = {5, 6, 7, 8};
+    long someLong = 2000L;
+    long someNewLong = 2001L;
+    short someShort = 3000;
+    short someNewShort = 3001;
+    float someFloat = 1.2F;
+    float someNewFloat = 2.2F;
+    double someDouble = 3.10D;
+    double someNewDouble = 4.10D;
+    byte someByte = 123;
+    byte someNewByte = 124;
+    boolean someBoolean = true;
+    boolean someNewBoolean = !someBoolean;
+    String someString = "someString";
+    String someNewString = "someNewString";
+
+    String someDateFormat = "yyyy-MM-dd HH:mm:ss.SSS";
+    Date someDate = assembleDate(2018, 2, 23, 20, 1, 2, 123);
+    Date someNewDate = assembleDate(2018, 2, 23, 21, 2, 3, 345);
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(someDateFormat, Locale.US);
+
+    Properties properties = new Properties();
+    properties.setProperty("intProperty", String.valueOf(someInt));
+    properties.setProperty("intArrayProperty", Ints.join(", ", someIntArray));
+    properties.setProperty("longProperty", String.valueOf(someLong));
+    properties.setProperty("shortProperty", String.valueOf(someShort));
+    properties.setProperty("floatProperty", String.valueOf(someFloat));
+    properties.setProperty("doubleProperty", String.valueOf(someDouble));
+    properties.setProperty("byteProperty", String.valueOf(someByte));
+    properties.setProperty("booleanProperty", String.valueOf(someBoolean));
+    properties.setProperty("stringProperty", String.valueOf(someString));
+    properties.setProperty("dateFormat", String.valueOf(someDateFormat));
+    properties.setProperty("dateProperty", simpleDateFormat.format(someDate));
+
+    SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/XmlConfigPlaceholderTest10.xml");
+
+    TestAllKindsOfDataTypesBean bean = context.getBean(TestAllKindsOfDataTypesBean.class);
+
+    assertEquals(someInt, bean.getIntProperty());
+    assertArrayEquals(someIntArray, bean.getIntArrayProperty());
+    assertEquals(someLong, bean.getLongProperty());
+    assertEquals(someShort, bean.getShortProperty());
+    assertEquals(someFloat, bean.getFloatProperty(), 0.001F);
+    assertEquals(someDouble, bean.getDoubleProperty(), 0.001D);
+    assertEquals(someByte, bean.getByteProperty());
+    assertEquals(someBoolean, bean.getBooleanProperty());
+    assertEquals(someString, bean.getStringProperty());
+    assertEquals(someDate, bean.getDateProperty());
+
+    Properties newProperties = new Properties();
+    newProperties.setProperty("intProperty", String.valueOf(someNewInt));
+    newProperties.setProperty("intArrayProperty", Ints.join(", ", someNewIntArray));
+    newProperties.setProperty("longProperty", String.valueOf(someNewLong));
+    newProperties.setProperty("shortProperty", String.valueOf(someNewShort));
+    newProperties.setProperty("floatProperty", String.valueOf(someNewFloat));
+    newProperties.setProperty("doubleProperty", String.valueOf(someNewDouble));
+    newProperties.setProperty("byteProperty", String.valueOf(someNewByte));
+    newProperties.setProperty("booleanProperty", String.valueOf(someNewBoolean));
+    newProperties.setProperty("stringProperty", String.valueOf(someNewString));
+    newProperties.setProperty("dateFormat", String.valueOf(someDateFormat));
+    newProperties.setProperty("dateProperty", simpleDateFormat.format(someNewDate));
+
+    config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
+
+    TimeUnit.MILLISECONDS.sleep(50);
+
+    assertEquals(someNewInt, bean.getIntProperty());
+    assertArrayEquals(someNewIntArray, bean.getIntArrayProperty());
+    assertEquals(someNewLong, bean.getLongProperty());
+    assertEquals(someNewShort, bean.getShortProperty());
+    assertEquals(someNewFloat, bean.getFloatProperty(), 0.001F);
+    assertEquals(someNewDouble, bean.getDoubleProperty(), 0.001D);
+    assertEquals(someNewByte, bean.getByteProperty());
+    assertEquals(someNewBoolean, bean.getBooleanProperty());
+    assertEquals(someNewString, bean.getStringProperty());
+    assertEquals(someNewDate, bean.getDateProperty());
+  }
+
   public static class TestXmlBeanWithConstructorArgs {
     private final int timeout;
     private final int batch;
@@ -409,6 +498,109 @@ public class XmlConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegratio
 
     public int getBatch() {
       return batch;
+    }
+  }
+
+  static class TestAllKindsOfDataTypesBean {
+
+    private int intProperty;
+
+    private int[] intArrayProperty;
+
+    private long longProperty;
+
+    private short shortProperty;
+
+    private float floatProperty;
+
+    private double doubleProperty;
+
+    private byte byteProperty;
+
+    private boolean booleanProperty;
+
+    private String stringProperty;
+
+    private Date dateProperty;
+
+    public void setDateProperty(Date dateProperty) {
+      this.dateProperty = dateProperty;
+    }
+
+    public void setIntProperty(int intProperty) {
+      this.intProperty = intProperty;
+    }
+
+    public void setIntArrayProperty(int[] intArrayProperty) {
+      this.intArrayProperty = intArrayProperty;
+    }
+
+    public void setLongProperty(long longProperty) {
+      this.longProperty = longProperty;
+    }
+
+    public void setShortProperty(short shortProperty) {
+      this.shortProperty = shortProperty;
+    }
+
+    public void setFloatProperty(float floatProperty) {
+      this.floatProperty = floatProperty;
+    }
+
+    public void setDoubleProperty(double doubleProperty) {
+      this.doubleProperty = doubleProperty;
+    }
+
+    public void setByteProperty(byte byteProperty) {
+      this.byteProperty = byteProperty;
+    }
+
+    public void setBooleanProperty(boolean booleanProperty) {
+      this.booleanProperty = booleanProperty;
+    }
+
+    public void setStringProperty(String stringProperty) {
+      this.stringProperty = stringProperty;
+    }
+
+    public int getIntProperty() {
+      return intProperty;
+    }
+
+    public int[] getIntArrayProperty() {
+      return intArrayProperty;
+    }
+
+    public long getLongProperty() {
+      return longProperty;
+    }
+
+    public short getShortProperty() {
+      return shortProperty;
+    }
+
+    public float getFloatProperty() {
+      return floatProperty;
+    }
+
+    public double getDoubleProperty() {
+      return doubleProperty;
+    }
+
+    public byte getByteProperty() {
+      return byteProperty;
+    }
+
+    public boolean getBooleanProperty() {
+      return booleanProperty;
+    }
+
+    public String getStringProperty() {
+      return stringProperty;
+    }
+
+    public Date getDateProperty() {
+      return dateProperty;
     }
   }
 }

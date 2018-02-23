@@ -9,6 +9,8 @@ import com.ctrip.framework.apollo.internals.SimpleConfig;
 import com.ctrip.framework.apollo.spring.property.SpringValueDefinitionProcessor;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 import java.util.Properties;
@@ -94,6 +96,15 @@ public abstract class AbstractSpringIntegrationTest {
 
     return properties;
   }
+
+  protected Date assembleDate(int year, int month, int day, int hour, int minute, int second, int millisecond) {
+    Calendar date = Calendar.getInstance();
+    date.set(year, month - 1, day, hour, minute, second); //Month in Calendar is 0 based
+    date.set(Calendar.MILLISECOND, millisecond);
+
+    return date.getTime();
+  }
+
 
   protected static void mockConfig(String namespace, Config config) {
     CONFIG_REGISTRY.put(namespace, config);

@@ -17,10 +17,13 @@ import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanExpressionContext;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.Scope;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
@@ -97,8 +100,8 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
       throws BeansException {
     if (configUtil.isAutoUpdateInjectedSpringPropertiesEnabled()) {
       Class clazz = bean.getClass();
-      processFields(bean, findAllField(clazz));
-      processMethods(bean, findAllMethod(clazz));
+      processFields(bean, beanName, findAllField(clazz));
+      processMethods(bean, beanName, findAllMethod(clazz));
       processBeanPropertyValues(bean, beanName);
     }
     return bean;
@@ -109,7 +112,7 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
     return bean;
   }
 
-  private void processFields(Object bean, List<Field> declaredFields) {
+  private void processFields(Object bean, String beanName, List<Field> declaredFields) {
     for (Field field : declaredFields) {
       // register @Value on field
       Value value = field.getAnnotation(Value.class);
@@ -123,14 +126,14 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
       }
 
       for (String key : keys) {
-        SpringValue springValue = new SpringValue(key, value.value(), bean, field);
+        SpringValue springValue = new SpringValue(key, value.value(), bean, beanName, field);
         monitor.put(key, springValue);
         logger.debug("Monitoring {}", springValue);
       }
     }
   }
 
-  private void processMethods(final Object bean, List<Method> declaredMethods) {
+  private void processMethods(final Object bean, String beanName, List<Method> declaredMethods) {
     for (final Method method : declaredMethods) {
       //register @Value on method
       Value value = method.getAnnotation(Value.class);
@@ -154,7 +157,7 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
       }
 
       for (String key : keys) {
-        SpringValue springValue = new SpringValue(key, value.value(), bean, method);
+        SpringValue springValue = new SpringValue(key, value.value(), bean, beanName, method);
         monitor.put(key, springValue);
         logger.debug("Monitoring {}", springValue);
       }
@@ -177,7 +180,7 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
           continue;
         }
         SpringValue springValue = new SpringValue(definition.getKey(), definition.getPlaceholder(),
-            bean, method);
+            bean, beanName, method);
         monitor.put(definition.getKey(), springValue);
         logger.debug("Monitoring {}", springValue);
       } catch (Throwable ex) {
@@ -250,29 +253,49 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
 
   private void updateSpringValue(SpringValue springValue) {
     try {
-      String strVal = beanFactory.resolveEmbeddedValue(springValue.getPlaceholder());
-      Object value;
-
-      if (springValue.isField()) {
-        // org.springframework.beans.TypeConverter#convertIfNecessary(java.lang.Object, java.lang.Class, java.lang.reflect.Field) is available from Spring 3.2.0+
-        if (typeConverterHasConvertIfNecessaryWithFieldParameter) {
-          value = this.typeConverter
-              .convertIfNecessary(strVal, springValue.getTargetType(), springValue.getField());
-        } else {
-          value = this.typeConverter.convertIfNecessary(strVal, springValue.getTargetType());
-        }
-      } else {
-        value = this.typeConverter.convertIfNecessary(strVal, springValue.getTargetType(),
-            springValue.getMethodParameter());
-      }
-
+      Object value = resolvePropertyValue(springValue);
       springValue.update(value);
 
-      logger.debug("Auto update apollo changed value successfully, new value: {}, {}", strVal,
+      logger.debug("Auto update apollo changed value successfully, new value: {}, {}", value,
           springValue.toString());
     } catch (Throwable ex) {
       logger.error("Auto update apollo changed value failed, {}", springValue.toString(), ex);
     }
+  }
+
+  /**
+   * Logic transplanted from org.springframework.beans.factory.support.DefaultListableBeanFactory#doResolveDependency(org.springframework.beans.factory.config.DependencyDescriptor, java.lang.String, java.util.Set, org.springframework.beans.TypeConverter)
+   */
+  private Object resolvePropertyValue(SpringValue springValue) {
+    String strVal = beanFactory.resolveEmbeddedValue(springValue.getPlaceholder());
+    Object value;
+
+    BeanDefinition bd = (beanFactory.containsBean(springValue.getBeanName()) ? beanFactory
+        .getMergedBeanDefinition(springValue.getBeanName()) : null);
+    value = evaluateBeanDefinitionString(strVal, bd);
+
+    if (springValue.isField()) {
+      // org.springframework.beans.TypeConverter#convertIfNecessary(java.lang.Object, java.lang.Class, java.lang.reflect.Field) is available from Spring 3.2.0+
+      if (typeConverterHasConvertIfNecessaryWithFieldParameter) {
+        value = this.typeConverter
+            .convertIfNecessary(value, springValue.getTargetType(), springValue.getField());
+      } else {
+        value = this.typeConverter.convertIfNecessary(value, springValue.getTargetType());
+      }
+    } else {
+      value = this.typeConverter.convertIfNecessary(value, springValue.getTargetType(),
+          springValue.getMethodParameter());
+    }
+
+    return value;
+  }
+
+  private Object evaluateBeanDefinitionString(String value, BeanDefinition beanDefinition) {
+    if (beanFactory.getBeanExpressionResolver() == null) {
+      return value;
+    }
+    Scope scope = (beanDefinition != null ? beanFactory.getRegisteredScope(beanDefinition.getScope()) : null);
+    return beanFactory.getBeanExpressionResolver().evaluate(value, new BeanExpressionContext(beanFactory, scope));
   }
 
   private boolean testTypeConverterHasConvertIfNecessaryWithFieldParameter() {

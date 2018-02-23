@@ -9,11 +9,11 @@ import org.springframework.util.StringUtils;
 /**
  * Extract keys from placeholder, e.g.
  * <ul>
- *   <li>${some.key} => "some.key"</li>
- *   <li>${some.key:${some.other.key:100}} => "some.key", "some.other.key"</li>
- *   <li>${${some.key}} => "some.key"</li>
- *   <li>${${some.key:other.key}} => "some.key"</li>
- *   <li>${${some.key}:${another.key}} => "some.key", "another.key"</li>
+ * <li>${some.key} => "some.key"</li>
+ * <li>${some.key:${some.other.key:100}} => "some.key", "some.other.key"</li>
+ * <li>${${some.key}} => "some.key"</li>
+ * <li>${${some.key:other.key}} => "some.key"</li>
+ * <li>${${some.key}:${another.key}} => "some.key", "another.key"</li>
  * </ul>
  */
 public class PlaceholderHelper {
@@ -22,11 +22,13 @@ public class PlaceholderHelper {
   private static final String PLACEHOLDER_SUFFIX = "}";
   private static final String VALUE_SEPARATOR = ":";
   private static final String SIMPLE_PLACEHOLDER_PREFIX = "{";
+  private static final String EXPRESSION_PREFIX = "#{";
+  private static final String EXPRESSION_SUFFIX = "}";
 
   public Set<String> extractPlaceholderKeys(String propertyString) {
     Set<String> placeholderKeys = Sets.newHashSet();
 
-    if (!isNormalizedPlaceholder(propertyString)) {
+    if (!isNormalizedPlaceholder(propertyString) && !isExpressionWithPlaceholder(propertyString)) {
       return placeholderKeys;
     }
 
@@ -81,6 +83,11 @@ public class PlaceholderHelper {
 
   private boolean isNormalizedPlaceholder(String propertyString) {
     return propertyString.startsWith(PLACEHOLDER_PREFIX) && propertyString.endsWith(PLACEHOLDER_SUFFIX);
+  }
+
+  private boolean isExpressionWithPlaceholder(String propertyString) {
+    return propertyString.startsWith(EXPRESSION_PREFIX) && propertyString.endsWith(EXPRESSION_SUFFIX)
+        && propertyString.contains(PLACEHOLDER_PREFIX);
   }
 
   private String normalizeToPlaceholder(String strVal) {

@@ -16,20 +16,23 @@ public class SpringValue {
   private MethodParameter methodParameter;
   private Field field;
   private Object bean;
+  private String beanName;
   private String key;
   private String placeholder;
   private Class<?> targetType;
 
-  public SpringValue(String key, String placeholder, Object bean, Field field) {
+  public SpringValue(String key, String placeholder, Object bean, String beanName, Field field) {
     this.bean = bean;
+    this.beanName = beanName;
     this.field = field;
     this.key = key;
     this.placeholder = placeholder;
     this.targetType = field.getType();
   }
 
-  public SpringValue(String key, String placeholder, Object bean, Method method) {
+  public SpringValue(String key, String placeholder, Object bean, String beanName, Method method) {
     this.bean = bean;
+    this.beanName = beanName;
     this.methodParameter = new MethodParameter(method, 0);
     this.key = key;
     this.placeholder = placeholder;
@@ -57,6 +60,10 @@ public class SpringValue {
     methodParameter.getMethod().invoke(bean, newVal);
   }
 
+  public String getBeanName() {
+    return beanName;
+  }
+
   public Class<?> getTargetType() {
     return targetType;
   }
@@ -81,9 +88,9 @@ public class SpringValue {
   public String toString() {
     if (isField()) {
       return String
-          .format("key: %s, field: %s.%s", key, bean.getClass().getName(), field.getName());
+          .format("key: %s, beanName: %s, field: %s.%s", key, beanName, bean.getClass().getName(), field.getName());
     }
-    return String.format("key: %s, method: %s.%s", key, bean.getClass().getName(),
+    return String.format("key: %s, beanName: %s, method: %s.%s", key, beanName, bean.getClass().getName(),
         methodParameter.getMethod().getName());
   }
 }
