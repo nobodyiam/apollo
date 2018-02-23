@@ -264,7 +264,8 @@ public class SpringValueProcessor implements BeanPostProcessor, PriorityOrdered,
   }
 
   /**
-   * Logic transplanted from org.springframework.beans.factory.support.DefaultListableBeanFactory#doResolveDependency(org.springframework.beans.factory.config.DependencyDescriptor, java.lang.String, java.util.Set, org.springframework.beans.TypeConverter)
+   * Logic transplanted from DefaultListableBeanFactory
+   * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#doResolveDependency(org.springframework.beans.factory.config.DependencyDescriptor, java.lang.String, java.util.Set, org.springframework.beans.TypeConverter)
    */
   private Object resolvePropertyValue(SpringValue springValue) {
     String strVal = beanFactory.resolveEmbeddedValue(springValue.getPlaceholder());
