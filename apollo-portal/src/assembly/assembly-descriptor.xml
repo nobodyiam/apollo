@@ -39,6 +39,12 @@
 			<outputDirectory>/config</outputDirectory>
 			<includes>
 				<include>application-github.properties</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/resources</directory>
+			<outputDirectory>/config</outputDirectory>
+			<includes>
 				<include>apollo-env.properties</include>
 			</includes>
 		</fileSet>

@@ -26,7 +26,7 @@ public final class EnvUtils {
       case "TOOLS":
         return Env.TOOLS;
       default:
-        return null;
+        return Env.UNKNOWN;
     }
   }
 }
