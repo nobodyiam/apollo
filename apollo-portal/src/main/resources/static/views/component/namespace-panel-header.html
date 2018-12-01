@@ -21,11 +21,11 @@
         </div>
         <div class="col-md-6 text-right" style="padding-right:23px;">
             <span data-toggle="collapse" data-target="#BODY{{namespace.branch.id}}" aria-expanded="false">
-                <span
-                        class="label no-radius cursor-pointer"
-                        data-toggle="collapse" data-target="#BODY{{namespace.id}}" aria-expanded="false"
-                        ng-click="showNamespaceBody = !showNamespaceBody">
-                    <a ><small>[展开/收缩]</small></a>
+                <span class="label no-radius cursor-pointer"
+                      data-toggle="collapse" data-target="#BODY{{namespace.id}}" aria-expanded="false"
+                      ng-click="showNamespaceBody = !showNamespaceBody"
+                      ng-show="namespace.initialized">
+                    <a>[展开/收缩]</a>
                 </span>
             </span>
         </div>
@@ -33,20 +33,20 @@
 </header>
 
 <!--branch nav-->
-<header class="panel-heading second-panel-heading" ng-show="namespace.hasBranch">
+<header class="panel-heading second-panel-heading" ng-show="namespace.initialized && namespace.hasBranch">
     <div class="row">
         <div class="col-md-8 pull-left">
             <ul class="nav nav-tabs">
                 <li role="presentation">
                     <a ng-class="{'node_active': namespace.displayControl.currentOperateBranch == 'master'}"
-                       ng-click="switchBranch('master')">
+                       ng-click="switchBranch('master', true)">
                         <img src="img/branch.png">
                         主版本
                     </a>
                 </li>
                 <li role="presentation">
                     <a ng-class="{'node_active': namespace.displayControl.currentOperateBranch != 'master'}"
-                       ng-click="switchBranch(namespace.branchName)">
+                       ng-click="switchBranch(namespace.branchName, true)">
                         <img src="img/branch.png">
                         灰度版本
                     </a>

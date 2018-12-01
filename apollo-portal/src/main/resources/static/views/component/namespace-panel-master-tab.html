@@ -1,8 +1,29 @@
+<!--master panel body when not initialized-->
+<section class="master-panel-body" ng-if="!namespace.initialized">
+    <!--main header-->
+    <header class="panel-heading">
+        <div class="row">
+            <div class="col-md-6 col-sm-6 header-namespace">
+                <b class="namespace-name" ng-bind="namespace.viewName"></b>
+            </div>
+
+            <div class="col-md-6 col-sm-6 text-right header-buttons">
+
+                <button type="button" class="btn btn-default btn-sm"
+                        data-tooltip="tooltip" data-placement="bottom" title="加载Namespace"
+                        ng-click="refreshNamespace()">
+                    <img src="img/more.png">
+                    加载Namespace
+                </button>
+            </div>
+        </div>
+    </header>
+
+</section>
 <!--master panel body-->
 <section class="master-panel-body"
-         ng-if="namespace.hasBranch
-         && namespace.displayControl.currentOperateBranch == 'master' ||
-          !namespace.hasBranch">
+         ng-if="namespace.initialized &&
+         (namespace.hasBranch && namespace.displayControl.currentOperateBranch == 'master' || !namespace.hasBranch)">
     <!--main header-->
     <header class="panel-heading">
         <div class="row">

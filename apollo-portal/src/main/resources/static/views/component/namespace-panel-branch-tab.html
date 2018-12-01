@@ -1,14 +1,11 @@
 <section class="branch-panel-body"
-         ng-if="namespace.hasBranch && namespace.displayControl.currentOperateBranch != 'master'">
+         ng-if="namespace.initialized &&
+                (namespace.hasBranch && namespace.displayControl.currentOperateBranch != 'master')">
     <!--main header-->
     <header class="panel-heading">
 
         <div class="row">
             <div class="col-md-6 col-sm-6 header-namespace">
-                <span class="cursor-pointer"
-                      data-toggle="collapse" data-target="#BODY{{namespace.branch.id}}" aria-expanded="false"
-                      ng-click="namespace.branch.displayControl.show = !namespace.branch.displayControl.show">
-                    </span>
                 <b class="namespace-name" ng-bind="namespace.viewName"></b>
                 <span class="label label-warning no-radius namespace-label"
                       ng-show="namespace.branch.itemModifiedCnt > 0">有修改

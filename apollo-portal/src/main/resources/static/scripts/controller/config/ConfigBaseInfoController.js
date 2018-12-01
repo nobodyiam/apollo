@@ -116,7 +116,7 @@ function ConfigBaseInfoController($rootScope, $scope, $window, $location, toastr
     $scope.findMissingNamespaces = function () {
         $scope.missingNamespaces = [];
         // only check missing private namespaces when app exists in current env
-        if ($scope.missEnvs.indexOf($rootScope.pageContext.env) === -1) {
+        if ($rootScope.pageContext.env && $scope.missEnvs.indexOf($rootScope.pageContext.env) === -1) {
           AppService.find_missing_namespaces($rootScope.pageContext.appId, $rootScope.pageContext.env,
               $rootScope.pageContext.clusterName).then(function (result) {
                   $scope.missingNamespaces = AppUtil.collectData(result);

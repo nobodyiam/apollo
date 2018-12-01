@@ -214,7 +214,8 @@
                        pre-delete-item="preDeleteItem"
                        show-text="showText"
                        show-no-modify-permission-dialog="showNoModifyPermissionDialog"
-                       show-body="namespaces.length == 1"
+                       show-body="namespaces.length < 3"
+                       lazy-load="namespaces.length > 10"
                        pre-create-branch="preCreateBranch"
                        pre-delete-branch="preDeleteBranch">
         </apollonspanel>
