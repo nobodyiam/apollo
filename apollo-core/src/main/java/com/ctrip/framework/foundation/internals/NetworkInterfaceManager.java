@@ -42,11 +42,16 @@ public enum NetworkInterfaceManager {
           weight += 2;
         }
 
+        /**
+         * The following logic is removed as we will sort the network interfaces according to the index asc to determine
+         * the priorities between network interfaces, see https://github.com/ctripcorp/apollo/pull/1986
+         */
         // has host name
-        // TODO fix performance issue when calling getHostName
+        /*
         if (!Objects.equals(address.getHostName(), address.getHostAddress())) {
           weight += 1;
         }
+        */
 
         if (weight > maxWeight) {
           maxWeight = weight;
