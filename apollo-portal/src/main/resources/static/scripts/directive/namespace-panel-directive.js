@@ -191,14 +191,15 @@ function directive($window, toastr, AppUtil, EventManager, PermissionService, Na
 
                             //modify master item and set item's masterReleaseValue
                             if (masterItem) {
-                                if (masterItem.isModified && masterItem.oldValue) {
+                                item.masterItemExists = true;
+                                if (masterItem.isModified) {
                                     item.masterReleaseValue = masterItem.oldValue;
-                                } else if (masterItem.item.value) {
+                                } else {
                                     item.masterReleaseValue = masterItem.item.value;
                                 }
 
                             } else {//delete branch item
-                                item.masterReleaseValue = '';
+                                item.masterItemExists = false;
                             }
 
                             //delete master item. ignore
