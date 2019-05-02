@@ -891,7 +891,7 @@ function directive($window, toastr, AppUtil, EventManager, PermissionService, Na
                 $blockScrolling: Infinity,
                 showPrintMargin: false,
                 theme: 'eclipse',
-                mode: scope.namespace.format === 'yml' ? 'yaml' : scope.namespace.format,
+                mode: scope.namespace.format === 'yml' ? 'yaml' : (scope.namespace.format === 'txt' ? undefined : scope.namespace.format),
                 onLoad: function (_editor) {
                     _editor.$blockScrolling = Infinity;
                     _editor.setOptions({
