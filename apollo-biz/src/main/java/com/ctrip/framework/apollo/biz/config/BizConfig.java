@@ -59,7 +59,7 @@ public class BizConfig extends RefreshableConfig {
     return checkInt(interval, 1, Integer.MAX_VALUE, DEFAULT_GRAY_RELEASE_RULE_SCAN_INTERVAL);
   }
 
-  public long longPollingTimeout() {
+  public long longPollingTimeoutInMilli() {
     int timeout = getIntProperty("long.polling.timeout", DEFAULT_LONG_POLLING_TIMEOUT);
     return 1000 * checkInt(timeout, 1, Integer.MAX_VALUE, DEFAULT_LONG_POLLING_TIMEOUT);
   }

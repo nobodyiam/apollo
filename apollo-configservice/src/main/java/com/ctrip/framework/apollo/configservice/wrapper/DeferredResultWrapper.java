@@ -23,8 +23,8 @@ public class DeferredResultWrapper {
   private DeferredResult<ResponseEntity<List<ApolloConfigNotification>>> result;
 
 
-  public DeferredResultWrapper(long timeout) {
-    result = new DeferredResult<>(timeout, NOT_MODIFIED_RESPONSE_LIST);
+  public DeferredResultWrapper(long timeoutInMilli) {
+    result = new DeferredResult<>(timeoutInMilli, NOT_MODIFIED_RESPONSE_LIST);
   }
 
   public void recordNamespaceNameNormalizedResult(String originalNamespaceName, String normalizedNamespaceName) {
