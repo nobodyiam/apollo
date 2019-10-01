@@ -1,7 +1,7 @@
 # Dockerfile for apollo-portal
 # 1. Copy apollo-portal-${VERSION}-github.zip to current directory
 # 2. Build with: docker build -t apollo-portal .
-# 3. Run with: docker run -p 8070:8070 -d -v /tmp/logs:/opt/logs --name apollo-portal apollo-portal
+# 3. Run with: docker run -p 8070:8070 -e DS_URL="jdbc:mysql://fill-in-the-correct-server:3306/ApolloPortalDB?characterEncoding=utf8" -e DS_USERNAME=FillInCorrectUser -e DS_PASSWORD=FillInCorrectPassword -e DEV_META=http://fill-in-dev-meta-server:8080 -e PRO_META=http://fill-in-pro-meta-server:8080 -d -v /tmp/logs:/opt/logs --name apollo-portal apollo-portal
 
 FROM openjdk:8-jre-alpine
 MAINTAINER ameizi <sxyx2008@163.com>

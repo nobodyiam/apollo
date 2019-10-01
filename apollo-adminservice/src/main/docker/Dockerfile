@@ -1,7 +1,7 @@
 # Dockerfile for apollo-adminservice
 # 1. Copy apollo-adminservice-${VERSION}-github.zip to current directory
 # 2. Build with: docker build -t apollo-adminservice .
-# 3. Run with: docker run -p 8090:8090 -d -v /tmp/logs:/opt/logs --name apollo-adminservice apollo-adminservice
+# 3. Run with: docker run -p 8090:8090 -e DS_URL="jdbc:mysql://fill-in-the-correct-server:3306/ApolloConfigDB?characterEncoding=utf8" -e DS_USERNAME=FillInCorrectUser -e DS_PASSWORD=FillInCorrectPassword -d -v /tmp/logs:/opt/logs --name apollo-adminservice apollo-adminservice
 
 FROM openjdk:8-jre-alpine
 MAINTAINER ameizi <sxyx2008@163.com>
