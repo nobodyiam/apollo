@@ -61,7 +61,8 @@ public class BizConfig extends RefreshableConfig {
 
   public long longPollingTimeoutInMilli() {
     int timeout = getIntProperty("long.polling.timeout", DEFAULT_LONG_POLLING_TIMEOUT);
-    return 1000 * checkInt(timeout, 1, Integer.MAX_VALUE, DEFAULT_LONG_POLLING_TIMEOUT);
+    // java client's long polling timeout is 90 seconds, so server side long polling timeout must be less than 90
+    return 1000 * checkInt(timeout, 1, 90, DEFAULT_LONG_POLLING_TIMEOUT);
   }
 
   public int itemKeyLengthLimit() {
