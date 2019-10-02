@@ -1,6 +1,8 @@
 package com.ctrip.framework.apollo.openapi.client.service;
 
+import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.openapi.dto.OpenClusterDTO;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -15,7 +17,10 @@ public class ClusterOpenApiService extends AbstractOpenApiService {
   public OpenClusterDTO getCluster(String appId, String env, String clusterName) {
     checkNotEmpty(appId, "App id");
     checkNotEmpty(env, "Env");
-    checkNotEmpty(clusterName, "Cluster name");
+
+    if (Strings.isNullOrEmpty(clusterName)) {
+      clusterName = ConfigConsts.CLUSTER_NAME_DEFAULT;
+    }
 
     String path = String.format("envs/%s/apps/%s/clusters/%s", escapePath(env), escapePath(appId),
         escapePath(clusterName));

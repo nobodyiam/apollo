@@ -15,6 +15,7 @@ import com.ctrip.framework.apollo.portal.entity.model.NamespaceGrayDelReleaseMod
 import com.ctrip.framework.apollo.portal.entity.model.NamespaceReleaseModel;
 import com.ctrip.framework.apollo.portal.service.NamespaceBranchService;
 import com.ctrip.framework.apollo.portal.service.ReleaseService;
+import com.ctrip.framework.apollo.portal.spi.UserInfoHolder;
 import com.ctrip.framework.apollo.portal.spi.UserService;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.access.AccessDeniedException;
@@ -160,7 +161,14 @@ public class ReleaseController {
 
   @PutMapping(path = "/releases/{releaseId}/rollback")
   public void rollback(@PathVariable String env,
-      @PathVariable long releaseId, HttpServletRequest request) {
+      @PathVariable long releaseId, @RequestParam String operator, HttpServletRequest request) {
+    RequestPrecondition.checkArguments(!StringUtils.isContainEmpty(operator),
+        "Param operator can not be empty");
+
+    if (userService.findByUserId(operator) == null) {
+      throw new BadRequestException("user(operator) not exists");
+    }
+
     ReleaseDTO release = releaseService.findReleaseById(Env.fromString(env), releaseId);
 
     if (release == null) {
@@ -171,7 +179,7 @@ public class ReleaseController {
       throw new AccessDeniedException("Forbidden operation. you don't have release permission");
     }
 
-    releaseService.rollback(Env.fromString(env), releaseId);
+    releaseService.rollback(Env.fromString(env), releaseId, operator);
 
   }
 

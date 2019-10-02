@@ -100,25 +100,28 @@ public class ReleaseOpenApiServiceTest extends AbstractOpenApiServiceTest {
   @Test
   public void testRollbackRelease() throws Exception {
     long someReleaseId = 1L;
+    String someOperator = "someOperator";
 
     final ArgumentCaptor<HttpPut> request = ArgumentCaptor.forClass(HttpPut.class);
 
-    releaseOpenApiService.rollbackRelease(someEnv, someReleaseId);
+    releaseOpenApiService.rollbackRelease(someEnv, someReleaseId, someOperator);
 
     verify(httpClient, times(1)).execute(request.capture());
 
     HttpPut put = request.getValue();
 
-    assertEquals(String
-        .format("%s/envs/%s/releases/%s/rollback", someBaseUrl, someEnv, someReleaseId), put.getURI().toString());
+    assertEquals(
+        String.format("%s/envs/%s/releases/%s/rollback?operator=%s", someBaseUrl, someEnv, someReleaseId, someOperator),
+        put.getURI().toString());
   }
 
   @Test(expected = RuntimeException.class)
   public void testRollbackReleaseWithError() throws Exception {
     long someReleaseId = 1L;
+    String someOperator = "someOperator";
 
     when(statusLine.getStatusCode()).thenReturn(400);
 
-    releaseOpenApiService.rollbackRelease(someEnv, someReleaseId);
+    releaseOpenApiService.rollbackRelease(someEnv, someReleaseId, someOperator);
   }
 }
