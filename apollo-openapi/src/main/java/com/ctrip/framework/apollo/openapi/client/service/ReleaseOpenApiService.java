@@ -64,4 +64,14 @@ public class ReleaseOpenApiService extends AbstractOpenApiService {
     }
   }
 
+  public void rollbackRelease(String env, long releaseId) {
+    checkNotEmpty(env, "Env");
+
+    String path = String.format("envs/%s/releases/%s/rollback", escapePath(env), releaseId);
+
+    try (CloseableHttpResponse ignored = put(path, null)) {
+    } catch (Throwable ex) {
+      throw new RuntimeException(String.format("Rollback release: %s in env: %s failed", releaseId, env), ex);
+    }
+  }
 }

@@ -161,7 +161,7 @@ public class ReleaseController {
   @PutMapping(path = "/releases/{releaseId}/rollback")
   public void rollback(@PathVariable String env,
       @PathVariable long releaseId, HttpServletRequest request) {
-    ReleaseDTO release = releaseService.findReleaseById(Env.valueOf(env), releaseId);
+    ReleaseDTO release = releaseService.findReleaseById(Env.fromString(env), releaseId);
 
     if (release == null) {
       throw new BadRequestException("release not found");
@@ -171,7 +171,7 @@ public class ReleaseController {
       throw new AccessDeniedException("Forbidden operation. you don't have release permission");
     }
 
-    releaseService.rollback(Env.valueOf(env), releaseId);
+    releaseService.rollback(Env.fromString(env), releaseId);
 
   }
 
