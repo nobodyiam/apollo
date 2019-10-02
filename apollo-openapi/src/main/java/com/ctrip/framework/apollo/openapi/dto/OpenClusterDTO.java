@@ -21,4 +21,16 @@ public class OpenClusterDTO extends BaseDTO {
   public void setAppId(String appId) {
     this.appId = appId;
   }
+
+  @Override
+  public String toString() {
+    return "OpenClusterDTO{" +
+        "name='" + name + '\'' +
+        ", appId='" + appId + '\'' +
+        ", dataChangeCreatedBy='" + dataChangeCreatedBy + '\'' +
+        ", dataChangeLastModifiedBy='" + dataChangeLastModifiedBy + '\'' +
+        ", dataChangeCreatedTime=" + dataChangeCreatedTime +
+        ", dataChangeLastModifiedTime=" + dataChangeLastModifiedTime +
+        '}';
+  }
 }
