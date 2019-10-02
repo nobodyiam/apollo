@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Where(clause = "isDeleted = 0")
 public class AppNamespace extends BaseEntity {
 
-  @NotBlank(message = "App Name cannot be blank")
+  @NotBlank(message = "AppNamespace Name cannot be blank")
   @Pattern(
       regexp = InputValidator.CLUSTER_NAMESPACE_VALIDATOR,
       message = "Namespace格式错误: " + InputValidator.INVALID_CLUSTER_NAMESPACE_MESSAGE + " & " + InputValidator.INVALID_NAMESPACE_NAMESPACE_MESSAGE
