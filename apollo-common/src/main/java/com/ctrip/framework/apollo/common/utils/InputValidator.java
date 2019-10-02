@@ -17,6 +17,13 @@ public class InputValidator {
   private static final Pattern APP_NAMESPACE_PATTERN =
       Pattern.compile(APP_NAMESPACE_VALIDATOR);
 
+  public static boolean isValidClusterNamespace(String name) {
+    if (StringUtils.isEmpty(name)){
+      return false;
+    }
+    return CLUSTER_NAMESPACE_PATTERN.matcher(name).matches();
+  }
+
   public static boolean isValidAppNamespace(String name){
     if (StringUtils.isEmpty(name)){
       return false;

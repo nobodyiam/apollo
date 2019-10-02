@@ -57,10 +57,9 @@ public class ClusterController {
     RequestPrecondition.checkArguments(!StringUtils.isContainEmpty(clusterName, operator),
         "name and dataChangeCreatedBy should not be null or empty");
 
-    if (!InputValidator.isValidAppNamespace(clusterName)) {
+    if (!InputValidator.isValidClusterNamespace(clusterName)) {
       throw new BadRequestException(
-          String.format("Cluster Name 格式错误: %s", InputValidator.INVALID_CLUSTER_NAMESPACE_MESSAGE
-              + " & " + InputValidator.INVALID_NAMESPACE_NAMESPACE_MESSAGE));
+          String.format("Cluster Name 格式错误: %s", InputValidator.INVALID_CLUSTER_NAMESPACE_MESSAGE));
     }
 
     if (userService.findByUserId(operator) == null) {
@@ -68,7 +67,7 @@ public class ClusterController {
     }
 
     ClusterDTO toCreate = OpenApiBeanUtils.transformToClusterDTO(cluster);
-    ClusterDTO createdClusterDTO = clusterService.createCluster(Env.valueOf(env), toCreate);
+    ClusterDTO createdClusterDTO = clusterService.createCluster(Env.fromString(env), toCreate);
 
     return OpenApiBeanUtils.transformFromClusterDTO(createdClusterDTO);
   }
