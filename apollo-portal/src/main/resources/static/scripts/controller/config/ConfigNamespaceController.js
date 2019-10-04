@@ -166,7 +166,7 @@ function controller($rootScope, $scope, toastr, AppUtil, EventManager, ConfigSer
     function deleteItem() {
         ConfigService.delete_item($rootScope.pageContext.appId,
                                   $rootScope.pageContext.env,
-                                  $rootScope.pageContext.clusterName,
+                                  $scope.toOperationNamespace.baseInfo.clusterName,
                                   $scope.toOperationNamespace.baseInfo.namespaceName,
                                   toDeleteItemId).then(
             function (result) {
