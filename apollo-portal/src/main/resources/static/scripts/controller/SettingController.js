@@ -1,12 +1,12 @@
 setting_module.controller('SettingController',
-    ['$scope', '$location', '$translate', 'toastr',
-        'AppService', 'AppUtil', 'PermissionService',
-        'OrganizationService',
-        SettingController]);
+                          ['$scope', '$location', 'toastr',
+                           'AppService', 'AppUtil', 'PermissionService',
+                           'OrganizationService',
+                           SettingController]);
 
-function SettingController($scope, $location, $translate, toastr,
-    AppService, AppUtil, PermissionService,
-    OrganizationService) {
+function SettingController($scope, $location, toastr,
+                           AppService, AppUtil, PermissionService,
+                           OrganizationService) {
 
     var params = AppUtil.parseParams($location.$$url);
     var $orgWidget = $('#organization');
@@ -49,10 +49,10 @@ function SettingController($scope, $location, $translate, toastr,
                 organizations.push(org);
             });
             $orgWidget.select2({
-                placeholder: $translate.instant('Common.PleaseChooseDepartment'),
-                width: '100%',
-                data: organizations
-            });
+                                   placeholder: '请选择部门',
+                                   width: '100%',
+                                   data: organizations
+                               });
         }, function (result) {
             toastr.error(AppUtil.errorMsg(result), "load organizations error");
         });
@@ -107,7 +107,7 @@ function SettingController($scope, $location, $translate, toastr,
 
         var $ownerSelector = $('.ownerSelector');
         var defaultSelectedDOM = '<option value="' + app.ownerName + '" selected="selected">' + app.ownerName
-            + '</option>';
+                                 + '</option>';
         $ownerSelector.append(defaultSelectedDOM);
         $ownerSelector.trigger('change');
     }
@@ -115,21 +115,21 @@ function SettingController($scope, $location, $translate, toastr,
     function assignMasterRoleToUser() {
         var user = $('.' + $scope.userSelectWidgetId).select2('data')[0];
         if (!user) {
-            toastr.warning($translate.instant('App.Setting.PleaseChooseUser'));
+            toastr.warning("请选择用户");
             return;
         }
         var toAssignMasterRoleUser = user.id;
         $scope.submitBtnDisabled = true;
         PermissionService.assign_master_role($scope.pageContext.appId,
-            toAssignMasterRoleUser)
+                                             toAssignMasterRoleUser)
             .then(function (result) {
                 $scope.submitBtnDisabled = false;
-                toastr.success($translate.instant('App.Setting.Added'));
-                $scope.appRoleUsers.masterUsers.push({ userId: toAssignMasterRoleUser });
+                toastr.success("添加成功");
+                $scope.appRoleUsers.masterUsers.push({userId: toAssignMasterRoleUser});
                 $('.' + $scope.userSelectWidgetId).select2("val", "");
             }, function (result) {
                 $scope.submitBtnDisabled = false;
-                toastr.error(AppUtil.errorMsg(result), $translate.instant('App.Setting.AddFailed'));
+                toastr.error(AppUtil.errorMsg(result), "添加失败");
             });
     }
 
@@ -140,10 +140,10 @@ function SettingController($scope, $location, $translate, toastr,
         }
         PermissionService.remove_master_role($scope.pageContext.appId, user)
             .then(function (result) {
-                toastr.success($translate.instant('App.Setting.Deleted'));
+                toastr.success("删除成功");
                 removeUserFromList($scope.appRoleUsers.masterUsers, user);
             }, function (result) {
-                toastr.error(AppUtil.errorMsg(result), $translate.instant('App.Setting.DeleteFailed'));
+                toastr.error(AppUtil.errorMsg(result), "删除失败");
             });
     }
 
@@ -177,7 +177,7 @@ function SettingController($scope, $location, $translate, toastr,
         var selectedOrg = $orgWidget.select2('data')[0];
 
         if (!selectedOrg.id) {
-            toastr.warning($translate.instant('Common.PleaseChooseDepartment'));
+            toastr.warning("请选择部门");
             return;
         }
 
@@ -187,13 +187,13 @@ function SettingController($scope, $location, $translate, toastr,
         // owner
         var owner = $('.ownerSelector').select2('data')[0];
         if (!owner) {
-            toastr.warning($translate.instant('Common.PleaseChooseOwner'));
+            toastr.warning("请选择应用负责人");
             return;
         }
         app.ownerName = owner.id;
 
         AppService.update(app).then(function (app) {
-            toastr.success($translate.instant('App.Setting.Modified'));
+            toastr.success("修改成功");
             initApplication();
             $scope.display.app.edit = false;
             $scope.submitBtnDisabled = false;

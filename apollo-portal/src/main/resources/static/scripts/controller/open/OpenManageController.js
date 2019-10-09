@@ -1,8 +1,8 @@
 open_manage_module.controller('OpenManageController',
-    ['$scope', '$translate', 'toastr', 'AppUtil', 'OrganizationService', 'ConsumerService', 'PermissionService', 'EnvService',
-        OpenManageController]);
+                              ['$scope', 'toastr', 'AppUtil', 'OrganizationService', 'ConsumerService', 'PermissionService','EnvService',
+                               OpenManageController]);
 
-function OpenManageController($scope, $translate, toastr, AppUtil, OrganizationService, ConsumerService, PermissionService, EnvService) {
+function OpenManageController($scope, toastr, AppUtil, OrganizationService, ConsumerService, PermissionService, EnvService) {
 
     var $orgWidget = $('#organization');
 
@@ -35,10 +35,10 @@ function OpenManageController($scope, $translate, toastr, AppUtil, OrganizationS
                 organizations.push(org);
             });
             $orgWidget.select2({
-                placeholder: $translate.instant('Common.PleaseChooseDepartment'),
-                width: '100%',
-                data: organizations
-            });
+                                   placeholder: '请选择部门',
+                                   width: '100%',
+                                   data: organizations
+                               });
         }, function (result) {
             toastr.error(AppUtil.errorMsg(result), "load organizations error");
         });
@@ -47,16 +47,16 @@ function OpenManageController($scope, $translate, toastr, AppUtil, OrganizationS
     function initPermission() {
         PermissionService.has_root_permission()
             .then(function (result) {
-                $scope.isRootUser = result.hasPermission;
+                  $scope.isRootUser = result.hasPermission;
             });
     }
 
     function initEnv() {
         EnvService.find_all_envs()
-            .then(function (result) {
+            .then(function (result){
                 $scope.envs = new Array();
-                for (var iLoop = 0; iLoop < result.length; iLoop++) {
-                    $scope.envs.push({ checked: false, env: result[iLoop] });
+                for (var iLoop  = 0; iLoop < result.length; iLoop++) {
+                    $scope.envs.push({ checked : false, env : result[iLoop] });
                     $scope.envsChecked = new Array();
                 }
 
@@ -75,7 +75,7 @@ function OpenManageController($scope, $translate, toastr, AppUtil, OrganizationS
 
     function getTokenByAppId() {
         if (!$scope.consumer.appId) {
-            toastr.warning($translate.instant('Open.Manage.PleaseEnterAppId'));
+            toastr.warning("请输入appId");
             return;
         }
 
@@ -86,9 +86,7 @@ function OpenManageController($scope, $translate, toastr, AppUtil, OrganizationS
                     $scope.consumerToken = consumerToken;
                     $scope.consumerRole.token = consumerToken.token;
                 } else {
-                    $scope.consumerToken = {
-                        token: $translate.instant('Open.Manage.AppNotCreated', { appId: $scope.consumer.appId })
-                    };
+                    $scope.consumerToken = {token: 'App(' + $scope.consumer.appId + ')未创建，请先创建'};
                 }
             });
     }
@@ -97,13 +95,13 @@ function OpenManageController($scope, $translate, toastr, AppUtil, OrganizationS
         $scope.submitBtnDisabled = true;
 
         if (!$scope.consumer.appId) {
-            toastr.warning($translate.instant('Open.Manage.PleaseEnterAppId'));
+            toastr.warning("请输入appId");
             return;
         }
         var selectedOrg = $orgWidget.select2('data')[0];
 
         if (!selectedOrg.id) {
-            toastr.warning($translate.instant('Common.PleaseChooseDepartment'));
+            toastr.warning("请选择部门");
             return;
         }
 
@@ -113,20 +111,20 @@ function OpenManageController($scope, $translate, toastr, AppUtil, OrganizationS
         // owner
         var owner = $('.ownerSelector').select2('data')[0];
         if (!owner) {
-            toastr.warning($translate.instant('Common.PleaseChooseOwner'));
+            toastr.warning("请选择应用负责人");
             return;
         }
         $scope.consumer.ownerName = owner.id;
 
         ConsumerService.createConsumer($scope.consumer)
             .then(function (consumerToken) {
-                toastr.success($translate.instant('Common.Created'));
+                toastr.success("创建成功");
                 $scope.consumerToken = consumerToken;
                 $scope.consumerRole.token = consumerToken.token;
                 $scope.submitBtnDisabled = false;
                 $scope.consumer = {};
             }, function (response) {
-                AppUtil.showErrorMsg(response, $translate.instant('Common.CreateFailed'));
+                AppUtil.showErrorMsg(response, "创建失败");
                 $scope.submitBtnDisabled = false;
             })
 
@@ -134,14 +132,14 @@ function OpenManageController($scope, $translate, toastr, AppUtil, OrganizationS
 
     function assignRoleToConsumer() {
         ConsumerService.assignRoleToConsumer($scope.consumerRole.token,
-            $scope.consumerRole.type,
-            $scope.consumerRole.appId,
-            $scope.consumerRole.namespaceName,
-            $scope.envsChecked)
+                                             $scope.consumerRole.type,
+                                             $scope.consumerRole.appId,
+                                             $scope.consumerRole.namespaceName,
+                                             $scope.envsChecked)
             .then(function (consumerRoles) {
-                toastr.success($translate.instant('Open.Manage.GrantSuccessfully'));
+                toastr.success("赋权成功");
             }, function (response) {
-                AppUtil.showErrorMsg(response, $translate.instant('Open.Manage.GrantFailed'));
+                AppUtil.showErrorMsg(response, "赋权失败");
             })
     }
 

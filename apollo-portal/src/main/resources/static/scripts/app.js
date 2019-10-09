@@ -1,35 +1,19 @@
 /**utils*/
-var appUtil = angular.module('app.util', ['toastr', 'ngCookies', 'pascalprecht.translate'])
-    .config(['$translateProvider', function ($translateProvider) {
+var appUtil = angular.module('app.util', ['toastr']);
 
-        $translateProvider.useSanitizeValueStrategy(null); // disable sanitization by default
-        $translateProvider.useCookieStorage();
-        $translateProvider.useStaticFilesLoader({
-            prefix: '/i18n/',
-            suffix: '.json'
-        });
-        $translateProvider.registerAvailableLanguageKeys(['en', 'zh-CN'], {
-                              'zh-*': 'zh-CN',
-                              'zh': 'zh-CN',
-                              'en-*': 'en',
-                              "*": "en"
-                            })
-        $translateProvider.uniformLanguageTag('bcp47').determinePreferredLanguage();
-    }]);
 /**service module 定义*/
-var appService = angular.module('app.service', ['ngResource', 'app.util'])
-
+var appService = angular.module('app.service', ['ngResource']);
 
 /** directive */
-var directive_module = angular.module('apollo.directive', ['app.service', 'app.util', 'toastr', 'pascalprecht.translate']);
+var directive_module = angular.module('apollo.directive', ['app.service', 'app.util', 'toastr']);
 
 /** page module 定义*/
 // 首页
-var index_module = angular.module('index', ['toastr', 'app.service', 'apollo.directive', 'app.util', 'angular-loading-bar', 'pascalprecht.translate']);
+var index_module = angular.module('index', ['toastr', 'app.service', 'apollo.directive', 'app.util', 'angular-loading-bar']);
 //项目主页
-var application_module = angular.module('application', ['app.service', 'apollo.directive', 'app.util', 'toastr', 'angular-loading-bar', 'valdr', 'ui.ace', 'ngSanitize']);
+var application_module = angular.module('application', ['app.service', 'apollo.directive', 'app.util', 'toastr', 'angular-loading-bar', 'valdr', 'ui.ace']);
 //创建项目页面
-var app_module = angular.module('create_app', ['apollo.directive', 'toastr', 'app.service', 'app.util', 'angular-loading-bar', 'valdr','pascalprecht.translate']);
+var app_module = angular.module('create_app', ['apollo.directive', 'toastr', 'app.service', 'app.util', 'angular-loading-bar', 'valdr']);
 //配置同步页面
 var sync_item_module = angular.module('sync_item', ['app.service', 'apollo.directive', 'app.util', 'toastr', 'angular-loading-bar']);
 // 比较页面
@@ -43,7 +27,7 @@ var setting_module = angular.module('setting', ['app.service', 'apollo.directive
 //role
 var role_module = angular.module('role', ['app.service', 'apollo.directive', 'app.util', 'toastr', 'angular-loading-bar']);
 //cluster
-var cluster_module = angular.module('cluster', ['app.service', 'apollo.directive', 'app.util', 'toastr', 'angular-loading-bar', 'valdr']);
+var cluster_module = angular.module('cluster', ['app.service', 'apollo.directive', 'app.util', 'toastr', 'angular-loading-bar' , 'valdr']);
 //release history
 var release_history_module = angular.module('release_history', ['app.service', 'apollo.directive', 'app.util', 'toastr', 'angular-loading-bar']);
 //open manage
@@ -51,7 +35,7 @@ var open_manage_module = angular.module('open_manage', ['app.service', 'apollo.d
 //user
 var user_module = angular.module('user', ['apollo.directive', 'toastr', 'app.service', 'app.util', 'angular-loading-bar', 'valdr']);
 //login
-var login_module = angular.module('login', ['app.service', 'toastr', 'app.util', 'pascalprecht.translate']);
+var login_module = angular.module('login', ['toastr', 'app.util']);
 //delete app cluster namespace
 var delete_app_cluster_namespace_module = angular.module('delete_app_cluster_namespace', ['app.service', 'apollo.directive', 'app.util', 'toastr', 'angular-loading-bar']);
 //system info
