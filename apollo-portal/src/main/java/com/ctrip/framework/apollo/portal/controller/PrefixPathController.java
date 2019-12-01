@@ -11,7 +11,7 @@ public class PrefixPathController {
   @Value("${prefixPath:}")
   private String prefixPath;
 
-  @GetMapping("/prefixPath")
+  @GetMapping("/prefix-path")
   public String getPrefixPath(){
     return prefixPath;
   }
