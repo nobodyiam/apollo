@@ -10,8 +10,6 @@ import com.ctrip.framework.apollo.ConfigFileChangeListener;
 import com.ctrip.framework.apollo.build.MockInjector;
 import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.model.ConfigFileChangeEvent;
-import com.ctrip.framework.apollo.util.ConfigUtil;
-import com.ctrip.framework.apollo.util.factory.DefaultPropertiesFactory;
 import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.Properties;
@@ -34,13 +32,15 @@ public class PropertiesConfigFileTest {
   private String someNamespace;
   @Mock
   private ConfigRepository configRepository;
+  @Mock
+  private PropertiesFactory propertiesFactory;
 
   @Before
   public void setUp() throws Exception {
     someNamespace = "someName";
     MockInjector.reset();
-    MockInjector.setInstance(ConfigUtil.class, new ConfigUtil());
-    MockInjector.setInstance(PropertiesFactory.class, new DefaultPropertiesFactory());
+    when(propertiesFactory.getPropertiesInstance()).thenReturn(new Properties());
+    MockInjector.setInstance(PropertiesFactory.class, propertiesFactory);
   }
 
   @Test

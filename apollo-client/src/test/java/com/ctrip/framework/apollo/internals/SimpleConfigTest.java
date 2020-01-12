@@ -35,20 +35,16 @@ public class SimpleConfigTest {
   private String someNamespace;
   @Mock
   private ConfigRepository configRepository;
+  @Mock
+  private PropertiesFactory propertiesFactory;
   private ConfigSourceType someSourceType;
 
   @Before
   public void setUp() throws Exception {
     someNamespace = "someName";
 
-    System.setProperty(PropertiesFactory.APOLLO_PROPERTY_ORDER_ENABLE, "true");
-    PropertiesFactory propertiesFactory = new DefaultPropertiesFactory();
+    when(propertiesFactory.getPropertiesInstance()).thenReturn(new Properties());
     MockInjector.setInstance(PropertiesFactory.class, propertiesFactory);
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    System.clearProperty(PropertiesFactory.APOLLO_PROPERTY_ORDER_ENABLE);
   }
 
   @Test

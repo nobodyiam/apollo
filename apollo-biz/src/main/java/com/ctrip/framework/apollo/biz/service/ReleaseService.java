@@ -381,7 +381,7 @@ public class ReleaseService {
 
 
   private Map<String, String> getNamespaceItems(Namespace namespace) {
-    List<Item> items = itemService.findItemsWithoutOrdered(namespace.getId());
+    List<Item> items = itemService.findItemsWithOrdered(namespace.getId());
     Map<String, String> configurations = new LinkedHashMap<>();
     for (Item item : items) {
       if (StringUtils.isEmpty(item.getKey())) {
