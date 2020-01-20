@@ -98,7 +98,12 @@ public class RemoteConfigRepositoryTest {
 
     MockInjector.setInstance(RemoteConfigLongPollService.class, remoteConfigLongPollService);
 
-    when(propertiesFactory.getPropertiesInstance()).thenReturn(new Properties());
+    when(propertiesFactory.getPropertiesInstance()).thenAnswer(new Answer<Properties>() {
+      @Override
+      public Properties answer(InvocationOnMock invocation) {
+        return new Properties();
+      }
+    });
     MockInjector.setInstance(PropertiesFactory.class, propertiesFactory);
 
     someAppId = "someAppId";
@@ -136,7 +141,12 @@ public class RemoteConfigRepositoryTest {
 
     when(someResponse.getStatusCode()).thenReturn(200);
     when(someResponse.getBody()).thenReturn(someApolloConfig);
-    when(propertiesFactory.getPropertiesInstance()).thenReturn(new OrderedProperties());
+    when(propertiesFactory.getPropertiesInstance()).thenAnswer(new Answer<Properties>() {
+      @Override
+      public Properties answer(InvocationOnMock invocation) {
+        return new OrderedProperties();
+      }
+    });
 
     RemoteConfigRepository remoteConfigRepository = new RemoteConfigRepository(someNamespace);
 

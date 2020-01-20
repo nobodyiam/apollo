@@ -27,6 +27,8 @@ import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.Files;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * Created by Jason on 4/9/16.
@@ -60,7 +62,12 @@ public class LocalFileConfigRepositoryTest {
     MockInjector.reset();
     MockInjector.setInstance(ConfigUtil.class, new MockConfigUtil());
     PropertiesFactory propertiesFactory = mock(PropertiesFactory.class);
-    when(propertiesFactory.getPropertiesInstance()).thenReturn(new Properties());
+    when(propertiesFactory.getPropertiesInstance()).thenAnswer(new Answer<Properties>() {
+      @Override
+      public Properties answer(InvocationOnMock invocation) {
+        return new Properties();
+      }
+    });
     MockInjector.setInstance(PropertiesFactory.class, propertiesFactory);
   }
 

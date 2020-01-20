@@ -18,7 +18,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class YamlConfigFileTest {
@@ -40,7 +42,12 @@ public class YamlConfigFileTest {
     MockInjector.reset();
     MockInjector.setInstance(YamlParser.class, yamlParser);
 
-    when(propertiesFactory.getPropertiesInstance()).thenReturn(new Properties());
+    when(propertiesFactory.getPropertiesInstance()).thenAnswer(new Answer<Properties>() {
+      @Override
+      public Properties answer(InvocationOnMock invocation) {
+        return new Properties();
+      }
+    });
     MockInjector.setInstance(PropertiesFactory.class, propertiesFactory);
   }
 
@@ -67,7 +74,12 @@ public class YamlConfigFileTest {
 
   @Test
   public void testWhenHasContentWithOrder() throws Exception {
-    when(propertiesFactory.getPropertiesInstance()).thenReturn(new OrderedProperties());
+    when(propertiesFactory.getPropertiesInstance()).thenAnswer(new Answer<Properties>() {
+      @Override
+      public Properties answer(InvocationOnMock invocation) {
+        return new OrderedProperties();
+      }
+    });
     Properties someProperties = new Properties();
     String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
     String someContent = "someKey: 'someValue'\nsomeKey2: 'someValue2'";

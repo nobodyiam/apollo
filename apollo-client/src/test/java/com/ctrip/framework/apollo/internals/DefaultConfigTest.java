@@ -66,7 +66,7 @@ public class DefaultConfigTest {
     propertiesFactory = mock(PropertiesFactory.class);
     when(propertiesFactory.getPropertiesInstance()).thenAnswer(new Answer<Properties>() {
       @Override
-      public Properties answer(InvocationOnMock invocation) throws Throwable {
+      public Properties answer(InvocationOnMock invocation) {
         return new Properties();
       }
     });
@@ -816,7 +816,12 @@ public class DefaultConfigTest {
     String someKeyPrefix = "someKey";
     String someValuePrefix = "someValue";
 
-    when(propertiesFactory.getPropertiesInstance()).thenReturn(new OrderedProperties());
+    when(propertiesFactory.getPropertiesInstance()).thenAnswer(new Answer<Properties>() {
+      @Override
+      public Properties answer(InvocationOnMock invocation) {
+        return new OrderedProperties();
+      }
+    });
     //set up config repo
     someProperties = new OrderedProperties();
     for (int i = 0; i < 10; i++) {

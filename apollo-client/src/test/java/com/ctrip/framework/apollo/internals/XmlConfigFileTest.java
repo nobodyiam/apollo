@@ -20,10 +20,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
+import org.mockito.stubbing.Answer;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
@@ -41,7 +43,12 @@ public class XmlConfigFileTest {
   public void setUp() throws Exception {
     someNamespace = "someName";
 
-    when(propertiesFactory.getPropertiesInstance()).thenReturn(new Properties());
+    when(propertiesFactory.getPropertiesInstance()).thenAnswer(new Answer<Properties>() {
+      @Override
+      public Properties answer(InvocationOnMock invocation) {
+        return new Properties();
+      }
+    });
     MockInjector.setInstance(PropertiesFactory.class, propertiesFactory);
   }
 
