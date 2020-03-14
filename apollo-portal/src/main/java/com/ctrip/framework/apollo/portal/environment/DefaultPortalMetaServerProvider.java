@@ -1,6 +1,6 @@
 package com.ctrip.framework.apollo.portal.environment;
 
-import static com.ctrip.framework.apollo.portal.environment.Env.conversionKey;
+import static com.ctrip.framework.apollo.portal.environment.Env.transformToEnvMap;
 
 import com.ctrip.framework.apollo.core.utils.ResourceUtils;
 import com.ctrip.framework.apollo.portal.util.KeyValueUtils;
@@ -31,17 +31,10 @@ class DefaultPortalMetaServerProvider implements PortalMetaServerProvider {
      */
     private static final String APOLLO_ENV_PROPERTIES_FILE_PATH = "apollo-env.properties";
 
-    private static final DefaultPortalMetaServerProvider INSTANCE = new DefaultPortalMetaServerProvider();
-
-
-    public static DefaultPortalMetaServerProvider getInstance() {
-        return INSTANCE;
-    }
-
     private volatile Map<Env, String> domains;
 
-    private DefaultPortalMetaServerProvider() {
-        domains = initializeDomains();
+    DefaultPortalMetaServerProvider() {
+      reload();
     }
 
     @Override
@@ -58,12 +51,13 @@ class DefaultPortalMetaServerProvider implements PortalMetaServerProvider {
     @Override
     public void reload() {
         domains = initializeDomains();
+        logger.info("Loaded meta server addresses from system property, os environment and properties file: {}", domains);
     }
 
     /**
      * load all environment's meta address dynamically when this class loaded by JVM
      */
-    private static Map<Env, String> initializeDomains() {
+    private Map<Env, String> initializeDomains() {
 
         // add to domain
         Map<Env, String> map = new ConcurrentHashMap<>();
@@ -73,34 +67,33 @@ class DefaultPortalMetaServerProvider implements PortalMetaServerProvider {
         map.putAll(getDomainsFromSystemProperty());
 
         // log all
-        logger.info("Loaded meta server addresses: {}", map);
         return map;
     }
 
-    static Map<Env, String> getDomainsFromSystemProperty() {
+    private Map<Env, String> getDomainsFromSystemProperty() {
         // find key-value from System Property which key ends with "_meta" (case insensitive)
         Map<String, String> metaServerAddressesFromSystemProperty = KeyValueUtils.filterWithKeyIgnoreCaseEndsWith(System.getProperties(), "_meta");
         // remove key's suffix "_meta" (case insensitive)
         metaServerAddressesFromSystemProperty = KeyValueUtils.removeKeySuffix(metaServerAddressesFromSystemProperty, "_meta".length());
-        return conversionKey(metaServerAddressesFromSystemProperty);
+        return transformToEnvMap(metaServerAddressesFromSystemProperty);
     }
 
-    static Map<Env, String> getDomainsFromOSEnvironment() {
+    private Map<Env, String> getDomainsFromOSEnvironment() {
         // find key-value from OS environment variable which key ends with "_meta" (case insensitive)
         Map<String, String> metaServerAddressesFromOSEnvironment = KeyValueUtils.filterWithKeyIgnoreCaseEndsWith(System.getenv(), "_meta");
         // remove key's suffix "_meta" (case insensitive)
         metaServerAddressesFromOSEnvironment = KeyValueUtils.removeKeySuffix(metaServerAddressesFromOSEnvironment, "_meta".length());
-        return conversionKey(metaServerAddressesFromOSEnvironment);
+        return transformToEnvMap(metaServerAddressesFromOSEnvironment);
     }
 
-    static Map<Env, String> getDomainsFromPropertiesFile() {
+    private Map<Env, String> getDomainsFromPropertiesFile() {
         // find key-value from properties file which key ends with ".meta" (case insensitive)
         Properties properties = new Properties();
         properties = ResourceUtils.readConfigFile(APOLLO_ENV_PROPERTIES_FILE_PATH, properties);
         Map<String, String> metaServerAddressesFromPropertiesFile = KeyValueUtils.filterWithKeyIgnoreCaseEndsWith(properties, ".meta");
         // remove key's suffix ".meta" (case insensitive)
         metaServerAddressesFromPropertiesFile = KeyValueUtils.removeKeySuffix(metaServerAddressesFromPropertiesFile, ".meta".length());
-        return conversionKey(metaServerAddressesFromPropertiesFile);
+        return transformToEnvMap(metaServerAddressesFromPropertiesFile);
     }
 
 }

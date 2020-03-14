@@ -198,7 +198,7 @@ public class Env {
      * @param metaServerAddresses key is environment, value is environment's meta server address
      * @return relationship between {@link Env} and meta server address
      */
-    public static Map<Env, String> conversionKey(Map<String, String> metaServerAddresses) {
+    static Map<Env, String> transformToEnvMap(Map<String, String> metaServerAddresses) {
         // add to domain
         Map<Env, String> map = new ConcurrentHashMap<>();
         for(Map.Entry<String, String> entry : metaServerAddresses.entrySet()) {

@@ -9,20 +9,21 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PortalMetaDomainServiceTest extends BaseIntegrationTest {
 
-    @Mock
     private PortalMetaDomainService portalMetaDomainService;
+    @Mock
+    private PortalConfig portalConfig;
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(this);
-        // mock it
-        PortalConfig portalConfig = Mockito.mock(PortalConfig.class);
         final Map<String, String> map = new HashMap<>();
         map.put("nothing", "http://unknown.com");
         Mockito.when(portalConfig.getMetaServers()).thenReturn(map);
