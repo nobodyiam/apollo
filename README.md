@@ -32,7 +32,7 @@ Java客户端不依赖任何框架，能够运行于所有Java运行时环境，
 > 如访问github速度缓慢，可以访问[gitee镜像](https://gitee.com/nobodyiam/apollo)，不定期同步
 
 # Screenshots
-![配置界面](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/apollo-home-screenshot.png)
+![配置界面](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/apollo-home-screenshot.jpg)
 
 # Features
 * **统一管理不同环境、不同集群的配置**
