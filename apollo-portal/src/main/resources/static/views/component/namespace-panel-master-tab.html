@@ -5,6 +5,11 @@
         <div class="row">
             <div class="col-md-6 col-sm-6 header-namespace">
                 <b class="namespace-name" ng-bind="namespace.viewName"></b>
+                <span class="label label-warning no-radius namespace-label modify-tip"
+                      ng-show="namespace.itemModifiedCnt > 0">
+                    {{'Component.Namespace.Master.Items.Changed' | translate }}
+                    <span class="badge label badge-white namespace-label" ng-bind="namespace.itemModifiedCnt"></span>
+                </span>
             </div>
 
             <div class="col-md-6 col-sm-6 text-right header-buttons">
