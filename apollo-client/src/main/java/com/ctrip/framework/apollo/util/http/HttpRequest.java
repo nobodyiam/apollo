@@ -6,6 +6,7 @@ import java.util.Map;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class HttpRequest {
+
   private String m_url;
   private Map<String, String> headers;
   private int m_connectTimeout;
@@ -13,6 +14,7 @@ public class HttpRequest {
 
   /**
    * Create the request for the url.
+   *
    * @param url the url
    */
   public HttpRequest(String url) {

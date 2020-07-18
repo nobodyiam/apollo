@@ -1,16 +1,16 @@
 package com.ctrip.framework.apollo.core.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ApolloThreadFactory implements ThreadFactory {
+
   private static Logger log = LoggerFactory.getLogger(ApolloThreadFactory.class);
 
   private final AtomicLong threadNumber = new AtomicLong(1);
@@ -62,6 +62,7 @@ public class ApolloThreadFactory implements ThreadFactory {
   }
 
   private static interface ClassifyStandard<T> {
+
     boolean satisfy(T thread);
   }
 

@@ -1,5 +1,9 @@
 package com.ctrip.framework.apollo.configservice.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
 import com.ctrip.framework.apollo.common.entity.AppNamespace;
 import com.ctrip.framework.apollo.configservice.service.AppNamespaceServiceWithCache;
 import com.ctrip.framework.apollo.core.ConfigConsts;
@@ -7,24 +11,20 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import java.util.Collection;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collection;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 @RunWith(MockitoJUnitRunner.class)
 public class WatchKeysUtilTest {
+
   @Mock
   private AppNamespaceServiceWithCache appNamespaceService;
   @Mock
@@ -72,7 +72,8 @@ public class WatchKeysUtilTest {
     when(somePublicAppNamespace.getName()).thenReturn(somePublicNamespace);
     when(appNamespaceService.findPublicNamespacesByNames(Sets.newHashSet(somePublicNamespace)))
         .thenReturn(Lists.newArrayList(somePublicAppNamespace));
-    when(appNamespaceService.findPublicNamespacesByNames(Sets.newHashSet(someNamespace, somePublicNamespace)))
+    when(appNamespaceService
+        .findPublicNamespacesByNames(Sets.newHashSet(someNamespace, somePublicNamespace)))
         .thenReturn(Lists.newArrayList(somePublicAppNamespace));
   }
 
@@ -134,8 +135,10 @@ public class WatchKeysUtilTest {
 
     assertWatchKeys(someAppId, clusters, someNamespace, watchKeysMap.get(someNamespace));
     assertWatchKeys(someAppId, clusters, anotherNamespace, watchKeysMap.get(anotherNamespace));
-    assertWatchKeys(someAppId, clusters, somePublicNamespace, watchKeysMap.get(somePublicNamespace));
-    assertWatchKeys(somePublicAppId, clusters, somePublicNamespace, watchKeysMap.get(somePublicNamespace));
+    assertWatchKeys(someAppId, clusters, somePublicNamespace,
+        watchKeysMap.get(somePublicNamespace));
+    assertWatchKeys(somePublicAppId, clusters, somePublicNamespace,
+        watchKeysMap.get(somePublicNamespace));
   }
 
   @Test
@@ -157,11 +160,12 @@ public class WatchKeysUtilTest {
 
     assertEquals(clusters.size(), watchKeysMap.size());
 
-    assertWatchKeys(somePublicAppId, clusters, somePublicNamespace, watchKeysMap.get(somePublicNamespace));
+    assertWatchKeys(somePublicAppId, clusters, somePublicNamespace,
+        watchKeysMap.get(somePublicNamespace));
   }
 
   private void assertWatchKeys(String appId, Set<String> clusters, String namespaceName,
-                               Collection<String> watchedKeys) {
+      Collection<String> watchedKeys) {
     for (String cluster : clusters) {
       String key =
           Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR)

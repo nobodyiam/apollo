@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Profile({"kubernetes"})
 @RestController
 public class KubernetesHomePageController {
+
   private final DiscoveryService discoveryService;
 
   public KubernetesHomePageController(DiscoveryService discoveryService) {

@@ -1,14 +1,14 @@
 package com.ctrip.framework.apollo.spi;
 
-import java.util.Map;
-
 import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.google.common.collect.Maps;
+import java.util.Map;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class DefaultConfigFactoryManager implements ConfigFactoryManager {
+
   private ConfigRegistry m_registry;
 
   private Map<String, ConfigFactory> m_factories = Maps.newConcurrentMap();

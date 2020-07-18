@@ -1,11 +1,16 @@
 package com.ctrip.framework.apollo.mockserver;
 
+import static org.junit.Assert.assertEquals;
+
 import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.mockserver.ApolloMockServerSpringIntegrationTest.TestConfiguration;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.ctrip.framework.apollo.spring.annotation.ApolloConfigChangeListener;
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import com.google.common.util.concurrent.SettableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,12 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Create by zhangzheng on 8/16/18 Email:zhangzheng@youzan.com
@@ -50,7 +49,8 @@ public class ApolloMockServerSpringIntegrationTest {
 
   @Test
   @DirtiesContext
-  public void testListenerTriggeredByAdd() throws InterruptedException, ExecutionException, TimeoutException {
+  public void testListenerTriggeredByAdd()
+      throws InterruptedException, ExecutionException, TimeoutException {
     embeddedApollo.addOrModifyProperty(otherNamespace, "someKey", "someValue");
     ConfigChangeEvent changeEvent = testBean.futureData.get(5000, TimeUnit.MILLISECONDS);
     assertEquals(otherNamespace, changeEvent.getNamespace());
@@ -73,7 +73,8 @@ public class ApolloMockServerSpringIntegrationTest {
     embeddedApollo.addOrModifyProperty(otherNamespace, "server.port", "8080");
     embeddedApollo.addOrModifyProperty(otherNamespace, "server.path", "/apollo");
     embeddedApollo.addOrModifyProperty(otherNamespace, "spring.application.name", "whatever");
-    ConfigChangeEvent changeEvent = testInterestedKeyPrefixesBean.futureData.get(5000, TimeUnit.MILLISECONDS);
+    ConfigChangeEvent changeEvent = testInterestedKeyPrefixesBean.futureData
+        .get(5000, TimeUnit.MILLISECONDS);
     assertEquals(otherNamespace, changeEvent.getNamespace());
     assertEquals("8080", changeEvent.getChange("server.port").getNewValue());
     assertEquals("/apollo", changeEvent.getChange("server.path").getNewValue());
@@ -117,6 +118,7 @@ public class ApolloMockServerSpringIntegrationTest {
   }
 
   private static class TestInterestedKeyPrefixesBean {
+
     private SettableFuture<ConfigChangeEvent> futureData = SettableFuture.create();
 
     @ApolloConfigChangeListener(value = otherNamespace, interestedKeyPrefixes = "server.")

@@ -1,19 +1,11 @@
 package com.ctrip.framework.apollo.portal.component;
 
-import com.ctrip.framework.apollo.portal.environment.PortalMetaDomainService;
 import com.ctrip.framework.apollo.core.dto.ServiceDTO;
-import com.ctrip.framework.apollo.portal.environment.Env;
 import com.ctrip.framework.apollo.core.utils.ApolloThreadFactory;
+import com.ctrip.framework.apollo.portal.environment.Env;
+import com.ctrip.framework.apollo.portal.environment.PortalMetaDomainService;
 import com.ctrip.framework.apollo.tracer.Tracer;
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestTemplate;
-
-import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
 
 @Component
 public class AdminServiceAddressLocator {
@@ -62,7 +61,8 @@ public class AdminServiceAddressLocator {
     refreshServiceAddressService =
         Executors.newScheduledThreadPool(1, ApolloThreadFactory.create("ServiceLocator", true));
 
-    refreshServiceAddressService.schedule(new RefreshAdminServerAddressTask(), 1, TimeUnit.MILLISECONDS);
+    refreshServiceAddressService
+        .schedule(new RefreshAdminServerAddressTask(), 1, TimeUnit.MILLISECONDS);
   }
 
   public List<ServiceDTO> getServiceList(Env env) {
@@ -89,10 +89,12 @@ public class AdminServiceAddressLocator {
 
       if (refreshSuccess) {
         refreshServiceAddressService
-            .schedule(new RefreshAdminServerAddressTask(), NORMAL_REFRESH_INTERVAL, TimeUnit.MILLISECONDS);
+            .schedule(new RefreshAdminServerAddressTask(), NORMAL_REFRESH_INTERVAL,
+                TimeUnit.MILLISECONDS);
       } else {
         refreshServiceAddressService
-            .schedule(new RefreshAdminServerAddressTask(), OFFLINE_REFRESH_INTERVAL, TimeUnit.MILLISECONDS);
+            .schedule(new RefreshAdminServerAddressTask(), OFFLINE_REFRESH_INTERVAL,
+                TimeUnit.MILLISECONDS);
       }
     }
   }
@@ -109,11 +111,13 @@ public class AdminServiceAddressLocator {
         cache.put(env, Arrays.asList(services));
         return true;
       } catch (Throwable e) {
-        logger.error(String.format("Get admin server address from meta server failed. env: %s, meta server address:%s",
-                                   env, portalMetaDomainService.getDomain(env)), e);
+        logger.error(String.format(
+            "Get admin server address from meta server failed. env: %s, meta server address:%s",
+            env, portalMetaDomainService.getDomain(env)), e);
         Tracer
-            .logError(String.format("Get admin server address from meta server failed. env: %s, meta server address:%s",
-                                    env, portalMetaDomainService.getDomain(env)), e);
+            .logError(String.format(
+                "Get admin server address from meta server failed. env: %s, meta server address:%s",
+                env, portalMetaDomainService.getDomain(env)), e);
       }
     }
     return false;

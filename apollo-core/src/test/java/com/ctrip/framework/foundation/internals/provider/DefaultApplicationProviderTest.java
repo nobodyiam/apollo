@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class DefaultApplicationProviderTest {
+
   private DefaultApplicationProvider defaultApplicationProvider;
   String PREDEFINED_APP_ID = "110402";
 

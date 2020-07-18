@@ -33,7 +33,8 @@ import org.springframework.context.annotation.Bean;
  * @author github.com/zhegexiaohuozi  seimimaster@gmail.com
  * @since 2017/12/20.
  */
-public class SpringValueProcessor extends ApolloProcessor implements BeanFactoryPostProcessor, BeanFactoryAware {
+public class SpringValueProcessor extends ApolloProcessor implements BeanFactoryPostProcessor,
+    BeanFactoryAware {
 
   private static final Logger logger = LoggerFactory.getLogger(SpringValueProcessor.class);
 
@@ -54,7 +55,8 @@ public class SpringValueProcessor extends ApolloProcessor implements BeanFactory
   @Override
   public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
       throws BeansException {
-    if (configUtil.isAutoUpdateInjectedSpringPropertiesEnabled() && beanFactory instanceof BeanDefinitionRegistry) {
+    if (configUtil.isAutoUpdateInjectedSpringPropertiesEnabled()
+        && beanFactory instanceof BeanDefinitionRegistry) {
       beanName2SpringValueDefinitions = SpringValueDefinitionProcessor
           .getBeanName2SpringValueDefinitions((BeanDefinitionRegistry) beanFactory);
     }

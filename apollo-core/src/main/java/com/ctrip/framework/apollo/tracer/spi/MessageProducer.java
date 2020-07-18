@@ -4,6 +4,7 @@ package com.ctrip.framework.apollo.tracer.spi;
  * @author Jason Song(song_s@ctrip.com)
  */
 public interface MessageProducer {
+
   /**
    * Log an error.
    *
@@ -29,9 +30,9 @@ public interface MessageProducer {
   /**
    * Log an event in one shot.
    *
-   * @param type           event type
-   * @param name           event name
-   * @param status         "0" means success, otherwise means error code
+   * @param type event type
+   * @param name event name
+   * @param status "0" means success, otherwise means error code
    * @param nameValuePairs name value pairs in the format of "a=1&b=2&..."
    */
   public void logEvent(String type, String name, String status, String nameValuePairs);

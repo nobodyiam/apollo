@@ -20,14 +20,14 @@ public class ConfigChangeContentBuilder {
 
 
   public ConfigChangeContentBuilder createItem(Item item) {
-    if (!StringUtils.isEmpty(item.getKey())){
+    if (!StringUtils.isEmpty(item.getKey())) {
       createItems.add(cloneItem(item));
     }
     return this;
   }
 
   public ConfigChangeContentBuilder updateItem(Item oldItem, Item newItem) {
-    if (!oldItem.getValue().equals(newItem.getValue())){
+    if (!oldItem.getValue().equals(newItem.getValue())) {
       ItemPair itemPair = new ItemPair(cloneItem(oldItem), cloneItem(newItem));
       updateItems.add(itemPair);
     }
@@ -41,7 +41,7 @@ public class ConfigChangeContentBuilder {
     return this;
   }
 
-  public boolean hasContent(){
+  public boolean hasContent() {
     return !createItems.isEmpty() || !updateItems.isEmpty() || !deleteItems.isEmpty();
   }
 

@@ -21,13 +21,12 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
-import org.apache.commons.lang.time.FastDateFormat;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import org.apache.commons.lang.time.FastDateFormat;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
@@ -35,7 +34,8 @@ import java.util.List;
 @Service
 public class ConsumerService {
 
-  private static final FastDateFormat TIMESTAMP_FORMAT = FastDateFormat.getInstance("yyyyMMddHHmmss");
+  private static final FastDateFormat TIMESTAMP_FORMAT = FastDateFormat
+      .getInstance("yyyyMMddHHmmss");
   private static final Joiner KEY_JOINER = Joiner.on("|");
 
   private final UserInfoHolder userInfoHolder;
@@ -112,7 +112,7 @@ public class ConsumerService {
       return null;
     }
     ConsumerToken consumerToken = consumerTokenRepository.findTopByTokenAndExpiresAfter(token,
-                                                                                        new Date());
+        new Date());
     return consumerToken == null ? null : consumerToken.getConsumerId();
   }
 
@@ -120,42 +120,53 @@ public class ConsumerService {
     return consumerRepository.findById(consumerId).orElse(null);
   }
 
-  public List<ConsumerRole> assignNamespaceRoleToConsumer(String token, String appId, String namespaceName) {
+  public List<ConsumerRole> assignNamespaceRoleToConsumer(String token, String appId,
+      String namespaceName) {
     return assignNamespaceRoleToConsumer(token, appId, namespaceName, null);
   }
 
   @Transactional
-  public List<ConsumerRole> assignNamespaceRoleToConsumer(String token, String appId, String namespaceName, String env) {
+  public List<ConsumerRole> assignNamespaceRoleToConsumer(String token, String appId,
+      String namespaceName, String env) {
     Long consumerId = getConsumerIdByToken(token);
     if (consumerId == null) {
       throw new BadRequestException("Token is Illegal");
     }
 
     Role namespaceModifyRole =
-        rolePermissionService.findRoleByRoleName(RoleUtils.buildModifyNamespaceRoleName(appId, namespaceName, env));
+        rolePermissionService
+            .findRoleByRoleName(RoleUtils.buildModifyNamespaceRoleName(appId, namespaceName, env));
     Role namespaceReleaseRole =
-        rolePermissionService.findRoleByRoleName(RoleUtils.buildReleaseNamespaceRoleName(appId, namespaceName, env));
+        rolePermissionService
+            .findRoleByRoleName(RoleUtils.buildReleaseNamespaceRoleName(appId, namespaceName, env));
 
     if (namespaceModifyRole == null || namespaceReleaseRole == null) {
-      throw new BadRequestException("Namespace's role does not exist. Please check whether namespace has created.");
+      throw new BadRequestException(
+          "Namespace's role does not exist. Please check whether namespace has created.");
     }
 
     long namespaceModifyRoleId = namespaceModifyRole.getId();
     long namespaceReleaseRoleId = namespaceReleaseRole.getId();
 
-    ConsumerRole managedModifyRole = consumerRoleRepository.findByConsumerIdAndRoleId(consumerId, namespaceModifyRoleId);
-    ConsumerRole managedReleaseRole = consumerRoleRepository.findByConsumerIdAndRoleId(consumerId, namespaceReleaseRoleId);
+    ConsumerRole managedModifyRole = consumerRoleRepository
+        .findByConsumerIdAndRoleId(consumerId, namespaceModifyRoleId);
+    ConsumerRole managedReleaseRole = consumerRoleRepository
+        .findByConsumerIdAndRoleId(consumerId, namespaceReleaseRoleId);
     if (managedModifyRole != null && managedReleaseRole != null) {
       return Arrays.asList(managedModifyRole, managedReleaseRole);
     }
 
     String operator = userInfoHolder.getUser().getUserId();
 
-    ConsumerRole namespaceModifyConsumerRole = createConsumerRole(consumerId, namespaceModifyRoleId, operator);
-    ConsumerRole namespaceReleaseConsumerRole = createConsumerRole(consumerId, namespaceReleaseRoleId, operator);
+    ConsumerRole namespaceModifyConsumerRole = createConsumerRole(consumerId, namespaceModifyRoleId,
+        operator);
+    ConsumerRole namespaceReleaseConsumerRole = createConsumerRole(consumerId,
+        namespaceReleaseRoleId, operator);
 
-    ConsumerRole createdModifyConsumerRole = consumerRoleRepository.save(namespaceModifyConsumerRole);
-    ConsumerRole createdReleaseConsumerRole = consumerRoleRepository.save(namespaceReleaseConsumerRole);
+    ConsumerRole createdModifyConsumerRole = consumerRoleRepository
+        .save(namespaceModifyConsumerRole);
+    ConsumerRole createdReleaseConsumerRole = consumerRoleRepository
+        .save(namespaceReleaseConsumerRole);
 
     return Arrays.asList(createdModifyConsumerRole, createdReleaseConsumerRole);
   }
@@ -167,13 +178,16 @@ public class ConsumerService {
       throw new BadRequestException("Token is Illegal");
     }
 
-    Role masterRole = rolePermissionService.findRoleByRoleName(RoleUtils.buildAppMasterRoleName(appId));
+    Role masterRole = rolePermissionService
+        .findRoleByRoleName(RoleUtils.buildAppMasterRoleName(appId));
     if (masterRole == null) {
-      throw new BadRequestException("App's role does not exist. Please check whether app has created.");
+      throw new BadRequestException(
+          "App's role does not exist. Please check whether app has created.");
     }
 
     long roleId = masterRole.getId();
-    ConsumerRole managedModifyRole = consumerRoleRepository.findByConsumerIdAndRoleId(consumerId, roleId);
+    ConsumerRole managedModifyRole = consumerRoleRepository
+        .findByConsumerIdAndRoleId(consumerId, roleId);
     if (managedModifyRole != null) {
       return managedModifyRole;
     }
@@ -230,7 +244,7 @@ public class ConsumerService {
         (generationTime), consumerTokenSalt), Charsets.UTF_8).toString();
   }
 
-    ConsumerRole createConsumerRole(Long consumerId, Long roleId, String operator) {
+  ConsumerRole createConsumerRole(Long consumerId, Long roleId, String operator) {
     ConsumerRole consumerRole = new ConsumerRole();
 
     consumerRole.setConsumerId(consumerId);

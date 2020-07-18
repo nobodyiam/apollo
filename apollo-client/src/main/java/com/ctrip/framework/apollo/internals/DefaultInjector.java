@@ -12,7 +12,6 @@ import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.ctrip.framework.apollo.util.factory.DefaultPropertiesFactory;
 import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import com.ctrip.framework.apollo.util.http.HttpUtil;
-
 import com.ctrip.framework.apollo.util.yaml.YamlParser;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -20,16 +19,19 @@ import com.google.inject.Singleton;
 
 /**
  * Guice injector
+ *
  * @author Jason Song(song_s@ctrip.com)
  */
 public class DefaultInjector implements Injector {
+
   private com.google.inject.Injector m_injector;
 
   public DefaultInjector() {
     try {
       m_injector = Guice.createInjector(new ApolloModule());
     } catch (Throwable ex) {
-      ApolloConfigException exception = new ApolloConfigException("Unable to initialize Guice Injector!", ex);
+      ApolloConfigException exception = new ApolloConfigException(
+          "Unable to initialize Guice Injector!", ex);
       Tracer.logError(exception);
       throw exception;
     }
@@ -53,6 +55,7 @@ public class DefaultInjector implements Injector {
   }
 
   private static class ApolloModule extends AbstractModule {
+
     @Override
     protected void configure() {
       bind(ConfigManager.class).to(DefaultConfigManager.class).in(Singleton.class);

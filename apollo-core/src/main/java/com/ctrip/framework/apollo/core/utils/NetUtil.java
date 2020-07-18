@@ -35,8 +35,9 @@ public class NetUtil {
   }
 
   /**
-   * according to https://docs.oracle.com/javase/7/docs/technotes/guides/net/http-keepalive.html, we should clean up the
-   * connection by reading the response body so that the connection could be reused.
+   * according to https://docs.oracle.com/javase/7/docs/technotes/guides/net/http-keepalive.html, we
+   * should clean up the connection by reading the response body so that the connection could be
+   * reused.
    */
   private static void cleanUpConnection(HttpURLConnection conn) {
     InputStreamReader isr = null;

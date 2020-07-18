@@ -4,6 +4,7 @@ package com.ctrip.framework.apollo.util.http;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class HttpResponse<T> {
+
   private final int m_statusCode;
   private final T m_body;
 

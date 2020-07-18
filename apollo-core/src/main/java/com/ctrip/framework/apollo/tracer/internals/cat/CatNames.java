@@ -4,6 +4,7 @@ package com.ctrip.framework.apollo.tracer.internals.cat;
  * @author Jason Song(song_s@ctrip.com)
  */
 public interface CatNames {
+
   String CAT_CLASS = "com.dianping.cat.Cat";
   String LOG_ERROR_METHOD = "logError";
   String LOG_EVENT_METHOD = "logEvent";

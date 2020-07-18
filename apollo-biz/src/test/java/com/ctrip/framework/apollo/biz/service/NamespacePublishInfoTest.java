@@ -1,5 +1,9 @@
 package com.ctrip.framework.apollo.biz.service;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
 import com.ctrip.framework.apollo.biz.AbstractUnitTest;
 import com.ctrip.framework.apollo.biz.entity.Cluster;
 import com.ctrip.framework.apollo.biz.entity.Item;
@@ -7,19 +11,13 @@ import com.ctrip.framework.apollo.biz.entity.Namespace;
 import com.ctrip.framework.apollo.biz.entity.Release;
 import com.ctrip.framework.apollo.biz.repository.NamespaceRepository;
 import com.ctrip.framework.apollo.core.ConfigConsts;
-
+import java.util.Collections;
+import java.util.Map;
+import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Random;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 
 public class NamespacePublishInfoTest extends AbstractUnitTest {
 
@@ -40,11 +38,13 @@ public class NamespacePublishInfoTest extends AbstractUnitTest {
   @Test
   public void testNamespaceNotEverPublishedButHasItems() {
     Cluster cluster = createCluster(ConfigConsts.CLUSTER_NAME_DEFAULT);
-    Namespace namespace = createNamespace(ConfigConsts.CLUSTER_NAME_DEFAULT, ConfigConsts.NAMESPACE_APPLICATION);
+    Namespace namespace = createNamespace(ConfigConsts.CLUSTER_NAME_DEFAULT,
+        ConfigConsts.NAMESPACE_APPLICATION);
     Item item = createItem(namespace.getId(), "a", "b");
 
     when(clusterService.findParentClusters(testApp)).thenReturn(Collections.singletonList(cluster));
-    when(namespaceRepository.findByAppIdAndClusterNameOrderByIdAsc(testApp, ConfigConsts.CLUSTER_NAME_DEFAULT))
+    when(namespaceRepository
+        .findByAppIdAndClusterNameOrderByIdAsc(testApp, ConfigConsts.CLUSTER_NAME_DEFAULT))
         .thenReturn(Collections.singletonList(namespace));
     when(itemService.findLastOne(anyLong())).thenReturn(item);
 
@@ -57,15 +57,18 @@ public class NamespacePublishInfoTest extends AbstractUnitTest {
   @Test
   public void testNamespaceEverPublishedAndNotModifiedAfter() {
     Cluster cluster = createCluster(ConfigConsts.CLUSTER_NAME_DEFAULT);
-    Namespace namespace = createNamespace(ConfigConsts.CLUSTER_NAME_DEFAULT, ConfigConsts.NAMESPACE_APPLICATION);
+    Namespace namespace = createNamespace(ConfigConsts.CLUSTER_NAME_DEFAULT,
+        ConfigConsts.NAMESPACE_APPLICATION);
     Item item = createItem(namespace.getId(), "a", "b");
     Release release = createRelease("{\"a\":\"b\"}");
 
     when(clusterService.findParentClusters(testApp)).thenReturn(Collections.singletonList(cluster));
-    when(namespaceRepository.findByAppIdAndClusterNameOrderByIdAsc(testApp, ConfigConsts.CLUSTER_NAME_DEFAULT))
+    when(namespaceRepository
+        .findByAppIdAndClusterNameOrderByIdAsc(testApp, ConfigConsts.CLUSTER_NAME_DEFAULT))
         .thenReturn(Collections.singletonList(namespace));
     when(releaseService.findLatestActiveRelease(namespace)).thenReturn(release);
-    when(itemService.findItemsModifiedAfterDate(anyLong(), any())).thenReturn(Collections.singletonList(item));
+    when(itemService.findItemsModifiedAfterDate(anyLong(), any()))
+        .thenReturn(Collections.singletonList(item));
 
     Map<String, Boolean> result = namespaceService.namespacePublishInfo(testApp);
 
@@ -77,15 +80,18 @@ public class NamespacePublishInfoTest extends AbstractUnitTest {
   @Test
   public void testNamespaceEverPublishedAndModifiedAfter() {
     Cluster cluster = createCluster(ConfigConsts.CLUSTER_NAME_DEFAULT);
-    Namespace namespace = createNamespace(ConfigConsts.CLUSTER_NAME_DEFAULT, ConfigConsts.NAMESPACE_APPLICATION);
+    Namespace namespace = createNamespace(ConfigConsts.CLUSTER_NAME_DEFAULT,
+        ConfigConsts.NAMESPACE_APPLICATION);
     Item item = createItem(namespace.getId(), "a", "b");
     Release release = createRelease("{\"a\":\"c\"}");
 
     when(clusterService.findParentClusters(testApp)).thenReturn(Collections.singletonList(cluster));
-    when(namespaceRepository.findByAppIdAndClusterNameOrderByIdAsc(testApp, ConfigConsts.CLUSTER_NAME_DEFAULT))
+    when(namespaceRepository
+        .findByAppIdAndClusterNameOrderByIdAsc(testApp, ConfigConsts.CLUSTER_NAME_DEFAULT))
         .thenReturn(Collections.singletonList(namespace));
     when(releaseService.findLatestActiveRelease(namespace)).thenReturn(release);
-    when(itemService.findItemsModifiedAfterDate(anyLong(), any())).thenReturn(Collections.singletonList(item));
+    when(itemService.findItemsModifiedAfterDate(anyLong(), any()))
+        .thenReturn(Collections.singletonList(item));
 
     Map<String, Boolean> result = namespaceService.namespacePublishInfo(testApp);
 

@@ -1,27 +1,31 @@
 package com.ctrip.framework.apollo.configservice.service;
 
+import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ctrip.framework.apollo.biz.config.BizConfig;
 import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
 import com.ctrip.framework.apollo.biz.message.Topics;
 import com.ctrip.framework.apollo.biz.repository.ReleaseMessageRepository;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
-import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
@@ -87,7 +91,8 @@ public class ReleaseMessageServiceWithCacheTest {
 
     ReleaseMessage latestReleaseMsg =
         releaseMessageServiceWithCache
-            .findLatestReleaseMessageForMessages(Sets.newHashSet(someMsgContent, anotherMsgContent));
+            .findLatestReleaseMessageForMessages(
+                Sets.newHashSet(someMsgContent, anotherMsgContent));
 
     assertNotNull(latestReleaseMsg);
     assertEquals(3, latestReleaseMsg.getId());
@@ -96,7 +101,7 @@ public class ReleaseMessageServiceWithCacheTest {
     List<ReleaseMessage> latestReleaseMsgGroupByMsgContent =
         releaseMessageServiceWithCache
             .findLatestReleaseMessagesGroupByMessages(Sets.newLinkedHashSet(
-                    Arrays.asList(someMsgContent, anotherMsgContent))
+                Arrays.asList(someMsgContent, anotherMsgContent))
             );
 
     assertEquals(2, latestReleaseMsgGroupByMsgContent.size());
@@ -137,7 +142,8 @@ public class ReleaseMessageServiceWithCacheTest {
 
     List<ReleaseMessage> latestReleaseMsgGroupByMsgContent =
         releaseMessageServiceWithCache
-            .findLatestReleaseMessagesGroupByMessages(Sets.newHashSet(someMsgContent, antherMsgContent));
+            .findLatestReleaseMessagesGroupByMessages(
+                Sets.newHashSet(someMsgContent, antherMsgContent));
 
     assertEquals(2, latestReleaseMsgGroupByMsgContent.size());
     assertEquals(500, latestReleaseMsgGroupByMsgContent.get(1).getId());
@@ -150,8 +156,9 @@ public class ReleaseMessageServiceWithCacheTest {
     long someMessageId = 1;
     ReleaseMessage someMessage = assembleReleaseMsg(someMessageId, someMessageContent);
 
-    when(releaseMessageRepository.findFirst500ByIdGreaterThanOrderByIdAsc(0L)).thenReturn(Lists.newArrayList
-        (someMessage));
+    when(releaseMessageRepository.findFirst500ByIdGreaterThanOrderByIdAsc(0L))
+        .thenReturn(Lists.newArrayList
+            (someMessage));
 
     releaseMessageServiceWithCache.afterPropertiesSet();
 
@@ -170,8 +177,9 @@ public class ReleaseMessageServiceWithCacheTest {
     long newMessageId = 2;
     ReleaseMessage newMessage = assembleReleaseMsg(newMessageId, someMessageContent);
 
-    when(releaseMessageRepository.findFirst500ByIdGreaterThanOrderByIdAsc(someMessageId)).thenReturn(Lists
-        .newArrayList(newMessage));
+    when(releaseMessageRepository.findFirst500ByIdGreaterThanOrderByIdAsc(someMessageId))
+        .thenReturn(Lists
+            .newArrayList(newMessage));
 
     await().atMost(scanInterval * 500, scanIntervalTimeUnit).untilAsserted(() -> {
       ReleaseMessage newLatestReleaseMsg =
@@ -194,8 +202,9 @@ public class ReleaseMessageServiceWithCacheTest {
     long someMessageId = 1;
     ReleaseMessage someMessage = assembleReleaseMsg(someMessageId, someMessageContent);
 
-    when(releaseMessageRepository.findFirst500ByIdGreaterThanOrderByIdAsc(0L)).thenReturn(Lists.newArrayList
-        (someMessage));
+    when(releaseMessageRepository.findFirst500ByIdGreaterThanOrderByIdAsc(0L))
+        .thenReturn(Lists.newArrayList
+            (someMessage));
 
     releaseMessageServiceWithCache.afterPropertiesSet();
 

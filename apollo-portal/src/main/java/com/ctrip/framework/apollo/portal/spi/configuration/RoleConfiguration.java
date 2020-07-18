@@ -12,13 +12,14 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class RoleConfiguration {
-    @Bean
-    public RoleInitializationService roleInitializationService() {
-        return new DefaultRoleInitializationService();
-    }
 
-    @Bean
-    public RolePermissionService rolePermissionService() {
-        return new DefaultRolePermissionService();
-    }
+  @Bean
+  public RoleInitializationService roleInitializationService() {
+    return new DefaultRoleInitializationService();
+  }
+
+  @Bean
+  public RolePermissionService rolePermissionService() {
+    return new DefaultRolePermissionService();
+  }
 }

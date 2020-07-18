@@ -6,6 +6,7 @@ import java.io.InputStream;
  * Provider for application related properties
  */
 public interface ApplicationProvider extends Provider {
+
   /**
    * @return the application's app id
    */

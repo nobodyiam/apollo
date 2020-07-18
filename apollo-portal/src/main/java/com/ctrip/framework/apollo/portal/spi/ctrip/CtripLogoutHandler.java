@@ -2,15 +2,12 @@ package com.ctrip.framework.apollo.portal.spi.ctrip;
 
 import com.ctrip.framework.apollo.portal.component.config.PortalConfig;
 import com.ctrip.framework.apollo.portal.spi.LogoutHandler;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.io.IOException;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class CtripLogoutHandler implements LogoutHandler {
 

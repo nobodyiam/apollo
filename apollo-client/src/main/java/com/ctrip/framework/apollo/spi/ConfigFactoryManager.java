@@ -4,6 +4,7 @@ package com.ctrip.framework.apollo.spi;
  * @author Jason Song(song_s@ctrip.com)
  */
 public interface ConfigFactoryManager {
+
   /**
    * Get the config factory for the namespace.
    *

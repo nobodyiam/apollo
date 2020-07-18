@@ -3,17 +3,16 @@ package com.ctrip.framework.apollo.common.utils;
 import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-import org.springframework.web.client.HttpStatusCodeException;
-
 import java.lang.reflect.Type;
 import java.util.Map;
+import org.springframework.web.client.HttpStatusCodeException;
 
 public final class ExceptionUtils {
 
   private static Gson gson = new Gson();
 
-  private static Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
+  private static Type mapType = new TypeToken<Map<String, Object>>() {
+  }.getType();
 
   public static String toString(HttpStatusCodeException e) {
     Map<String, Object> errorAttributes = gson.fromJson(e.getResponseBodyAsString(), mapType);

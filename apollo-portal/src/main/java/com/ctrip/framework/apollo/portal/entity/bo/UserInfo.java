@@ -42,7 +42,7 @@ public class UserInfo {
   public boolean equals(Object o) {
     if (o instanceof UserInfo) {
 
-      if (o == this){
+      if (o == this) {
         return true;
       }
 

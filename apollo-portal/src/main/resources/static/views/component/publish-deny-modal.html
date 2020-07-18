@@ -1,26 +1,26 @@
 <div class="modal fade" id="publishDenyModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header panel-primary">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">{{'Component.PublishDeny.Title' | translate }}</h4>
-            </div>
-            <div class="modal-body">{{'Component.PublishDeny.Tips1' | translate:this }}
-                <span ng-if="toReleaseNamespace.isEmergencyPublishAllowed">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header panel-primary">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">{{'Component.PublishDeny.Title' | translate }}</h4>
+      </div>
+      <div class="modal-body">{{'Component.PublishDeny.Tips1' | translate:this }}
+        <span ng-if="toReleaseNamespace.isEmergencyPublishAllowed">
                     <br><br><small>{{'Component.PublishDeny.Tips2' | translate }}</small>
                 </span>
 
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal"
-                    ng-if="toReleaseNamespace.isEmergencyPublishAllowed" ng-click="emergencyPublish()">
-                    {{'Component.PublishDeny.EmergencyPublish' | translate }}
-                </button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">
-                    {{'Component.PublishDeny.Close' | translate }}
-                </button>
-            </div>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal"
+                ng-if="toReleaseNamespace.isEmergencyPublishAllowed" ng-click="emergencyPublish()">
+          {{'Component.PublishDeny.EmergencyPublish' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">
+          {{'Component.PublishDeny.Close' | translate }}
+        </button>
+      </div>
     </div>
+  </div>
 </div>

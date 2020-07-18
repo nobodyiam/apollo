@@ -13,11 +13,12 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 @Component
 public class EntityManagerUtil extends EntityManagerFactoryAccessor {
+
   private static final Logger logger = LoggerFactory.getLogger(EntityManagerUtil.class);
+
   /**
-   * close the entity manager.
-   * Use it with caution! This is only intended for use with async request, which Spring won't
-   * close the entity manager until the async request is finished.
+   * close the entity manager. Use it with caution! This is only intended for use with async
+   * request, which Spring won't close the entity manager until the async request is finished.
    */
   public void closeEntityManager() {
     EntityManagerHolder emHolder = (EntityManagerHolder)

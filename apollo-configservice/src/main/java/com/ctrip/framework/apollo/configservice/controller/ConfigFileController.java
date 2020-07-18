@@ -15,14 +15,20 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.google.common.cache.Weigher;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.gson.Gson;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -34,21 +40,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 @RestController
 @RequestMapping("/configfiles")
 public class ConfigFileController implements ReleaseMessageListener {
+
   private static final Logger logger = LoggerFactory.getLogger(ConfigFileController.class);
   private static final Joiner STRING_JOINER = Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR);
   private static final Splitter X_FORWARDED_FOR_SPLITTER = Splitter.on(",").omitEmptyStrings()
@@ -107,12 +105,12 @@ public class ConfigFileController implements ReleaseMessageListener {
 
   @GetMapping(value = "/{appId}/{clusterName}/{namespace:.+}")
   public ResponseEntity<String> queryConfigAsProperties(@PathVariable String appId,
-                                                        @PathVariable String clusterName,
-                                                        @PathVariable String namespace,
-                                                        @RequestParam(value = "dataCenter", required = false) String dataCenter,
-                                                        @RequestParam(value = "ip", required = false) String clientIp,
-                                                        HttpServletRequest request,
-                                                        HttpServletResponse response)
+      @PathVariable String clusterName,
+      @PathVariable String namespace,
+      @RequestParam(value = "dataCenter", required = false) String dataCenter,
+      @RequestParam(value = "ip", required = false) String clientIp,
+      HttpServletRequest request,
+      HttpServletResponse response)
       throws IOException {
 
     String result =
@@ -128,12 +126,12 @@ public class ConfigFileController implements ReleaseMessageListener {
 
   @GetMapping(value = "/json/{appId}/{clusterName}/{namespace:.+}")
   public ResponseEntity<String> queryConfigAsJson(@PathVariable String appId,
-                                                  @PathVariable String clusterName,
-                                                  @PathVariable String namespace,
-                                                  @RequestParam(value = "dataCenter", required = false) String dataCenter,
-                                                  @RequestParam(value = "ip", required = false) String clientIp,
-                                                  HttpServletRequest request,
-                                                  HttpServletResponse response) throws IOException {
+      @PathVariable String clusterName,
+      @PathVariable String namespace,
+      @RequestParam(value = "dataCenter", required = false) String dataCenter,
+      @RequestParam(value = "ip", required = false) String clientIp,
+      HttpServletRequest request,
+      HttpServletResponse response) throws IOException {
 
     String result =
         queryConfig(ConfigFileOutputFormat.JSON, appId, clusterName, namespace, dataCenter,
@@ -147,9 +145,9 @@ public class ConfigFileController implements ReleaseMessageListener {
   }
 
   String queryConfig(ConfigFileOutputFormat outputFormat, String appId, String clusterName,
-                     String namespace, String dataCenter, String clientIp,
-                     HttpServletRequest request,
-                     HttpServletResponse response) throws IOException {
+      String namespace, String dataCenter, String clientIp,
+      HttpServletRequest request,
+      HttpServletResponse response) throws IOException {
     //strip out .properties suffix
     namespace = namespaceUtil.filterNamespaceName(namespace);
     //fix the character case issue, such as FX.apollo <-> fx.apollo
@@ -212,9 +210,9 @@ public class ConfigFileController implements ReleaseMessageListener {
   }
 
   private String loadConfig(ConfigFileOutputFormat outputFormat, String appId, String clusterName,
-                            String namespace, String dataCenter, String clientIp,
-                            HttpServletRequest request,
-                            HttpServletResponse response) throws IOException {
+      String namespace, String dataCenter, String clientIp,
+      HttpServletRequest request,
+      HttpServletResponse response) throws IOException {
     ApolloConfig apolloConfig = configController.queryConfig(appId, clusterName, namespace,
         dataCenter, "-1", clientIp, null, request, response);
 
@@ -239,8 +237,8 @@ public class ConfigFileController implements ReleaseMessageListener {
   }
 
   String assembleCacheKey(ConfigFileOutputFormat outputFormat, String appId, String clusterName,
-                          String namespace,
-                          String dataCenter) {
+      String namespace,
+      String dataCenter) {
     List<String> keyParts =
         Lists.newArrayList(outputFormat.getValue(), appId, clusterName, namespace);
     if (!Strings.isNullOrEmpty(dataCenter)) {

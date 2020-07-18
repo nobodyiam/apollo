@@ -1,57 +1,60 @@
 <header class="row namespace-attribute-panel">
-    <div class="row">
-        <div class="col-md-6" style="padding-bottom:5px;">
+  <div class="row">
+    <div class="col-md-6" style="padding-bottom:5px;">
             <span class="text-center namespace-attribute-public label label-primary no-radius">
                 <span data-tooltip="tooltip" data-placement="bottom"
-                    title="{{'Component.Namespace.Header.Title.PrivateTips' | translate:this }}"
-                    ng-show="!namespace.isPublic">{{'Component.Namespace.Header.Title.Private' | translate }}</span>
+                      title="{{'Component.Namespace.Header.Title.PrivateTips' | translate:this }}"
+                      ng-show="!namespace.isPublic">{{'Component.Namespace.Header.Title.Private' | translate }}</span>
 
                 <span data-tooltip="tooltip" data-placement="top"
-                    title="{{'Component.Namespace.Header.Title.PublicTips' | translate:this }}"
-                    ng-show="namespace.isPublic && namespace.parentAppId == namespace.baseInfo.appId">{{'Component.Namespace.Header.Title.Public' | translate }}</span>
+                      title="{{'Component.Namespace.Header.Title.PublicTips' | translate:this }}"
+                      ng-show="namespace.isPublic && namespace.parentAppId == namespace.baseInfo.appId">{{'Component.Namespace.Header.Title.Public' | translate }}</span>
 
                 <span data-tooltip="tooltip" data-placement="top"
-                    title="{{'Component.Namespace.Header.Title.ExtendTips' | translate:this }}"
-                    ng-show="namespace.isPublic && namespace.isLinkedNamespace"
-                    ng-click="goToParentAppConfigPage(namespace)">{{'Component.Namespace.Header.Title.Extend' | translate }}</span>
+                      title="{{'Component.Namespace.Header.Title.ExtendTips' | translate:this }}"
+                      ng-show="namespace.isPublic && namespace.isLinkedNamespace"
+                      ng-click="goToParentAppConfigPage(namespace)">{{'Component.Namespace.Header.Title.Extend' | translate }}</span>
             </span>
-            <span class="text-center namespace-attribute-public label label-info no-radius">
+      <span class="text-center namespace-attribute-public label label-info no-radius">
                 <span ng-bind="namespace.format" style="width:30px;"></span>
             </span>
-        </div>
-        <div class="col-md-6 text-right" style="padding-right:23px;">
-            <span data-toggle="collapse" data-target="#BODY{{namespace.branch.id}}" aria-expanded="false">
-                <span class="label no-radius cursor-pointer" data-toggle="collapse" data-target="#BODY{{namespace.id}}"
-                    aria-expanded="false" ng-click="showNamespaceBody = !showNamespaceBody"
-                    ng-show="namespace.initialized">
+    </div>
+    <div class="col-md-6 text-right" style="padding-right:23px;">
+            <span data-toggle="collapse" data-target="#BODY{{namespace.branch.id}}"
+                  aria-expanded="false">
+                <span class="label no-radius cursor-pointer" data-toggle="collapse"
+                      data-target="#BODY{{namespace.id}}"
+                      aria-expanded="false" ng-click="showNamespaceBody = !showNamespaceBody"
+                      ng-show="namespace.initialized">
                     <a>{{'Component.Namespace.Header.Title.ExpandAndCollapse' | translate }}</a>
                 </span>
             </span>
-        </div>
     </div>
+  </div>
 </header>
 
 <!--branch nav-->
-<header class="panel-heading second-panel-heading" ng-show="namespace.initialized && namespace.hasBranch">
-    <div class="row">
-        <div class="col-md-8 pull-left">
-            <ul class="nav nav-tabs">
-                <li role="presentation">
-                    <a ng-class="{'node_active': namespace.displayControl.currentOperateBranch == 'master'}"
-                        ng-click="switchBranch('master', true)">
-                        <img src="img/branch.png">
-                        {{'Component.Namespace.Header.Title.Master' | translate }}
-                    </a>
-                </li>
-                <li role="presentation">
-                    <a ng-class="{'node_active': namespace.displayControl.currentOperateBranch != 'master'}"
-                        ng-click="switchBranch(namespace.branchName, true)">
-                        <img src="img/branch.png">
-                        {{'Component.Namespace.Header.Title.Grayscale' | translate }}
-                    </a>
-                </li>
+<header class="panel-heading second-panel-heading"
+        ng-show="namespace.initialized && namespace.hasBranch">
+  <div class="row">
+    <div class="col-md-8 pull-left">
+      <ul class="nav nav-tabs">
+        <li role="presentation">
+          <a ng-class="{'node_active': namespace.displayControl.currentOperateBranch == 'master'}"
+             ng-click="switchBranch('master', true)">
+            <img src="img/branch.png">
+            {{'Component.Namespace.Header.Title.Master' | translate }}
+          </a>
+        </li>
+        <li role="presentation">
+          <a ng-class="{'node_active': namespace.displayControl.currentOperateBranch != 'master'}"
+             ng-click="switchBranch(namespace.branchName, true)">
+            <img src="img/branch.png">
+            {{'Component.Namespace.Header.Title.Grayscale' | translate }}
+          </a>
+        </li>
 
-            </ul>
-        </div>
+      </ul>
     </div>
+  </div>
 </header>

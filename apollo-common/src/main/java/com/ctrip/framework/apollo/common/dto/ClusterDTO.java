@@ -4,7 +4,7 @@ import com.ctrip.framework.apollo.common.utils.InputValidator;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-public class ClusterDTO extends BaseDTO{
+public class ClusterDTO extends BaseDTO {
 
   private long id;
 

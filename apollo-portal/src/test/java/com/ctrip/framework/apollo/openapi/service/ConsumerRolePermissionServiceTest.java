@@ -1,19 +1,19 @@
 package com.ctrip.framework.apollo.openapi.service;
 
-import com.ctrip.framework.apollo.portal.AbstractIntegrationTest;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import com.ctrip.framework.apollo.portal.AbstractIntegrationTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class ConsumerRolePermissionServiceTest extends AbstractIntegrationTest {
+
   @Autowired
   private ConsumerRolePermissionService consumerRolePermissionService;
 
@@ -37,13 +37,20 @@ public class ConsumerRolePermissionServiceTest extends AbstractIntegrationTest {
     long anotherConsumerId = 2;
     long someConsumerWithNoPermission = 3;
 
-    assertTrue(consumerRolePermissionService.consumerHasPermission(someConsumerId, somePermissionType, someTargetId));
-    assertTrue(consumerRolePermissionService.consumerHasPermission(someConsumerId, anotherPermissionType, anotherTargetId));
-    assertTrue(consumerRolePermissionService.consumerHasPermission(anotherConsumerId, somePermissionType, someTargetId));
-    assertTrue(consumerRolePermissionService.consumerHasPermission(anotherConsumerId, anotherPermissionType, anotherTargetId));
+    assertTrue(consumerRolePermissionService
+        .consumerHasPermission(someConsumerId, somePermissionType, someTargetId));
+    assertTrue(consumerRolePermissionService
+        .consumerHasPermission(someConsumerId, anotherPermissionType, anotherTargetId));
+    assertTrue(consumerRolePermissionService
+        .consumerHasPermission(anotherConsumerId, somePermissionType, someTargetId));
+    assertTrue(consumerRolePermissionService
+        .consumerHasPermission(anotherConsumerId, anotherPermissionType, anotherTargetId));
 
-    assertFalse(consumerRolePermissionService.consumerHasPermission(someConsumerWithNoPermission, somePermissionType, someTargetId));
-    assertFalse(consumerRolePermissionService.consumerHasPermission(someConsumerWithNoPermission, anotherPermissionType, anotherTargetId));
+    assertFalse(consumerRolePermissionService
+        .consumerHasPermission(someConsumerWithNoPermission, somePermissionType, someTargetId));
+    assertFalse(consumerRolePermissionService
+        .consumerHasPermission(someConsumerWithNoPermission, anotherPermissionType,
+            anotherTargetId));
 
   }
 

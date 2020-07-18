@@ -2,10 +2,8 @@ package com.ctrip.framework.apollo.biz.repository;
 
 
 import com.ctrip.framework.apollo.biz.entity.Cluster;
-
-import org.springframework.data.repository.PagingAndSortingRepository;
-
 import java.util.List;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface ClusterRepository extends PagingAndSortingRepository<Cluster, Long> {
 

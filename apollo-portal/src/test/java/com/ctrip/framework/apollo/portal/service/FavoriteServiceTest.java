@@ -4,15 +4,13 @@ import com.ctrip.framework.apollo.common.exception.BadRequestException;
 import com.ctrip.framework.apollo.portal.AbstractIntegrationTest;
 import com.ctrip.framework.apollo.portal.entity.po.Favorite;
 import com.ctrip.framework.apollo.portal.repository.FavoriteRepository;
-
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.util.List;
 
 public class FavoriteServiceTest extends AbstractIntegrationTest {
 
@@ -35,7 +33,8 @@ public class FavoriteServiceTest extends AbstractIntegrationTest {
     Favorite favorite = instanceOfFavorite(testUser, testApp);
     favoriteService.addFavorite(favorite);
 
-    List<Favorite> createdFavorites = favoriteService.search(testUser, testApp, PageRequest.of(0, 10));
+    List<Favorite> createdFavorites = favoriteService
+        .search(testUser, testApp, PageRequest.of(0, 10));
 
     Assert.assertEquals(1, createdFavorites.size());
 
@@ -73,7 +72,8 @@ public class FavoriteServiceTest extends AbstractIntegrationTest {
   @Sql(scripts = "/sql/favorites/favorites.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
   @Sql(scripts = "/sql/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
   public void testSearchByAppIdAndUserId() {
-    List<Favorite> favorites = favoriteService.search(testUser, "test0621-04", PageRequest.of(0, 10));
+    List<Favorite> favorites = favoriteService
+        .search(testUser, "test0621-04", PageRequest.of(0, 10));
     Assert.assertEquals(1, favorites.size());
   }
 

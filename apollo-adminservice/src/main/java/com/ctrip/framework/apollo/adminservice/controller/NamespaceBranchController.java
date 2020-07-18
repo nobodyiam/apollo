@@ -42,32 +42,34 @@ public class NamespaceBranchController {
 
   @PostMapping("/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/branches")
   public NamespaceDTO createBranch(@PathVariable String appId,
-                                   @PathVariable String clusterName,
-                                   @PathVariable String namespaceName,
-                                   @RequestParam("operator") String operator) {
+      @PathVariable String clusterName,
+      @PathVariable String namespaceName,
+      @RequestParam("operator") String operator) {
 
     checkNamespace(appId, clusterName, namespaceName);
 
-    Namespace createdBranch = namespaceBranchService.createBranch(appId, clusterName, namespaceName, operator);
+    Namespace createdBranch = namespaceBranchService
+        .createBranch(appId, clusterName, namespaceName, operator);
 
     return BeanUtils.transform(NamespaceDTO.class, createdBranch);
   }
 
   @GetMapping("/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/branches/{branchName}/rules")
   public GrayReleaseRuleDTO findBranchGrayRules(@PathVariable String appId,
-                                                @PathVariable String clusterName,
-                                                @PathVariable String namespaceName,
-                                                @PathVariable String branchName) {
+      @PathVariable String clusterName,
+      @PathVariable String namespaceName,
+      @PathVariable String branchName) {
 
     checkBranch(appId, clusterName, namespaceName, branchName);
 
-    GrayReleaseRule rules = namespaceBranchService.findBranchGrayRules(appId, clusterName, namespaceName, branchName);
+    GrayReleaseRule rules = namespaceBranchService
+        .findBranchGrayRules(appId, clusterName, namespaceName, branchName);
     if (rules == null) {
       return null;
     }
     GrayReleaseRuleDTO ruleDTO =
         new GrayReleaseRuleDTO(rules.getAppId(), rules.getClusterName(), rules.getNamespaceName(),
-                               rules.getBranchName());
+            rules.getBranchName());
 
     ruleDTO.setReleaseId(rules.getReleaseId());
 
@@ -79,40 +81,46 @@ public class NamespaceBranchController {
   @Transactional
   @PutMapping("/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/branches/{branchName}/rules")
   public void updateBranchGrayRules(@PathVariable String appId, @PathVariable String clusterName,
-                                    @PathVariable String namespaceName, @PathVariable String branchName,
-                                    @RequestBody GrayReleaseRuleDTO newRuleDto) {
+      @PathVariable String namespaceName, @PathVariable String branchName,
+      @RequestBody GrayReleaseRuleDTO newRuleDto) {
 
     checkBranch(appId, clusterName, namespaceName, branchName);
 
     GrayReleaseRule newRules = BeanUtils.transform(GrayReleaseRule.class, newRuleDto);
-    newRules.setRules(GrayReleaseRuleItemTransformer.batchTransformToJSON(newRuleDto.getRuleItems()));
+    newRules
+        .setRules(GrayReleaseRuleItemTransformer.batchTransformToJSON(newRuleDto.getRuleItems()));
     newRules.setBranchStatus(NamespaceBranchStatus.ACTIVE);
 
-    namespaceBranchService.updateBranchGrayRules(appId, clusterName, namespaceName, branchName, newRules);
+    namespaceBranchService
+        .updateBranchGrayRules(appId, clusterName, namespaceName, branchName, newRules);
 
-    messageSender.sendMessage(ReleaseMessageKeyGenerator.generate(appId, clusterName, namespaceName),
-                              Topics.APOLLO_RELEASE_TOPIC);
+    messageSender
+        .sendMessage(ReleaseMessageKeyGenerator.generate(appId, clusterName, namespaceName),
+            Topics.APOLLO_RELEASE_TOPIC);
   }
 
   @Transactional
   @DeleteMapping("/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/branches/{branchName}")
   public void deleteBranch(@PathVariable String appId, @PathVariable String clusterName,
-                           @PathVariable String namespaceName, @PathVariable String branchName,
-                           @RequestParam("operator") String operator) {
+      @PathVariable String namespaceName, @PathVariable String branchName,
+      @RequestParam("operator") String operator) {
 
     checkBranch(appId, clusterName, namespaceName, branchName);
 
     namespaceBranchService
-        .deleteBranch(appId, clusterName, namespaceName, branchName, NamespaceBranchStatus.DELETED, operator);
+        .deleteBranch(appId, clusterName, namespaceName, branchName, NamespaceBranchStatus.DELETED,
+            operator);
 
-    messageSender.sendMessage(ReleaseMessageKeyGenerator.generate(appId, clusterName, namespaceName),
-                              Topics.APOLLO_RELEASE_TOPIC);
+    messageSender
+        .sendMessage(ReleaseMessageKeyGenerator.generate(appId, clusterName, namespaceName),
+            Topics.APOLLO_RELEASE_TOPIC);
 
   }
 
   @GetMapping("/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/branches")
-  public NamespaceDTO loadNamespaceBranch(@PathVariable String appId, @PathVariable String clusterName,
-                                          @PathVariable String namespaceName) {
+  public NamespaceDTO loadNamespaceBranch(@PathVariable String appId,
+      @PathVariable String clusterName,
+      @PathVariable String namespaceName) {
 
     checkNamespace(appId, clusterName, namespaceName);
 
@@ -124,16 +132,18 @@ public class NamespaceBranchController {
     return BeanUtils.transform(NamespaceDTO.class, childNamespace);
   }
 
-  private void checkBranch(String appId, String clusterName, String namespaceName, String branchName) {
+  private void checkBranch(String appId, String clusterName, String namespaceName,
+      String branchName) {
     //1. check parent namespace
     checkNamespace(appId, clusterName, namespaceName);
 
     //2. check child namespace
     Namespace childNamespace = namespaceService.findOne(appId, branchName, namespaceName);
     if (childNamespace == null) {
-      throw new BadRequestException(String.format("Namespace's branch not exist. AppId = %s, ClusterName = %s, "
-                                                  + "NamespaceName = %s, BranchName = %s",
-                                                  appId, clusterName, namespaceName, branchName));
+      throw new BadRequestException(
+          String.format("Namespace's branch not exist. AppId = %s, ClusterName = %s, "
+                  + "NamespaceName = %s, BranchName = %s",
+              appId, clusterName, namespaceName, branchName));
     }
 
   }
@@ -141,8 +151,9 @@ public class NamespaceBranchController {
   private void checkNamespace(String appId, String clusterName, String namespaceName) {
     Namespace parentNamespace = namespaceService.findOne(appId, clusterName, namespaceName);
     if (parentNamespace == null) {
-      throw new BadRequestException(String.format("Namespace not exist. AppId = %s, ClusterName = %s, NamespaceName = %s", appId,
-                                                  clusterName, namespaceName));
+      throw new BadRequestException(String
+          .format("Namespace not exist. AppId = %s, ClusterName = %s, NamespaceName = %s", appId,
+              clusterName, namespaceName));
     }
   }
 

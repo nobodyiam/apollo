@@ -2,323 +2,337 @@
 <html ng-app="release_history">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="icon" href="../img/config.png">
-    <!-- styles -->
-    <link rel="stylesheet" type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="../vendor/angular/angular-toastr-1.4.1.min.css">
-    <link rel="stylesheet" type="text/css" media='all' href="../vendor/angular/loading-bar.min.css">
-    <link rel="stylesheet" type="text/css" href="../styles/common-style.css">
-    <link rel="stylesheet" type="text/css" href="../vendor/select2/select2.min.css">
-    <title>{{'Config.History.Title' | translate }}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link rel="icon" href="../img/config.png">
+  <!-- styles -->
+  <link rel="stylesheet" type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="../vendor/angular/angular-toastr-1.4.1.min.css">
+  <link rel="stylesheet" type="text/css" media='all' href="../vendor/angular/loading-bar.min.css">
+  <link rel="stylesheet" type="text/css" href="../styles/common-style.css">
+  <link rel="stylesheet" type="text/css" href="../vendor/select2/select2.min.css">
+  <title>{{'Config.History.Title' | translate }}</title>
 </head>
 
 <body>
 
-    <apollonav></apollonav>
+<apollonav></apollonav>
 
-    <div class="container-fluid apollo-container" ng-controller="ReleaseHistoryController">
-        <section class="release-history panel col-md-12 no-radius hidden">
-            <div class="panel-heading row">
+<div class="container-fluid apollo-container" ng-controller="ReleaseHistoryController">
+  <section class="release-history panel col-md-12 no-radius hidden">
+    <div class="panel-heading row">
 
-                <div class="operation-caption-container col-md-3">
-                    <div class="operation-caption release-operation-normal text-center" style="left:0;">
-                        <small>{{'Config.History.MasterVersionPublish' | translate }}</small>
-                    </div>
-                    <div class="operation-caption release-operation-rollback text-center" style="left: 110px;">
-                        <small>{{'Config.History.MasterVersionRollback' | translate }}</small>
-                    </div>
-                    <div class="operation-caption release-operation-gray text-center" style="left: 220px;">
-                        <small>{{'Config.History.GrayscaleOperator' | translate }}</small>
-                    </div>
-                </div>
+      <div class="operation-caption-container col-md-3">
+        <div class="operation-caption release-operation-normal text-center" style="left:0;">
+          <small>{{'Config.History.MasterVersionPublish' | translate }}</small>
+        </div>
+        <div class="operation-caption release-operation-rollback text-center" style="left: 110px;">
+          <small>{{'Config.History.MasterVersionRollback' | translate }}</small>
+        </div>
+        <div class="operation-caption release-operation-gray text-center" style="left: 220px;">
+          <small>{{'Config.History.GrayscaleOperator' | translate }}</small>
+        </div>
+      </div>
 
-                <div class="col-md-6 text-center">
-                    <h4>{{'Config.History.PublishHistory' | translate }}</h4>
-                    <small>({{'Common.AppId' | translate }}:{{pageContext.appId}},
-                        {{'Common.Environment' | translate }}:{{pageContext.env}},
-                        {{'Common.Cluster' | translate }}:{{pageContext.clusterName}},
-                        {{'Common.Namespace' | translate }}:{{pageContext.namespaceName}})
-                    </small>
-                </div>
+      <div class="col-md-6 text-center">
+        <h4>{{'Config.History.PublishHistory' | translate }}</h4>
+        <small>({{'Common.AppId' | translate }}:{{pageContext.appId}},
+          {{'Common.Environment' | translate }}:{{pageContext.env}},
+          {{'Common.Cluster' | translate }}:{{pageContext.clusterName}},
+          {{'Common.Namespace' | translate }}:{{pageContext.namespaceName}})
+        </small>
+      </div>
 
-                <div class="pull-right back-btn">
-                    <a type="button" class="btn btn-info"
-                        href="{{ '/config.html' | prefixPath }}?#/appid={{pageContext.appId}}">{{'Common.ReturnToIndex' | translate }}
-                    </a>
-                </div>
+      <div class="pull-right back-btn">
+        <a type="button" class="btn btn-info"
+           href="{{ '/config.html' | prefixPath }}?#/appid={{pageContext.appId}}">{{'Common.ReturnToIndex'
+          | translate }}
+        </a>
+      </div>
 
-            </div>
+    </div>
 
-            <div class="release-history-container panel-body row"
-                ng-show="!isConfigHidden && releaseHistories && releaseHistories.length > 0">
-                <div class="release-history-list col-md-3">
+    <div class="release-history-container panel-body row"
+         ng-show="!isConfigHidden && releaseHistories && releaseHistories.length > 0">
+      <div class="release-history-list col-md-3">
 
-                    <div class="media hover" ng-class="{'active': releaseHistory.id == selectedReleaseHistory}"
-                        ng-repeat="releaseHistory in releaseHistories"
-                        ng-click="showReleaseHistoryDetail(releaseHistory)">
-                        <div class="release-operation"
-                            ng-class="{'release-operation-normal': releaseHistory.operation == 0  || releaseHistory.operation == 5,
+        <div class="media hover" ng-class="{'active': releaseHistory.id == selectedReleaseHistory}"
+             ng-repeat="releaseHistory in releaseHistories"
+             ng-click="showReleaseHistoryDetail(releaseHistory)">
+          <div class="release-operation"
+               ng-class="{'release-operation-normal': releaseHistory.operation == 0  || releaseHistory.operation == 5,
                                'release-operation-gray': releaseHistory.operation == 2 || releaseHistory.operation == 3 ||
                                releaseHistory.operation == 4 || releaseHistory.operation == 7 || releaseHistory.operation == 8,
                                'release-operation-rollback': releaseHistory.operation == 1 || releaseHistory.operation == 6}">
-                        </div>
-                        <h4 class="media-left text-center" ng-bind="releaseHistory.operator">
-                        </h4>
-                        <div class="media-body">
+          </div>
+          <h4 class="media-left text-center" ng-bind="releaseHistory.operator">
+          </h4>
+          <div class="media-body">
 
-                            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 0">
-                                {{'Config.History.OperationType0' | translate }}</h5>
-                            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 1">
-                                {{'Config.History.OperationType1' | translate }}</h5>
-                            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 2">
-                                {{'Config.History.OperationType2' | translate }}</h5>
-                            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 3">
-                                {{'Config.History.OperationType3' | translate }}</h5>
-                            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 4">
-                                {{'Config.History.OperationType4' | translate }}</h5>
-                            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 5">
-                                {{'Config.History.OperationType5' | translate }}</h5>
-                            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 6">
-                                {{'Config.History.OperationType6' | translate }}</h5>
-                            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 7">
-                                {{'Config.History.OperationType7' | translate }}</h5>
-                            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 8">
-                                {{'Config.History.OperationType8' | translate }}</h5>
+            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 0">
+              {{'Config.History.OperationType0' | translate }}</h5>
+            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 1">
+              {{'Config.History.OperationType1' | translate }}</h5>
+            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 2">
+              {{'Config.History.OperationType2' | translate }}</h5>
+            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 3">
+              {{'Config.History.OperationType3' | translate }}</h5>
+            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 4">
+              {{'Config.History.OperationType4' | translate }}</h5>
+            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 5">
+              {{'Config.History.OperationType5' | translate }}</h5>
+            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 6">
+              {{'Config.History.OperationType6' | translate }}</h5>
+            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 7">
+              {{'Config.History.OperationType7' | translate }}</h5>
+            <h5 class="col-md-7 word-break" ng-show="releaseHistory.operation == 8">
+              {{'Config.History.OperationType8' | translate }}</h5>
 
-                            <h6 class="col-md-5 text-right" ng-bind="releaseHistory.releaseTimeFormatted"></h6>
-                            <span class="label label-warning no-radius emergency-publish"
-                                ng-if="releaseHistory.operationContext.isEmergencyPublish">{{'Config.History.UrgentPublish' | translate }}</span>
-                        </div>
-                    </div>
+            <h6 class="col-md-5 text-right" ng-bind="releaseHistory.releaseTimeFormatted"></h6>
+            <span class="label label-warning no-radius emergency-publish"
+                  ng-if="releaseHistory.operationContext.isEmergencyPublish">{{'Config.History.UrgentPublish' | translate }}</span>
+          </div>
+        </div>
 
-                    <div class="load-more media panel-heading text-center hover" ng-show="!hasLoadAll"
-                        ng-click="findReleaseHistory()">
-                        {{'Config.History.LoadMore' | translate }}
-                    </div>
+        <div class="load-more media panel-heading text-center hover" ng-show="!hasLoadAll"
+             ng-click="findReleaseHistory()">
+          {{'Config.History.LoadMore' | translate }}
+        </div>
 
-                </div>
+      </div>
 
-                <!--properties mode info-->
-                <div class="release-info col-md-9 panel panel-default no-radius" ng-show="!isTextNamespace">
-                    <div class="panel-heading">
+      <!--properties mode info-->
+      <div class="release-info col-md-9 panel panel-default no-radius" ng-show="!isTextNamespace">
+        <div class="panel-heading">
 
-                        <span ng-bind="history.releaseTitle"></span>
-                        <span class="label label-warning no-radius" ng-if="history.isReleaseAbandoned">{{'Config.History.Abandoned' | translate }}</span>
-                        <span class="pull-right" ng-bind="history.releaseTime | date: 'yyyy-MM-dd HH:mm:ss'"></span>
+          <span ng-bind="history.releaseTitle"></span>
+          <span class="label label-warning no-radius" ng-if="history.isReleaseAbandoned">{{'Config.History.Abandoned' | translate }}</span>
+          <span class="pull-right"
+                ng-bind="history.releaseTime | date: 'yyyy-MM-dd HH:mm:ss'"></span>
 
-                        <div class="row" style="padding-top: 10px;">
-                            <div class="col-md-5">
-                                <small ng-show="history.releaseComment" ng-bind="history.releaseComment"></small>
-                            </div>
-                            <div class="col-md-7 text-right">
-                                <button type="button" class="btn btn-default btn-sm" data-tooltip="tooltip" data-placement="bottom"
-                                        title="{{'Config.History.RollbackToTips' | translate }}"
-                                        ng-show="namespace.hasReleasePermission && !history.isReleaseAbandoned
+          <div class="row" style="padding-top: 10px;">
+            <div class="col-md-5">
+              <small ng-show="history.releaseComment" ng-bind="history.releaseComment"></small>
+            </div>
+            <div class="col-md-7 text-right">
+              <button type="button" class="btn btn-default btn-sm" data-tooltip="tooltip"
+                      data-placement="bottom"
+                      title="{{'Config.History.RollbackToTips' | translate }}"
+                      ng-show="namespace.hasReleasePermission && !history.isReleaseAbandoned
                                             && (history.operation == 0 || history.operation == 1 || history.operation == 4)"
-                                        ng-click="preRollback()">
-                                    <img src="../img/rollback.png">
-                                    {{'Config.History.RollbackTo' | translate }}
-                                </button>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-default btn-sm"
-                                        ng-class="{'active':history.viewType == 'diff'}" data-tooltip="tooltip"
-                                        data-placement="bottom" title="{{'Config.History.ChangedItemTips' | translate }}"
-                                        ng-click="switchConfigViewType(history, 'diff')">{{'Config.History.ChangedItem' | translate }}
-                                    </button>
-                                    <button type="button" class="btn btn-default btn-sm"
-                                        ng-class="{'active':history.viewType == 'all'}" data-tooltip="tooltip"
-                                        data-placement="bottom" title="{{'Config.History.AllItemTips' | translate }}"
-                                        ng-click="switchConfigViewType(history, 'all')">{{'Config.History.AllItem' | translate }}
-                                    </button>
-                                </div>
-                            </div>
+                      ng-click="preRollback()">
+                <img src="../img/rollback.png">
+                {{'Config.History.RollbackTo' | translate }}
+              </button>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default btn-sm"
+                        ng-class="{'active':history.viewType == 'diff'}" data-tooltip="tooltip"
+                        data-placement="bottom"
+                        title="{{'Config.History.ChangedItemTips' | translate }}"
+                        ng-click="switchConfigViewType(history, 'diff')">
+                  {{'Config.History.ChangedItem' | translate }}
+                </button>
+                <button type="button" class="btn btn-default btn-sm"
+                        ng-class="{'active':history.viewType == 'all'}" data-tooltip="tooltip"
+                        data-placement="bottom"
+                        title="{{'Config.History.AllItemTips' | translate }}"
+                        ng-click="switchConfigViewType(history, 'all')">{{'Config.History.AllItem' |
+                  translate }}
+                </button>
+              </div>
+            </div>
 
-                        </div>
-                    </div>
+          </div>
+        </div>
 
-                    <div class="panel-body config">
-                        <section ng-show="history.viewType=='diff'">
-                            <h4 class="section-title">{{'Config.History.ChangedItem' | translate }}</h4>
-                            <div ng-show="history.changes && history.changes.length > 0">
-                                <table class="no-margin table table-striped table-hover table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>{{'Config.History.ChangeType' | translate }}</th>
-                                            <th>{{'Config.History.ChangeKey' | translate }}</th>
-                                            <th>{{'Config.History.ChangeOldValue' | translate }}</th>
-                                            <th>{{'Config.History.ChangeNewValue' | translate }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="change in history.changes">
-                                            <td width="10%">
+        <div class="panel-body config">
+          <section ng-show="history.viewType=='diff'">
+            <h4 class="section-title">{{'Config.History.ChangedItem' | translate }}</h4>
+            <div ng-show="history.changes && history.changes.length > 0">
+              <table class="no-margin table table-striped table-hover table-bordered">
+                <thead>
+                <tr>
+                  <th>{{'Config.History.ChangeType' | translate }}</th>
+                  <th>{{'Config.History.ChangeKey' | translate }}</th>
+                  <th>{{'Config.History.ChangeOldValue' | translate }}</th>
+                  <th>{{'Config.History.ChangeNewValue' | translate }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="change in history.changes">
+                  <td width="10%">
                                                 <span
                                                     ng-show="change.type == 'ADDED'">{{'Config.History.ChangeTypeNew' | translate }}</span>
-                                                <span
-                                                    ng-show="change.type == 'MODIFIED'">{{'Config.History.ChangeTypeModify' | translate }}</span>
-                                                <span
-                                                    ng-show="change.type == 'DELETED'">{{'Config.History.ChangeTypeDelete' | translate }}</span>
-                                            </td>
-                                            <td class="cursor-pointer" width="20%"
-                                                ng-click="showText(change.entity.firstEntity.key)">
-                                                <span ng-bind="change.entity.firstEntity.key | limitTo: 250"></span>
-                                                <span
-                                                    ng-bind="change.entity.firstEntity.key.length > 250 ? '...' :''"></span>
-                                            </td>
-                                            <td class="cursor-pointer" width="35%"
-                                                ng-click="showText(change.entity.firstEntity.value)">
-                                                <span ng-bind="change.entity.firstEntity.value | limitTo: 250"></span>
-                                                <span
-                                                    ng-bind="change.entity.firstEntity.value.length > 250 ? '...' :''"></span>
-                                            </td>
-                                            <td class="cursor-pointer" width="35%"
-                                                ng-click="showText(change.entity.secondEntity.value)">
-                                                <span ng-bind="change.entity.secondEntity.value | limitTo: 250"></span>
-                                                <span
-                                                    ng-bind="change.entity.secondEntity.value.length > 250 ? '...' :''"></span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="text-center empty-container"
-                                ng-show="!history.changes || history.changes.length == 0">
-                                <h5>{{'Config.History.NoChange' | translate }}</h5>
-                            </div>
-                        </section>
-
-
-                        <section ng-show="history.viewType=='all'">
-                            <h4 class="section-title">{{'Config.History.AllItem' | translate }}</h4>
-                            <table class="no-margin table table-striped table-hover table-bordered"
-                                ng-show="history.configuration && history.configuration.length > 0">
-                                <thead>
-                                    <tr>
-                                        <th>{{'Config.History.ChangeKey' | translate }}</th>
-                                        <th>{{'Config.History.ChangeValue' | translate }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="item in history.configuration">
-                                        <td class="cursor-pointer" width="30%" ng-click="showText(item.firstEntity)">
-                                            <span ng-bind="item.firstEntity | limitTo: 250"></span>
-                                            <span ng-bind="item.firstEntity.length > 250 ? '...' :''"></span>
-                                        </td>
-                                        <td class="cursor-pointer" width="70%" ng-click="showText(item.secondEntity)">
-                                            <span ng-bind="item.secondEntity | limitTo: 250"></span>
-                                            <span ng-bind="item.secondEntity.length > 250 ? '...' :''"></span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div class="text-center empty-container"
-                                ng-show="history.viewType=='all' && (!history.configuration || history.configuration.length == 0)">
-                                <h5>{{'Config.History.NoItem' | translate }}</h5>
-                            </div>
-                        </section>
-
-
-                        <section
-                            ng-show="history.branchName != history.clusterName && history.operation != 8 && history.operation != 7">
-                            <hr>
-                            <h4 class="section-title">{{'Config.History.GrayscaleRule' | translate }}</h4>
-                            <table class="no-margin table table-striped table-hover table-bordered"
-                                ng-show="history.operationContext.rules">
-                                <thead>
-                                    <tr>
-                                        <th>{{'Config.History.GrayscaleAppId' | translate }}</th>
-                                        <th>{{'Config.History.GrayscaleIp' | translate }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="rule in history.operationContext.rules">
-                                        <td width="20%" ng-bind="rule.clientAppId"></td>
-                                        <td width="80%" ng-bind="rule.clientIpList.join(', ')"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <h5 class="text-center empty-container" ng-show="!history.operationContext.rules">
-                                {{'Config.History.NoGrayscaleRule' | translate }}
-                            </h5>
-                        </section>
-
-                    </div>
-                </div>
-
-                <!--text mode-->
-                <div class="release-info col-md-9"
-                    ng-show="isTextNamespace && history.changes && history.changes.length > 0">
-                    <apollodiff ng-repeat="change in history.changes" old-str="change.entity.firstEntity.value"
-                        new-str="change.entity.secondEntity.value" apollo-id="'releaseStrDiff'">
-                    </apollodiff>
-                </div>
-
+                    <span
+                        ng-show="change.type == 'MODIFIED'">{{'Config.History.ChangeTypeModify' | translate }}</span>
+                    <span
+                        ng-show="change.type == 'DELETED'">{{'Config.History.ChangeTypeDelete' | translate }}</span>
+                  </td>
+                  <td class="cursor-pointer" width="20%"
+                      ng-click="showText(change.entity.firstEntity.key)">
+                    <span ng-bind="change.entity.firstEntity.key | limitTo: 250"></span>
+                    <span
+                        ng-bind="change.entity.firstEntity.key.length > 250 ? '...' :''"></span>
+                  </td>
+                  <td class="cursor-pointer" width="35%"
+                      ng-click="showText(change.entity.firstEntity.value)">
+                    <span ng-bind="change.entity.firstEntity.value | limitTo: 250"></span>
+                    <span
+                        ng-bind="change.entity.firstEntity.value.length > 250 ? '...' :''"></span>
+                  </td>
+                  <td class="cursor-pointer" width="35%"
+                      ng-click="showText(change.entity.secondEntity.value)">
+                    <span ng-bind="change.entity.secondEntity.value | limitTo: 250"></span>
+                    <span
+                        ng-bind="change.entity.secondEntity.value.length > 250 ? '...' :''"></span>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
             </div>
-
-            <div class="panel-body" ng-show="isConfigHidden || !releaseHistories || releaseHistories.length == 0">
-                <h4 class="text-center empty-container" ng-show="isConfigHidden">
-                    {{'Config.History.NoPermissionTips' | translate }}</h4>
-                <h4 class="text-center empty-container" ng-show="!isConfigHidden">
-                    {{'Config.History.NoPublishHistory' | translate }}</h4>
+            <div class="text-center empty-container"
+                 ng-show="!history.changes || history.changes.length == 0">
+              <h5>{{'Config.History.NoChange' | translate }}</h5>
             </div>
-        </section>
+          </section>
 
-        <showtextmodal text="text"></showtextmodal>
 
-        <rollbackmodal app-id="pageContext.appId" env="pageContext.env" cluster="pageContext.clusterName">
-        </rollbackmodal>
+          <section ng-show="history.viewType=='all'">
+            <h4 class="section-title">{{'Config.History.AllItem' | translate }}</h4>
+            <table class="no-margin table table-striped table-hover table-bordered"
+                   ng-show="history.configuration && history.configuration.length > 0">
+              <thead>
+              <tr>
+                <th>{{'Config.History.ChangeKey' | translate }}</th>
+                <th>{{'Config.History.ChangeValue' | translate }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat="item in history.configuration">
+                <td class="cursor-pointer" width="30%" ng-click="showText(item.firstEntity)">
+                  <span ng-bind="item.firstEntity | limitTo: 250"></span>
+                  <span ng-bind="item.firstEntity.length > 250 ? '...' :''"></span>
+                </td>
+                <td class="cursor-pointer" width="70%" ng-click="showText(item.secondEntity)">
+                  <span ng-bind="item.secondEntity | limitTo: 250"></span>
+                  <span ng-bind="item.secondEntity.length > 250 ? '...' :''"></span>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <div class="text-center empty-container"
+                 ng-show="history.viewType=='all' && (!history.configuration || history.configuration.length == 0)">
+              <h5>{{'Config.History.NoItem' | translate }}</h5>
+            </div>
+          </section>
 
-        <apolloconfirmdialog apollo-dialog-id="'rollbackAlertDialog'"
-                             apollo-title="'Config.RollbackAlert.DialogTitle' | translate"
-                             apollo-detail="'Config.RollbackAlert.DialogContent' | translate" apollo-show-cancel-btn="true"
-                             apollo-confirm="rollback">
-        </apolloconfirmdialog>
+
+          <section
+              ng-show="history.branchName != history.clusterName && history.operation != 8 && history.operation != 7">
+            <hr>
+            <h4 class="section-title">{{'Config.History.GrayscaleRule' | translate }}</h4>
+            <table class="no-margin table table-striped table-hover table-bordered"
+                   ng-show="history.operationContext.rules">
+              <thead>
+              <tr>
+                <th>{{'Config.History.GrayscaleAppId' | translate }}</th>
+                <th>{{'Config.History.GrayscaleIp' | translate }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat="rule in history.operationContext.rules">
+                <td width="20%" ng-bind="rule.clientAppId"></td>
+                <td width="80%" ng-bind="rule.clientIpList.join(', ')"></td>
+              </tr>
+              </tbody>
+            </table>
+            <h5 class="text-center empty-container" ng-show="!history.operationContext.rules">
+              {{'Config.History.NoGrayscaleRule' | translate }}
+            </h5>
+          </section>
+
+        </div>
+      </div>
+
+      <!--text mode-->
+      <div class="release-info col-md-9"
+           ng-show="isTextNamespace && history.changes && history.changes.length > 0">
+        <apollodiff ng-repeat="change in history.changes" old-str="change.entity.firstEntity.value"
+                    new-str="change.entity.secondEntity.value" apollo-id="'releaseStrDiff'">
+        </apollodiff>
+      </div>
+
     </div>
 
+    <div class="panel-body"
+         ng-show="isConfigHidden || !releaseHistories || releaseHistories.length == 0">
+      <h4 class="text-center empty-container" ng-show="isConfigHidden">
+        {{'Config.History.NoPermissionTips' | translate }}</h4>
+      <h4 class="text-center empty-container" ng-show="!isConfigHidden">
+        {{'Config.History.NoPublishHistory' | translate }}</h4>
+    </div>
+  </section>
 
-    <div ng-include="'../views/common/footer.html'"></div>
+  <showtextmodal text="text"></showtextmodal>
 
-    <!-- jquery.js -->
-    <script src="../vendor/jquery.min.js" type="text/javascript"></script>
-    <script src="../vendor/select2/select2.min.js" type="text/javascript"></script>
+  <rollbackmodal app-id="pageContext.appId" env="pageContext.env" cluster="pageContext.clusterName">
+  </rollbackmodal>
 
-    <!--angular-->
-    <script src="../vendor/angular/angular.min.js"></script>
-    <script src="../vendor/angular/angular-resource.min.js"></script>
-    <script src="../vendor/angular/angular-toastr-1.4.1.tpls.min.js"></script>
-    <script src="../vendor/angular/loading-bar.min.js"></script>
-    <script src="../vendor/angular/angular-cookies.min.js"></script>
+  <apolloconfirmdialog apollo-dialog-id="'rollbackAlertDialog'"
+                       apollo-title="'Config.RollbackAlert.DialogTitle' | translate"
+                       apollo-detail="'Config.RollbackAlert.DialogContent' | translate"
+                       apollo-show-cancel-btn="true"
+                       apollo-confirm="rollback">
+  </apolloconfirmdialog>
+</div>
 
-    <script src="../vendor/angular/angular-translate.2.18.1/angular-translate.min.js"></script>
-    <script src="../vendor/angular/angular-translate.2.18.1/angular-translate-loader-static-files.min.js"></script>
-    <script src="../vendor/angular/angular-translate.2.18.1/angular-translate-storage-cookie.min.js"></script>
 
-    <!-- bootstrap.js -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<div ng-include="'../views/common/footer.html'"></div>
 
-    <script src="../vendor/diff.min.js" type="text/javascript"></script>
+<!-- jquery.js -->
+<script src="../vendor/jquery.min.js" type="text/javascript"></script>
+<script src="../vendor/select2/select2.min.js" type="text/javascript"></script>
 
-    <!--biz-->
-    <script type="application/javascript" src="../scripts/app.js"></script>
-    <script type="application/javascript" src="../scripts/services/AppService.js"></script>
-    <script type="application/javascript" src="../scripts/services/EnvService.js"></script>
-    <script type="application/javascript" src="../scripts/services/ReleaseService.js"></script>
-    <script type="application/javascript" src="../scripts/services/UserService.js"></script>
-    <script type="application/javascript" src="../scripts/services/CommonService.js"></script>
-    <script type="application/javascript" src="../scripts/services/ReleaseHistoryService.js"></script>
-    <script type="application/javascript" src="../scripts/services/ConfigService.js"></script>
-    <script type="application/javascript" src="../scripts/services/PermissionService.js"></script>
-    <script type="application/javascript" src="../scripts/services/EventManager.js"></script>
+<!--angular-->
+<script src="../vendor/angular/angular.min.js"></script>
+<script src="../vendor/angular/angular-resource.min.js"></script>
+<script src="../vendor/angular/angular-toastr-1.4.1.tpls.min.js"></script>
+<script src="../vendor/angular/loading-bar.min.js"></script>
+<script src="../vendor/angular/angular-cookies.min.js"></script>
 
-    <script type="application/javascript" src="../scripts/AppUtils.js"></script>
-    <script type="application/javascript" src="../scripts/controller/config/ReleaseHistoryController.js"></script>
+<script src="../vendor/angular/angular-translate.2.18.1/angular-translate.min.js"></script>
+<script
+    src="../vendor/angular/angular-translate.2.18.1/angular-translate-loader-static-files.min.js"></script>
+<script
+    src="../vendor/angular/angular-translate.2.18.1/angular-translate-storage-cookie.min.js"></script>
 
-    <script type="application/javascript" src="../scripts/PageCommon.js"></script>
-    <script type="application/javascript" src="../scripts/directive/directive.js"></script>
-    <script type="application/javascript" src="../scripts/directive/show-text-modal-directive.js"></script>
-    <script type="application/javascript" src="../scripts/directive/diff-directive.js"></script>
-    <script type="application/javascript" src="../scripts/directive/rollback-modal-directive.js"></script>
+<!-- bootstrap.js -->
+<script src="../vendor/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+
+<script src="../vendor/diff.min.js" type="text/javascript"></script>
+
+<!--biz-->
+<script type="application/javascript" src="../scripts/app.js"></script>
+<script type="application/javascript" src="../scripts/services/AppService.js"></script>
+<script type="application/javascript" src="../scripts/services/EnvService.js"></script>
+<script type="application/javascript" src="../scripts/services/ReleaseService.js"></script>
+<script type="application/javascript" src="../scripts/services/UserService.js"></script>
+<script type="application/javascript" src="../scripts/services/CommonService.js"></script>
+<script type="application/javascript" src="../scripts/services/ReleaseHistoryService.js"></script>
+<script type="application/javascript" src="../scripts/services/ConfigService.js"></script>
+<script type="application/javascript" src="../scripts/services/PermissionService.js"></script>
+<script type="application/javascript" src="../scripts/services/EventManager.js"></script>
+
+<script type="application/javascript" src="../scripts/AppUtils.js"></script>
+<script type="application/javascript"
+        src="../scripts/controller/config/ReleaseHistoryController.js"></script>
+
+<script type="application/javascript" src="../scripts/PageCommon.js"></script>
+<script type="application/javascript" src="../scripts/directive/directive.js"></script>
+<script type="application/javascript"
+        src="../scripts/directive/show-text-modal-directive.js"></script>
+<script type="application/javascript" src="../scripts/directive/diff-directive.js"></script>
+<script type="application/javascript"
+        src="../scripts/directive/rollback-modal-directive.js"></script>
 </body>
 
 </html>

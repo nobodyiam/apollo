@@ -1,16 +1,5 @@
 package com.ctrip.framework.apollo.biz.message;
 
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
-
 import com.ctrip.framework.apollo.biz.config.BizConfig;
 import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
 import com.ctrip.framework.apollo.biz.repository.ReleaseMessageRepository;
@@ -18,11 +7,21 @@ import com.ctrip.framework.apollo.core.utils.ApolloThreadFactory;
 import com.ctrip.framework.apollo.tracer.Tracer;
 import com.ctrip.framework.apollo.tracer.spi.Transaction;
 import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class ReleaseMessageScanner implements InitializingBean {
+
   private static final Logger logger = LoggerFactory.getLogger(ReleaseMessageScanner.class);
   @Autowired
   private BizConfig bizConfig;
@@ -44,7 +43,8 @@ public class ReleaseMessageScanner implements InitializingBean {
     databaseScanInterval = bizConfig.releaseMessageScanIntervalInMilli();
     maxIdScanned = loadLargestMessageId();
     executorService.scheduleWithFixedDelay((Runnable) () -> {
-      Transaction transaction = Tracer.newTransaction("Apollo.ReleaseMessageScanner", "scanMessage");
+      Transaction transaction = Tracer
+          .newTransaction("Apollo.ReleaseMessageScanner", "scanMessage");
       try {
         scanMessages();
         transaction.setStatus(Transaction.SUCCESS);
@@ -60,7 +60,6 @@ public class ReleaseMessageScanner implements InitializingBean {
 
   /**
    * add message listeners for release message
-   * @param listener
    */
   public void addMessageListener(ReleaseMessageListener listener) {
     if (!listeners.contains(listener)) {
@@ -98,6 +97,7 @@ public class ReleaseMessageScanner implements InitializingBean {
 
   /**
    * find largest message id as the current start point
+   *
    * @return current largest message id
    */
   private long loadLargestMessageId() {
@@ -107,7 +107,6 @@ public class ReleaseMessageScanner implements InitializingBean {
 
   /**
    * Notify listeners with messages loaded
-   * @param messages
    */
   private void fireMessageScanned(List<ReleaseMessage> messages) {
     for (ReleaseMessage message : messages) {

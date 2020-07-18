@@ -1,14 +1,14 @@
 package com.ctrip.framework.apollo.common.dto;
 
-import org.springframework.data.domain.Pageable;
-
 import java.util.Collections;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class PageDTO<T> {
+
   private final long total;
   private final List<T> content;
   private final int page;
@@ -38,7 +38,7 @@ public class PageDTO<T> {
     return size;
   }
 
-  public boolean hasContent(){
+  public boolean hasContent() {
     return content != null && content.size() > 0;
   }
 }

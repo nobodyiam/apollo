@@ -1,5 +1,9 @@
 package com.ctrip.framework.apollo.portal.controller;
 
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 import com.ctrip.framework.apollo.portal.AbstractIntegrationTest;
 import com.ctrip.framework.apollo.portal.entity.po.ServerConfig;
 import org.junit.Assert;
@@ -7,9 +11,6 @@ import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.HttpClientErrorException;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 /**
  * Created by kezhenxu at 2019/1/14 13:24.
@@ -18,6 +19,7 @@ import static org.junit.Assert.assertThat;
  */
 @ActiveProfiles("skipAuthorization")
 public class ServerConfigControllerTest extends AbstractIntegrationTest {
+
   @Test
   public void shouldSuccessWhenParameterValid() {
     ServerConfig serverConfig = new ServerConfig();

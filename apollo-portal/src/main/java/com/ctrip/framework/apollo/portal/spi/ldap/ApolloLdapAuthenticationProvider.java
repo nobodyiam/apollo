@@ -1,5 +1,3 @@
-
-
 package com.ctrip.framework.apollo.portal.spi.ldap;
 
 import com.ctrip.framework.apollo.portal.spi.configuration.LdapExtendProperties;
@@ -16,9 +14,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Inherited from LdapAuthenticationProvider and rewritten the authenticate method,
- * modified the userId used by the previous user input,
- * changed to use the userId in the LDAP system.
+ * Inherited from LdapAuthenticationProvider and rewritten the authenticate method, modified the
+ * userId used by the previous user input, changed to use the userId in the LDAP system.
  *
  * @author wuzishu
  */

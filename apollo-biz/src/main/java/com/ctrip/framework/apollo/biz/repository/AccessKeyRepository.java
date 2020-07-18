@@ -14,7 +14,8 @@ public interface AccessKeyRepository extends PagingAndSortingRepository<AccessKe
 
   List<AccessKey> findByAppId(String appId);
 
-  List<AccessKey> findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(Date date);
+  List<AccessKey> findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(
+      Date date);
 
   List<AccessKey> findByDataChangeLastModifiedTime(Date date);
 }

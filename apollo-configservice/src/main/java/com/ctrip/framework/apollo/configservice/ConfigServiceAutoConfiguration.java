@@ -61,6 +61,7 @@ public class ConfigServiceAutoConfiguration {
 
   @Configuration
   static class MessageScannerConfiguration {
+
     private final NotificationController notificationController;
     private final ConfigFileController configFileController;
     private final NotificationControllerV2 notificationControllerV2;

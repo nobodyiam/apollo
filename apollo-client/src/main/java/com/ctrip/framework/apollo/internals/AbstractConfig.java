@@ -21,9 +21,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -33,18 +30,22 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public abstract class AbstractConfig implements Config {
+
   private static final Logger logger = LoggerFactory.getLogger(AbstractConfig.class);
 
   private static final ExecutorService m_executorService;
 
   private final List<ConfigChangeListener> m_listeners = Lists.newCopyOnWriteArrayList();
   private final Map<ConfigChangeListener, Set<String>> m_interestedKeys = Maps.newConcurrentMap();
-  private final Map<ConfigChangeListener, Set<String>> m_interestedKeyPrefixes = Maps.newConcurrentMap();
+  private final Map<ConfigChangeListener, Set<String>> m_interestedKeyPrefixes = Maps
+      .newConcurrentMap();
   private final ConfigUtil m_configUtil;
   private volatile Cache<String, Integer> m_integerCache;
   private volatile Cache<String, Long> m_longCache;
@@ -85,7 +86,8 @@ public abstract class AbstractConfig implements Config {
   }
 
   @Override
-  public void addChangeListener(ConfigChangeListener listener, Set<String> interestedKeys, Set<String> interestedKeyPrefixes) {
+  public void addChangeListener(ConfigChangeListener listener, Set<String> interestedKeys,
+      Set<String> interestedKeyPrefixes) {
     if (!m_listeners.contains(listener)) {
       m_listeners.add(listener);
       if (interestedKeys != null && !interestedKeys.isEmpty()) {
@@ -378,14 +380,15 @@ public abstract class AbstractConfig implements Config {
       }
     } catch (Throwable ex) {
       Tracer.logError(new ApolloConfigException(
-              String.format("getProperty for %s failed, return default value %s", key,
-                      defaultValue), ex));
+          String.format("getProperty for %s failed, return default value %s", key,
+              defaultValue), ex));
     }
 
     return defaultValue;
   }
 
-  private <T> T getValueFromCache(String key, Function<String, T> parser, Cache<String, T> cache, T defaultValue) {
+  private <T> T getValueFromCache(String key, Function<String, T> parser, Cache<String, T> cache,
+      T defaultValue) {
     T result = cache.getIfPresent(key);
 
     if (result != null) {
@@ -395,7 +398,8 @@ public abstract class AbstractConfig implements Config {
     return getValueAndStoreToCache(key, parser, cache, defaultValue);
   }
 
-  private <T> T getValueAndStoreToCache(String key, Function<String, T> parser, Cache<String, T> cache, T defaultValue) {
+  private <T> T getValueAndStoreToCache(String key, Function<String, T> parser,
+      Cache<String, T> cache, T defaultValue) {
     long currentConfigVersion = m_configVersion.get();
     String value = getProperty(key, null);
 
@@ -418,7 +422,8 @@ public abstract class AbstractConfig implements Config {
   private <T> Cache<String, T> newCache() {
     Cache<String, T> cache = CacheBuilder.newBuilder()
         .maximumSize(m_configUtil.getMaxConfigCacheSize())
-        .expireAfterAccess(m_configUtil.getConfigCacheExpireTime(), m_configUtil.getConfigCacheExpireTimeUnit())
+        .expireAfterAccess(m_configUtil.getConfigCacheExpireTime(),
+            m_configUtil.getConfigCacheExpireTimeUnit())
         .build();
     allCaches.add(cache);
     return cache;
@@ -448,7 +453,8 @@ public abstract class AbstractConfig implements Config {
         @Override
         public void run() {
           String listenerName = listener.getClass().getName();
-          Transaction transaction = Tracer.newTransaction("Apollo.ConfigChangeListener", listenerName);
+          Transaction transaction = Tracer
+              .newTransaction("Apollo.ConfigChangeListener", listenerName);
           try {
             listener.onChange(changeEvent);
             transaction.setStatus(Transaction.SUCCESS);
@@ -464,7 +470,8 @@ public abstract class AbstractConfig implements Config {
     }
   }
 
-  private boolean isConfigChangeListenerInterested(ConfigChangeListener configChangeListener, ConfigChangeEvent configChangeEvent) {
+  private boolean isConfigChangeListenerInterested(ConfigChangeListener configChangeListener,
+      ConfigChangeEvent configChangeEvent) {
     Set<String> interestedKeys = m_interestedKeys.get(configChangeListener);
     Set<String> interestedKeyPrefixes = m_interestedKeyPrefixes.get(configChangeListener);
 
@@ -495,13 +502,13 @@ public abstract class AbstractConfig implements Config {
   }
 
   List<ConfigChange> calcPropertyChanges(String namespace, Properties previous,
-                                         Properties current) {
+      Properties current) {
     if (previous == null) {
       previous = propertiesFactory.getPropertiesInstance();
     }
 
     if (current == null) {
-      current =  propertiesFactory.getPropertiesInstance();
+      current = propertiesFactory.getPropertiesInstance();
     }
 
     Set<String> previousKeys = previous.stringPropertyNames();

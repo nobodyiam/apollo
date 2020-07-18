@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty("redis.cache.enabled")
 @Component
 public class SpringBootApolloRefreshConfig {
+
   private static final Logger logger = LoggerFactory.getLogger(SpringBootApolloRefreshConfig.class);
 
   private final SampleRedisConfig sampleRedisConfig;
@@ -28,7 +29,8 @@ public class SpringBootApolloRefreshConfig {
     this.refreshScope = refreshScope;
   }
 
-  @ApolloConfigChangeListener(value = {ConfigConsts.NAMESPACE_APPLICATION, "TEST1.apollo", "application.yaml"},
+  @ApolloConfigChangeListener(value = {ConfigConsts.NAMESPACE_APPLICATION, "TEST1.apollo",
+      "application.yaml"},
       interestedKeyPrefixes = {"redis.cache."})
   public void onChange(ConfigChangeEvent changeEvent) {
     logger.info("before refresh {}", sampleRedisConfig.toString());

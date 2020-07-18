@@ -1,13 +1,15 @@
 package com.ctrip.framework.foundation.spi.provider;
 
 public interface Provider {
+
   /**
    * @return the current provider's type
    */
   public Class<? extends Provider> getType();
 
   /**
-   * Return the property value with the given name, or {@code defaultValue} if the name doesn't exist.
+   * Return the property value with the given name, or {@code defaultValue} if the name doesn't
+   * exist.
    *
    * @param name the property name
    * @param defaultValue the default value when name is not found or any error occurred

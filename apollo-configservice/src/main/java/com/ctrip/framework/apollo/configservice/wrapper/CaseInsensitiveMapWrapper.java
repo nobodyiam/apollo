@@ -6,6 +6,7 @@ import java.util.Map;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class CaseInsensitiveMapWrapper<T> {
+
   private final Map<String, T> delegate;
 
   public CaseInsensitiveMapWrapper(Map<String, T> delegate) {

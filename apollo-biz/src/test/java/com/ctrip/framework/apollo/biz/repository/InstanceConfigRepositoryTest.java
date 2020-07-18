@@ -1,5 +1,8 @@
 package com.ctrip.framework.apollo.biz.repository;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
+
 import com.ctrip.framework.apollo.biz.AbstractIntegrationTest;
 import com.ctrip.framework.apollo.biz.entity.Instance;
 import com.ctrip.framework.apollo.biz.entity.InstanceConfig;
@@ -10,15 +13,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-
 /**
  * Created by kezhenxu94 at 2019/1/18 15:33.
  *
  * @author kezhenxu94 (kezhenxu94 at 163 dot com)
  */
 public class InstanceConfigRepositoryTest extends AbstractIntegrationTest {
+
   @Autowired
   private InstanceConfigRepository instanceConfigRepository;
   @Autowired

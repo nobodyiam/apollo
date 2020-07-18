@@ -186,7 +186,7 @@
   "Component.Namespace.Master.Items.SortByKey": "Filter the configurations by key",
   "Component.Namespace.Master.Items.FilterItem": "Filter",
   "Component.Namespace.Master.Items.RevokeItemTips": "Revoke configuration changes",
-  "Component.Namespace.Master.Items.RevokeItem" :"Revoke",
+  "Component.Namespace.Master.Items.RevokeItem": "Revoke",
   "Component.Namespace.Master.Items.SyncItemTips": "Synchronize configurations among environments",
   "Component.Namespace.Master.Items.SyncItem": "Synchronize",
   "Component.Namespace.Master.Items.DiffItemTips": "Compare the configurations among environments",

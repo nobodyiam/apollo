@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -11,12 +12,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-
 /**
- * You may set up data like the following in Apollo:
- * <br /><br />
- * Properties Sample: application.properties
+ * You may set up data like the following in Apollo: <br /><br /> Properties Sample:
+ * application.properties
  * <pre>
  * redis.cache.enabled = true
  * redis.cache.expireSeconds = 100
@@ -44,8 +42,9 @@ import javax.annotation.PostConstruct;
  *     - d
  * </pre>
  *
- * To make <code>@ConditionalOnProperty</code> work properly, <code>apollo.bootstrap.enabled</code> should be set to true
- * and <code>redis.cache.enabled</code> should also be set to true. Check 'src/main/resources/application.yml' for more information.
+ * To make <code>@ConditionalOnProperty</code> work properly, <code>apollo.bootstrap.enabled</code>
+ * should be set to true and <code>redis.cache.enabled</code> should also be set to true. Check
+ * 'src/main/resources/application.yml' for more information.
  *
  * @author Jason Song(song_s@ctrip.com)
  */
@@ -95,6 +94,6 @@ public class SampleRedisConfig {
   public String toString() {
     return String.format(
         "[SampleRedisConfig] expireSeconds: %d, clusterNodes: %s, commandTimeout: %d, someMap: %s, someList: %s",
-            expireSeconds, clusterNodes, commandTimeout, someMap, someList);
+        expireSeconds, clusterNodes, commandTimeout, someMap, someList);
   }
 }

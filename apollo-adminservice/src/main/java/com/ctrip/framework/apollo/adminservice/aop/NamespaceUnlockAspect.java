@@ -17,21 +17,17 @@ import com.ctrip.framework.apollo.core.utils.StringUtils;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
+import java.util.List;
+import java.util.Map;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-
 
 /**
- * unlock namespace if is redo operation.
- * --------------------------------------------
- * For example: If namespace has a item K1 = v1
- * --------------------------------------------
- * First operate: change k1 = v2 (lock namespace)
- * Second operate: change k1 = v1 (unlock namespace)
+ * unlock namespace if is redo operation. -------------------------------------------- For example:
+ * If namespace has a item K1 = v1 -------------------------------------------- First operate:
+ * change k1 = v2 (lock namespace) Second operate: change k1 = v1 (unlock namespace)
  */
 @Aspect
 @Component
@@ -62,21 +58,21 @@ public class NamespaceUnlockAspect {
   //create item
   @After("@annotation(PreAcquireNamespaceLock) && args(appId, clusterName, namespaceName, item, ..)")
   public void requireLockAdvice(String appId, String clusterName, String namespaceName,
-                                ItemDTO item) {
+      ItemDTO item) {
     tryUnlock(namespaceService.findOne(appId, clusterName, namespaceName));
   }
 
   //update item
   @After("@annotation(PreAcquireNamespaceLock) && args(appId, clusterName, namespaceName, itemId, item, ..)")
   public void requireLockAdvice(String appId, String clusterName, String namespaceName, long itemId,
-                                ItemDTO item) {
+      ItemDTO item) {
     tryUnlock(namespaceService.findOne(appId, clusterName, namespaceName));
   }
 
   //update by change set
   @After("@annotation(PreAcquireNamespaceLock) && args(appId, clusterName, namespaceName, changeSet, ..)")
   public void requireLockAdvice(String appId, String clusterName, String namespaceName,
-                                ItemChangeSets changeSet) {
+      ItemChangeSets changeSet) {
     tryUnlock(namespaceService.findOne(appId, clusterName, namespaceName));
   }
 
@@ -109,10 +105,12 @@ public class NamespaceUnlockAspect {
       return hasNormalItems(items);
     }
 
-    Map<String, String> releasedConfiguration = gson.fromJson(release.getConfigurations(), GsonType.CONFIG);
+    Map<String, String> releasedConfiguration = gson
+        .fromJson(release.getConfigurations(), GsonType.CONFIG);
     Map<String, String> configurationFromItems = generateConfigurationFromItems(namespace, items);
 
-    MapDifference<String, String> difference = Maps.difference(releasedConfiguration, configurationFromItems);
+    MapDifference<String, String> difference = Maps
+        .difference(releasedConfiguration, configurationFromItems);
 
     return !difference.areEqual();
 
@@ -128,7 +126,8 @@ public class NamespaceUnlockAspect {
     return false;
   }
 
-  private Map<String, String> generateConfigurationFromItems(Namespace namespace, List<Item> namespaceItems) {
+  private Map<String, String> generateConfigurationFromItems(Namespace namespace,
+      List<Item> namespaceItems) {
 
     Map<String, String> configurationFromItems = Maps.newHashMap();
 
@@ -147,7 +146,8 @@ public class NamespaceUnlockAspect {
     return configurationFromItems;
   }
 
-  private Map<String, String> generateMapFromItems(List<Item> items, Map<String, String> configurationFromItems) {
+  private Map<String, String> generateMapFromItems(List<Item> items,
+      Map<String, String> configurationFromItems) {
     for (Item item : items) {
       String key = item.getKey();
       if (StringUtils.isBlank(key)) {

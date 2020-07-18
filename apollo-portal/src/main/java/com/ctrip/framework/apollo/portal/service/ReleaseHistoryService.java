@@ -6,13 +6,11 @@ import com.ctrip.framework.apollo.common.dto.ReleaseDTO;
 import com.ctrip.framework.apollo.common.dto.ReleaseHistoryDTO;
 import com.ctrip.framework.apollo.common.entity.EntityPair;
 import com.ctrip.framework.apollo.common.utils.BeanUtils;
-import com.ctrip.framework.apollo.portal.environment.Env;
 import com.ctrip.framework.apollo.portal.api.AdminServiceAPI;
 import com.ctrip.framework.apollo.portal.entity.bo.ReleaseHistoryBO;
+import com.ctrip.framework.apollo.portal.environment.Env;
 import com.ctrip.framework.apollo.portal.util.RelativeDateFormat;
 import com.google.gson.Gson;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -20,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ReleaseHistoryService {
@@ -30,15 +29,18 @@ public class ReleaseHistoryService {
   private final AdminServiceAPI.ReleaseHistoryAPI releaseHistoryAPI;
   private final ReleaseService releaseService;
 
-  public ReleaseHistoryService(final AdminServiceAPI.ReleaseHistoryAPI releaseHistoryAPI, final ReleaseService releaseService) {
+  public ReleaseHistoryService(final AdminServiceAPI.ReleaseHistoryAPI releaseHistoryAPI,
+      final ReleaseService releaseService) {
     this.releaseHistoryAPI = releaseHistoryAPI;
     this.releaseService = releaseService;
   }
 
 
-  public ReleaseHistoryBO findLatestByReleaseIdAndOperation(Env env, long releaseId, int operation){
-    PageDTO<ReleaseHistoryDTO> pageDTO = releaseHistoryAPI.findByReleaseIdAndOperation(env, releaseId, operation, 0, 1);
-    if (pageDTO != null && pageDTO.hasContent()){
+  public ReleaseHistoryBO findLatestByReleaseIdAndOperation(Env env, long releaseId,
+      int operation) {
+    PageDTO<ReleaseHistoryDTO> pageDTO = releaseHistoryAPI
+        .findByReleaseIdAndOperation(env, releaseId, operation, 0, 1);
+    if (pageDTO != null && pageDTO.hasContent()) {
       ReleaseHistoryDTO releaseHistory = pageDTO.getContent().get(0);
       ReleaseDTO release = releaseService.findReleaseById(env, releaseHistory.getReleaseId());
       return transformReleaseHistoryDTO2BO(releaseHistory, release);
@@ -47,9 +49,11 @@ public class ReleaseHistoryService {
     return null;
   }
 
-  public ReleaseHistoryBO findLatestByPreviousReleaseIdAndOperation(Env env, long previousReleaseId, int operation){
-    PageDTO<ReleaseHistoryDTO> pageDTO = releaseHistoryAPI.findByPreviousReleaseIdAndOperation(env, previousReleaseId, operation, 0, 1);
-    if (pageDTO != null && pageDTO.hasContent()){
+  public ReleaseHistoryBO findLatestByPreviousReleaseIdAndOperation(Env env, long previousReleaseId,
+      int operation) {
+    PageDTO<ReleaseHistoryDTO> pageDTO = releaseHistoryAPI
+        .findByPreviousReleaseIdAndOperation(env, previousReleaseId, operation, 0, 1);
+    if (pageDTO != null && pageDTO.hasContent()) {
       ReleaseHistoryDTO releaseHistory = pageDTO.getContent().get(0);
       ReleaseDTO release = releaseService.findReleaseById(env, releaseHistory.getReleaseId());
       return transformReleaseHistoryDTO2BO(releaseHistory, release);
@@ -58,10 +62,12 @@ public class ReleaseHistoryService {
     return null;
   }
 
-  public List<ReleaseHistoryBO> findNamespaceReleaseHistory(String appId, Env env, String clusterName,
-                                                            String namespaceName, int page, int size) {
-    PageDTO<ReleaseHistoryDTO> result = releaseHistoryAPI.findReleaseHistoriesByNamespace(appId, env, clusterName,
-                                                                                          namespaceName, page, size);
+  public List<ReleaseHistoryBO> findNamespaceReleaseHistory(String appId, Env env,
+      String clusterName,
+      String namespaceName, int page, int size) {
+    PageDTO<ReleaseHistoryDTO> result = releaseHistoryAPI
+        .findReleaseHistoriesByNamespace(appId, env, clusterName,
+            namespaceName, page, size);
     if (result == null || !result.hasContent()) {
       return Collections.emptyList();
     }
@@ -81,7 +87,7 @@ public class ReleaseHistoryService {
   }
 
   private List<ReleaseHistoryBO> transformReleaseHistoryDTO2BO(List<ReleaseHistoryDTO> source,
-                                                               List<ReleaseDTO> releases) {
+      List<ReleaseDTO> releases) {
 
     Map<Long, ReleaseDTO> releasesMap = BeanUtils.mapByKey("id", releases);
 
@@ -94,7 +100,8 @@ public class ReleaseHistoryService {
     return bos;
   }
 
-  private ReleaseHistoryBO transformReleaseHistoryDTO2BO(ReleaseHistoryDTO dto, ReleaseDTO release){
+  private ReleaseHistoryBO transformReleaseHistoryDTO2BO(ReleaseHistoryDTO dto,
+      ReleaseDTO release) {
     ReleaseHistoryBO bo = new ReleaseHistoryBO();
     bo.setId(dto.getId());
     bo.setAppId(dto.getAppId());
@@ -114,13 +121,15 @@ public class ReleaseHistoryService {
 
     return bo;
   }
+
   private void setReleaseInfoToReleaseHistoryBO(ReleaseHistoryBO bo, ReleaseDTO release) {
     if (release != null) {
       bo.setReleaseTitle(release.getName());
       bo.setReleaseComment(release.getComment());
       bo.setReleaseAbandoned(release.isAbandoned());
 
-      Map<String, String> configuration = gson.fromJson(release.getConfigurations(), GsonType.CONFIG);
+      Map<String, String> configuration = gson
+          .fromJson(release.getConfigurations(), GsonType.CONFIG);
       List<EntityPair<String>> items = new ArrayList<>(configuration.size());
       for (Map.Entry<String, String> entry : configuration.entrySet()) {
         EntityPair<String> entityPair = new EntityPair<>(entry.getKey(), entry.getValue());

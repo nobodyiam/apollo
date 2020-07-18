@@ -3,6 +3,7 @@ package com.ctrip.framework.apollo.portal.entity.vo;
 import com.ctrip.framework.apollo.common.dto.ItemChangeSets;
 
 public class ItemDiffs {
+
   private NamespaceIdentifier namespace;
   private ItemChangeSets diffs;
   private String extInfo;

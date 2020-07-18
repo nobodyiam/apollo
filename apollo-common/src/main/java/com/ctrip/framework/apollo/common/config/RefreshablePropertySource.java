@@ -1,8 +1,7 @@
 package com.ctrip.framework.apollo.common.config;
 
-import org.springframework.core.env.MapPropertySource;
-
 import java.util.Map;
+import org.springframework.core.env.MapPropertySource;
 
 public abstract class RefreshablePropertySource extends MapPropertySource {
 

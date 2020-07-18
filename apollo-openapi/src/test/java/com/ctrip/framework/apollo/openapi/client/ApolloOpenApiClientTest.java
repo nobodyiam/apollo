@@ -1,6 +1,6 @@
 package com.ctrip.framework.apollo.openapi.client;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -11,7 +11,8 @@ public class ApolloOpenApiClientTest {
     String someUrl = "http://someUrl";
     String someToken = "someToken";
 
-    ApolloOpenApiClient client = ApolloOpenApiClient.newBuilder().withPortalUrl(someUrl).withToken(someToken).build();
+    ApolloOpenApiClient client = ApolloOpenApiClient.newBuilder().withPortalUrl(someUrl)
+        .withToken(someToken).build();
 
     assertEquals(someUrl, client.getPortalUrl());
     assertEquals(someToken, client.getToken());

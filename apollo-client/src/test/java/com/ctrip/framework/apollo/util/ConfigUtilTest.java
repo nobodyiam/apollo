@@ -1,15 +1,15 @@
 package com.ctrip.framework.apollo.util;
 
-import com.ctrip.framework.apollo.core.ConfigConsts;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
+import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.io.File;
 import org.junit.After;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

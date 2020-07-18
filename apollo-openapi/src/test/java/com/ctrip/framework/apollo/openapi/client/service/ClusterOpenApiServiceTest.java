@@ -1,6 +1,6 @@
 package com.ctrip.framework.apollo.openapi.client.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,7 +79,8 @@ public class ClusterOpenApiServiceTest extends AbstractOpenApiServiceTest {
     HttpPost post = request.getValue();
 
     assertEquals(String
-        .format("%s/envs/%s/apps/%s/clusters", someBaseUrl, someEnv, someAppId), post.getURI().toString());
+            .format("%s/envs/%s/apps/%s/clusters", someBaseUrl, someEnv, someAppId),
+        post.getURI().toString());
 
     StringEntity entity = (StringEntity) post.getEntity();
 

@@ -19,9 +19,11 @@ import org.springframework.core.type.AnnotationMetadata;
 public class DefaultApolloConfigRegistrarHelper implements ApolloConfigRegistrarHelper {
 
   @Override
-  public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+  public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+      BeanDefinitionRegistry registry) {
     AnnotationAttributes attributes = AnnotationAttributes
-        .fromMap(importingClassMetadata.getAnnotationAttributes(EnableApolloConfig.class.getName()));
+        .fromMap(
+            importingClassMetadata.getAnnotationAttributes(EnableApolloConfig.class.getName()));
     String[] namespaces = attributes.getStringArray("value");
     int order = attributes.getNumber("order");
     PropertySourcesProcessor.addNamespaces(Lists.newArrayList(namespaces), order);
@@ -30,18 +32,24 @@ public class DefaultApolloConfigRegistrarHelper implements ApolloConfigRegistrar
     // to make sure the default PropertySourcesPlaceholderConfigurer's priority is higher than PropertyPlaceholderConfigurer
     propertySourcesPlaceholderPropertyValues.put("order", 0);
 
-    BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry, PropertySourcesPlaceholderConfigurer.class.getName(),
+    BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry,
+        PropertySourcesPlaceholderConfigurer.class.getName(),
         PropertySourcesPlaceholderConfigurer.class, propertySourcesPlaceholderPropertyValues);
-    BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry, PropertySourcesProcessor.class.getName(),
-        PropertySourcesProcessor.class);
-    BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry, ApolloAnnotationProcessor.class.getName(),
-        ApolloAnnotationProcessor.class);
-    BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry, SpringValueProcessor.class.getName(),
-        SpringValueProcessor.class);
-    BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry, SpringValueDefinitionProcessor.class.getName(),
-        SpringValueDefinitionProcessor.class);
-    BeanRegistrationUtil.registerBeanDefinitionIfNotExists(registry, ApolloJsonValueProcessor.class.getName(),
-        ApolloJsonValueProcessor.class);
+    BeanRegistrationUtil
+        .registerBeanDefinitionIfNotExists(registry, PropertySourcesProcessor.class.getName(),
+            PropertySourcesProcessor.class);
+    BeanRegistrationUtil
+        .registerBeanDefinitionIfNotExists(registry, ApolloAnnotationProcessor.class.getName(),
+            ApolloAnnotationProcessor.class);
+    BeanRegistrationUtil
+        .registerBeanDefinitionIfNotExists(registry, SpringValueProcessor.class.getName(),
+            SpringValueProcessor.class);
+    BeanRegistrationUtil
+        .registerBeanDefinitionIfNotExists(registry, SpringValueDefinitionProcessor.class.getName(),
+            SpringValueDefinitionProcessor.class);
+    BeanRegistrationUtil
+        .registerBeanDefinitionIfNotExists(registry, ApolloJsonValueProcessor.class.getName(),
+            ApolloJsonValueProcessor.class);
   }
 
   @Override

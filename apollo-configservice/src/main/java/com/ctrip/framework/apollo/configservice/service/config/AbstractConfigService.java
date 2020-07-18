@@ -4,9 +4,7 @@ import com.ctrip.framework.apollo.biz.entity.Release;
 import com.ctrip.framework.apollo.biz.grayReleaseRule.GrayReleaseRulesHolder;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.dto.ApolloNotificationMessages;
-
 import com.google.common.base.Strings;
-
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,15 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Jason Song(song_s@ctrip.com)
  */
 public abstract class AbstractConfigService implements ConfigService {
+
   @Autowired
   private GrayReleaseRulesHolder grayReleaseRulesHolder;
 
   @Override
-  public Release loadConfig(String clientAppId, String clientIp, String configAppId, String configClusterName,
+  public Release loadConfig(String clientAppId, String clientIp, String configAppId,
+      String configClusterName,
       String configNamespace, String dataCenter, ApolloNotificationMessages clientMessages) {
     // load from specified cluster fist
     if (!Objects.equals(ConfigConsts.CLUSTER_NAME_DEFAULT, configClusterName)) {
-      Release clusterRelease = findRelease(clientAppId, clientIp, configAppId, configClusterName, configNamespace,
+      Release clusterRelease = findRelease(clientAppId, clientIp, configAppId, configClusterName,
+          configNamespace,
           clientMessages);
 
       if (!Objects.isNull(clusterRelease)) {
@@ -32,7 +33,8 @@ public abstract class AbstractConfigService implements ConfigService {
 
     // try to load via data center
     if (!Strings.isNullOrEmpty(dataCenter) && !Objects.equals(dataCenter, configClusterName)) {
-      Release dataCenterRelease = findRelease(clientAppId, clientIp, configAppId, dataCenter, configNamespace,
+      Release dataCenterRelease = findRelease(clientAppId, clientIp, configAppId, dataCenter,
+          configNamespace,
           clientMessages);
       if (!Objects.isNull(dataCenterRelease)) {
         return dataCenterRelease;
@@ -40,13 +42,14 @@ public abstract class AbstractConfigService implements ConfigService {
     }
 
     // fallback to default release
-    return findRelease(clientAppId, clientIp, configAppId, ConfigConsts.CLUSTER_NAME_DEFAULT, configNamespace,
+    return findRelease(clientAppId, clientIp, configAppId, ConfigConsts.CLUSTER_NAME_DEFAULT,
+        configNamespace,
         clientMessages);
   }
 
   /**
    * Find release
-   * 
+   *
    * @param clientAppId the client's app id
    * @param clientIp the client ip
    * @param configAppId the requested config's app id
@@ -55,10 +58,12 @@ public abstract class AbstractConfigService implements ConfigService {
    * @param clientMessages the messages received in client side
    * @return the release
    */
-  private Release findRelease(String clientAppId, String clientIp, String configAppId, String configClusterName,
+  private Release findRelease(String clientAppId, String clientIp, String configAppId,
+      String configClusterName,
       String configNamespace, ApolloNotificationMessages clientMessages) {
-    Long grayReleaseId = grayReleaseRulesHolder.findReleaseIdFromGrayReleaseRule(clientAppId, clientIp, configAppId,
-        configClusterName, configNamespace);
+    Long grayReleaseId = grayReleaseRulesHolder
+        .findReleaseIdFromGrayReleaseRule(clientAppId, clientIp, configAppId,
+            configClusterName, configNamespace);
 
     Release release = null;
 
@@ -67,7 +72,8 @@ public abstract class AbstractConfigService implements ConfigService {
     }
 
     if (release == null) {
-      release = findLatestActiveRelease(configAppId, configClusterName, configNamespace, clientMessages);
+      release = findLatestActiveRelease(configAppId, configClusterName, configNamespace,
+          clientMessages);
     }
 
     return release;

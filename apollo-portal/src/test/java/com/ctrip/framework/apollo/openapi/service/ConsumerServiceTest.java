@@ -1,5 +1,17 @@
 package com.ctrip.framework.apollo.openapi.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ctrip.framework.apollo.openapi.entity.Consumer;
 import com.ctrip.framework.apollo.openapi.entity.ConsumerRole;
 import com.ctrip.framework.apollo.openapi.entity.ConsumerToken;
@@ -15,21 +27,15 @@ import com.ctrip.framework.apollo.portal.service.RolePermissionService;
 import com.ctrip.framework.apollo.portal.spi.UserInfoHolder;
 import com.ctrip.framework.apollo.portal.spi.UserService;
 import com.ctrip.framework.apollo.portal.util.RoleUtils;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 public class ConsumerServiceTest extends AbstractUnitTest {
 
@@ -82,7 +88,7 @@ public class ConsumerServiceTest extends AbstractUnitTest {
 
     assertNull(consumerId);
     verify(consumerTokenRepository, never()).findTopByTokenAndExpiresAfter(anyString(), any(Date
-                                                                                                .class));
+        .class));
   }
 
   @Test
@@ -172,8 +178,10 @@ public class ConsumerServiceTest extends AbstractUnitTest {
     String testNamespace = "namespace";
     String modifyRoleName = RoleUtils.buildModifyNamespaceRoleName(testAppId, testNamespace);
     String releaseRoleName = RoleUtils.buildReleaseNamespaceRoleName(testAppId, testNamespace);
-    String envModifyRoleName = RoleUtils.buildModifyNamespaceRoleName(testAppId, testNamespace, Env.DEV.toString());
-    String envReleaseRoleName = RoleUtils.buildReleaseNamespaceRoleName(testAppId, testNamespace, Env.DEV.toString());
+    String envModifyRoleName = RoleUtils
+        .buildModifyNamespaceRoleName(testAppId, testNamespace, Env.DEV.toString());
+    String envReleaseRoleName = RoleUtils
+        .buildReleaseNamespaceRoleName(testAppId, testNamespace, Env.DEV.toString());
     long modifyRoleId = 1;
     long releaseRoleId = 2;
     long envModifyRoleId = 3;
@@ -187,7 +195,8 @@ public class ConsumerServiceTest extends AbstractUnitTest {
     when(rolePermissionService.findRoleByRoleName(envModifyRoleName)).thenReturn(envModifyRole);
     when(rolePermissionService.findRoleByRoleName(envReleaseRoleName)).thenReturn(envReleaseRole);
 
-    when(consumerRoleRepository.findByConsumerIdAndRoleId(consumerId, modifyRoleId)).thenReturn(null);
+    when(consumerRoleRepository.findByConsumerIdAndRoleId(consumerId, modifyRoleId))
+        .thenReturn(null);
 
     UserInfo owner = createUser(testOwner);
     when(userInfoHolder.getUser()).thenReturn(owner);
@@ -196,13 +205,18 @@ public class ConsumerServiceTest extends AbstractUnitTest {
     ConsumerRole namespaceEnvModifyConsumerRole = createConsumerRole(consumerId, envModifyRoleId);
     ConsumerRole namespaceReleaseConsumerRole = createConsumerRole(consumerId, releaseRoleId);
     ConsumerRole namespaceEnvReleaseConsumerRole = createConsumerRole(consumerId, envReleaseRoleId);
-    doReturn(namespaceModifyConsumerRole).when(consumerService).createConsumerRole(consumerId, modifyRoleId, testOwner);
-    doReturn(namespaceEnvModifyConsumerRole).when(consumerService).createConsumerRole(consumerId, envModifyRoleId, testOwner);
-    doReturn(namespaceReleaseConsumerRole).when(consumerService).createConsumerRole(consumerId, releaseRoleId, testOwner);
-    doReturn(namespaceEnvReleaseConsumerRole).when(consumerService).createConsumerRole(consumerId, envReleaseRoleId, testOwner);
+    doReturn(namespaceModifyConsumerRole).when(consumerService)
+        .createConsumerRole(consumerId, modifyRoleId, testOwner);
+    doReturn(namespaceEnvModifyConsumerRole).when(consumerService)
+        .createConsumerRole(consumerId, envModifyRoleId, testOwner);
+    doReturn(namespaceReleaseConsumerRole).when(consumerService)
+        .createConsumerRole(consumerId, releaseRoleId, testOwner);
+    doReturn(namespaceEnvReleaseConsumerRole).when(consumerService)
+        .createConsumerRole(consumerId, envReleaseRoleId, testOwner);
 
     consumerService.assignNamespaceRoleToConsumer(token, testAppId, testNamespace);
-    consumerService.assignNamespaceRoleToConsumer(token, testAppId, testNamespace, Env.DEV.toString());
+    consumerService
+        .assignNamespaceRoleToConsumer(token, testAppId, testNamespace, Env.DEV.toString());
 
     verify(consumerRoleRepository).save(namespaceModifyConsumerRole);
     verify(consumerRoleRepository).save(namespaceEnvModifyConsumerRole);

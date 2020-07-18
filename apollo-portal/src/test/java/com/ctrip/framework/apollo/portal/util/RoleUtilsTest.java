@@ -1,6 +1,7 @@
 package com.ctrip.framework.apollo.portal.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -10,7 +11,6 @@ public class RoleUtilsTest {
   public void testExtractAppIdFromMasterRoleName() throws Exception {
     assertEquals("someApp", RoleUtils.extractAppIdFromMasterRoleName("Master+someApp"));
     assertEquals("someApp", RoleUtils.extractAppIdFromMasterRoleName("Master+someApp+xx"));
-
 
     assertNull(RoleUtils.extractAppIdFromMasterRoleName("ReleaseNamespace+app1+application"));
   }

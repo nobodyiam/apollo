@@ -15,7 +15,7 @@ public class RequestPrecondition {
     checkArguments(!StringUtils.isContainEmpty(args), CONTAIN_EMPTY_ARGUMENT);
   }
 
-  public static void checkModel(boolean valid){
+  public static void checkModel(boolean valid) {
     checkArguments(valid, ILLEGAL_MODEL);
   }
 

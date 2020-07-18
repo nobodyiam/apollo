@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class RemoteConfigLongPollService {
+
   private static final Logger logger = LoggerFactory.getLogger(RemoteConfigLongPollService.class);
   private static final Joiner STRING_JOINER = Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR);
   private static final Joiner.MapJoiner MAP_JOINER = Joiner.on("&").withKeyValueSeparator("=");
@@ -137,7 +138,8 @@ public class RemoteConfigLongPollService {
     this.m_longPollingStopped.compareAndSet(false, true);
   }
 
-  private void doLongPollingRefresh(String appId, String cluster, String dataCenter, String secret) {
+  private void doLongPollingRefresh(String appId, String cluster, String dataCenter,
+      String secret) {
     final Random random = new Random();
     ServiceDTO lastServiceDto = null;
     while (!m_longPollingStopped.get() && !Thread.currentThread().isInterrupted()) {
@@ -197,7 +199,8 @@ public class RemoteConfigLongPollService {
         long sleepTimeInSecond = m_longPollFailSchedulePolicyInSecond.fail();
         logger.warn(
             "Long polling failed, will retry in {} seconds. appId: {}, cluster: {}, namespaces: {}, long polling url: {}, reason: {}",
-            sleepTimeInSecond, appId, cluster, assembleNamespaces(), url, ExceptionUtil.getDetailMessage(ex));
+            sleepTimeInSecond, appId, cluster, assembleNamespaces(), url,
+            ExceptionUtil.getDetailMessage(ex));
         try {
           TimeUnit.SECONDS.sleep(sleepTimeInSecond);
         } catch (InterruptedException ie) {
@@ -219,7 +222,8 @@ public class RemoteConfigLongPollService {
       List<RemoteConfigRepository> toBeNotified =
           Lists.newArrayList(m_longPollNamespaces.get(namespaceName));
       ApolloNotificationMessages originalMessages = m_remoteNotificationMessages.get(namespaceName);
-      ApolloNotificationMessages remoteMessages = originalMessages == null ? null : originalMessages.clone();
+      ApolloNotificationMessages remoteMessages =
+          originalMessages == null ? null : originalMessages.clone();
       //since .properties are filtered out by default, so we need to check if there is any listener for it
       toBeNotified.addAll(m_longPollNamespaces
           .get(String.format("%s.%s", namespaceName, ConfigFileFormat.Properties.getValue())));
@@ -277,7 +281,7 @@ public class RemoteConfigLongPollService {
   }
 
   String assembleLongPollRefreshUrl(String uri, String appId, String cluster, String dataCenter,
-                                    Map<String, Long> notificationsMap) {
+      Map<String, Long> notificationsMap) {
     Map<String, String> queryParams = Maps.newHashMap();
     queryParams.put("appId", queryParamEscaper.escape(appId));
     queryParams.put("cluster", queryParamEscaper.escape(cluster));
@@ -303,7 +307,8 @@ public class RemoteConfigLongPollService {
   String assembleNotifications(Map<String, Long> notificationsMap) {
     List<ApolloConfigNotification> notifications = Lists.newArrayList();
     for (Map.Entry<String, Long> entry : notificationsMap.entrySet()) {
-      ApolloConfigNotification notification = new ApolloConfigNotification(entry.getKey(), entry.getValue());
+      ApolloConfigNotification notification = new ApolloConfigNotification(entry.getKey(),
+          entry.getValue());
       notifications.add(notification);
     }
     return gson.toJson(notifications);

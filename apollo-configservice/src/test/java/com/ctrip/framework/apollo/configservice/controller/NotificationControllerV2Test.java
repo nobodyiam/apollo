@@ -1,5 +1,14 @@
 package com.ctrip.framework.apollo.configservice.controller;
 
+import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ctrip.framework.apollo.biz.config.BizConfig;
 import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
 import com.ctrip.framework.apollo.biz.message.Topics;
@@ -17,6 +26,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,20 +40,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.async.DeferredResult;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
-import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationControllerV2Test {
+
   private NotificationControllerV2 controller;
   private String someAppId;
   private String someCluster;
@@ -86,11 +91,14 @@ public class NotificationControllerV2Test {
 
     when(namespaceUtil.filterNamespaceName(defaultNamespace)).thenReturn(defaultNamespace);
     when(namespaceUtil.filterNamespaceName(somePublicNamespace)).thenReturn(somePublicNamespace);
-    when(namespaceUtil.normalizeNamespace(someAppId, defaultNamespace)).thenReturn(defaultNamespace);
-    when(namespaceUtil.normalizeNamespace(someAppId, somePublicNamespace)).thenReturn(somePublicNamespace);
+    when(namespaceUtil.normalizeNamespace(someAppId, defaultNamespace))
+        .thenReturn(defaultNamespace);
+    when(namespaceUtil.normalizeNamespace(someAppId, somePublicNamespace))
+        .thenReturn(somePublicNamespace);
 
     deferredResults =
-        (Multimap<String, DeferredResultWrapper>) ReflectionTestUtils.getField(controller, "deferredResults");
+        (Multimap<String, DeferredResultWrapper>) ReflectionTestUtils
+            .getField(controller, "deferredResults");
   }
 
   @Test
@@ -155,8 +163,10 @@ public class NotificationControllerV2Test {
     String somePublicNamespaceAsFile = somePublicNamespace + ".xml";
 
     when(namespaceUtil.filterNamespaceName(defaultNamespaceAsFile)).thenReturn(defaultNamespace);
-    when(namespaceUtil.filterNamespaceName(somePublicNamespaceAsFile)).thenReturn(somePublicNamespaceAsFile);
-    when(namespaceUtil.normalizeNamespace(someAppId, somePublicNamespaceAsFile)).thenReturn(somePublicNamespaceAsFile);
+    when(namespaceUtil.filterNamespaceName(somePublicNamespaceAsFile))
+        .thenReturn(somePublicNamespaceAsFile);
+    when(namespaceUtil.normalizeNamespace(someAppId, somePublicNamespaceAsFile))
+        .thenReturn(somePublicNamespaceAsFile);
 
     String someWatchKey = "someKey";
     String anotherWatchKey = "anotherKey";
@@ -210,7 +220,8 @@ public class NotificationControllerV2Test {
     Multimap<String, String> watchKeysMap =
         assembleMultiMap(defaultNamespace, Lists.newArrayList(someWatchKey));
     watchKeysMap
-        .putAll(assembleMultiMap(somePublicNamespace, Lists.newArrayList(anotherWatchKey, yetAnotherWatchKey)));
+        .putAll(assembleMultiMap(somePublicNamespace,
+            Lists.newArrayList(anotherWatchKey, yetAnotherWatchKey)));
 
     when(watchKeysUtil
         .assembleAllWatchKeys(someAppId, someCluster,
@@ -247,7 +258,8 @@ public class NotificationControllerV2Test {
     ApolloNotificationMessages notificationMessages = result.getBody().get(0).getMessages();
     assertEquals(2, notificationMessages.getDetails().size());
     assertEquals(notificationId, notificationMessages.get(anotherWatchKey).longValue());
-    assertEquals(yetAnotherNotificationId, notificationMessages.get(yetAnotherWatchKey).longValue());
+    assertEquals(yetAnotherNotificationId,
+        notificationMessages.get(yetAnotherWatchKey).longValue());
   }
 
   @Test
@@ -353,12 +365,16 @@ public class NotificationControllerV2Test {
         assembleMultiMap(defaultNamespace, Lists.newArrayList(someWatchKey));
 
     String notificationAsString =
-        transformApolloConfigNotificationsToString(defaultNamespace.toUpperCase(), someNotificationId);
+        transformApolloConfigNotificationsToString(defaultNamespace.toUpperCase(),
+            someNotificationId);
 
-    when(namespaceUtil.filterNamespaceName(namespaceWithIncorrectCase)).thenReturn(namespaceWithIncorrectCase);
-    when(namespaceUtil.normalizeNamespace(appIdWithIncorrectCase, namespaceWithIncorrectCase)).thenReturn(defaultNamespace);
+    when(namespaceUtil.filterNamespaceName(namespaceWithIncorrectCase))
+        .thenReturn(namespaceWithIncorrectCase);
+    when(namespaceUtil.normalizeNamespace(appIdWithIncorrectCase, namespaceWithIncorrectCase))
+        .thenReturn(defaultNamespace);
     when(watchKeysUtil
-        .assembleAllWatchKeys(appIdWithIncorrectCase, someCluster, Sets.newHashSet(defaultNamespace),
+        .assembleAllWatchKeys(appIdWithIncorrectCase, someCluster,
+            Sets.newHashSet(defaultNamespace),
             someDataCenter)).thenReturn(watchKeysMap);
 
     DeferredResult<ResponseEntity<List<ApolloConfigNotification>>>
@@ -397,8 +413,8 @@ public class NotificationControllerV2Test {
   }
 
   private String transformApolloConfigNotificationsToString(String namespace, long notificationId,
-                                                            String anotherNamespace,
-                                                            long anotherNotificationId) {
+      String anotherNamespace,
+      long anotherNotificationId) {
     List<ApolloConfigNotification> notifications =
         Lists.newArrayList(assembleApolloConfigNotification(namespace, notificationId),
             assembleApolloConfigNotification(anotherNamespace, anotherNotificationId));
@@ -406,10 +422,10 @@ public class NotificationControllerV2Test {
   }
 
   private String transformApolloConfigNotificationsToString(String namespace, long notificationId,
-                                                            String anotherNamespace,
-                                                            long anotherNotificationId,
-                                                            String yetAnotherNamespace,
-                                                            long yetAnotherNotificationId) {
+      String anotherNamespace,
+      long anotherNotificationId,
+      String yetAnotherNamespace,
+      long yetAnotherNotificationId) {
     List<ApolloConfigNotification> notifications =
         Lists.newArrayList(assembleApolloConfigNotification(namespace, notificationId),
             assembleApolloConfigNotification(anotherNamespace, anotherNotificationId),
@@ -418,7 +434,7 @@ public class NotificationControllerV2Test {
   }
 
   private ApolloConfigNotification assembleApolloConfigNotification(String namespace,
-                                                                    long notificationId) {
+      long notificationId) {
     ApolloConfigNotification notification = new ApolloConfigNotification(namespace, notificationId);
     return notification;
   }
@@ -429,11 +445,12 @@ public class NotificationControllerV2Test {
     return multimap;
   }
 
-  private void assertWatchKeys(Multimap<String, String> watchKeysMap, DeferredResult deferredResult) {
+  private void assertWatchKeys(Multimap<String, String> watchKeysMap,
+      DeferredResult deferredResult) {
     for (String watchKey : watchKeysMap.values()) {
       Collection<DeferredResultWrapper> deferredResultWrappers = deferredResults.get(watchKey);
       boolean found = false;
-      for (DeferredResultWrapper wrapper: deferredResultWrappers) {
+      for (DeferredResultWrapper wrapper : deferredResultWrappers) {
         if (Objects.equals(wrapper.getResult(), deferredResult)) {
           found = true;
         }

@@ -1,13 +1,5 @@
 package com.ctrip.framework.apollo.tracer;
 
-import com.ctrip.framework.apollo.tracer.internals.MockMessageProducerManager;
-import com.ctrip.framework.apollo.tracer.internals.NullTransaction;
-import com.ctrip.framework.apollo.tracer.spi.MessageProducer;
-import com.ctrip.framework.apollo.tracer.spi.Transaction;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doThrow;
@@ -16,10 +8,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ctrip.framework.apollo.tracer.internals.MockMessageProducerManager;
+import com.ctrip.framework.apollo.tracer.internals.NullTransaction;
+import com.ctrip.framework.apollo.tracer.spi.MessageProducer;
+import com.ctrip.framework.apollo.tracer.spi.Transaction;
+import org.junit.Before;
+import org.junit.Test;
+
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class TracerTest {
+
   private MessageProducer someProducer;
 
   @Before

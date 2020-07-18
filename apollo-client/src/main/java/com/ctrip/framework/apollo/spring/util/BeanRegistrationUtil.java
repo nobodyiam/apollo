@@ -2,7 +2,6 @@ package com.ctrip.framework.apollo.spring.util;
 
 import java.util.Map;
 import java.util.Objects;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -11,13 +10,16 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class BeanRegistrationUtil {
-  public static boolean registerBeanDefinitionIfNotExists(BeanDefinitionRegistry registry, String beanName,
+
+  public static boolean registerBeanDefinitionIfNotExists(BeanDefinitionRegistry registry,
+      String beanName,
       Class<?> beanClass) {
     return registerBeanDefinitionIfNotExists(registry, beanName, beanClass, null);
   }
 
-  public static boolean registerBeanDefinitionIfNotExists(BeanDefinitionRegistry registry, String beanName,
-                                                          Class<?> beanClass, Map<String, Object> extraPropertyValues) {
+  public static boolean registerBeanDefinitionIfNotExists(BeanDefinitionRegistry registry,
+      String beanName,
+      Class<?> beanClass, Map<String, Object> extraPropertyValues) {
     if (registry.containsBeanDefinition(beanName)) {
       return false;
     }
@@ -31,7 +33,8 @@ public class BeanRegistrationUtil {
       }
     }
 
-    BeanDefinition beanDefinition = BeanDefinitionBuilder.genericBeanDefinition(beanClass).getBeanDefinition();
+    BeanDefinition beanDefinition = BeanDefinitionBuilder.genericBeanDefinition(beanClass)
+        .getBeanDefinition();
 
     if (extraPropertyValues != null) {
       for (Map.Entry<String, Object> entry : extraPropertyValues.entrySet()) {

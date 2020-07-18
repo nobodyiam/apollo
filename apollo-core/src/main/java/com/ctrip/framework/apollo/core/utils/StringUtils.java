@@ -21,7 +21,8 @@ public class StringUtils {
    * </pre>
    *
    * <p>
-   * NOTE: This method changed in Lang version 2.0. It no longer trims the String. That functionality is available in isBlank().
+   * NOTE: This method changed in Lang version 2.0. It no longer trims the String. That
+   * functionality is available in isBlank().
    * </p>
    *
    * @param str the String to check, may be null
@@ -32,19 +33,20 @@ public class StringUtils {
   }
 
 
-  public static boolean isContainEmpty(String... args){
-    if (args == null){
+  public static boolean isContainEmpty(String... args) {
+    if (args == null) {
       return false;
     }
 
-    for (String arg: args){
-      if (arg == null || "".equals(arg)){
+    for (String arg : args) {
+      if (arg == null || "".equals(arg)) {
         return true;
       }
     }
 
     return false;
   }
+
   /**
    * <p>
    * Checks if a String is whitespace, empty ("") or null.
@@ -76,12 +78,12 @@ public class StringUtils {
 
   /**
    * <p>
-   * Removes control characters (char &lt;= 32) from both ends of this String returning <code>null</code> if the String is empty
-   * ("") after the trim or if it is <code>null</code>.
+   * Removes control characters (char &lt;= 32) from both ends of this String returning
+   * <code>null</code> if the String is empty ("") after the trim or if it is <code>null</code>.
    *
    * <p>
-   * The String is trimmed using {@link String#trim()}. Trim removes start and end characters &lt;= 32. To strip whitespace use
-   * {@link #stripToNull(String)}.
+   * The String is trimmed using {@link String#trim()}. Trim removes start and end characters &lt;=
+   * 32. To strip whitespace use {@link #stripToNull(String)}.
    * </p>
    *
    * <pre>
@@ -93,7 +95,8 @@ public class StringUtils {
    * </pre>
    *
    * @param str the String to be trimmed, may be null
-   * @return the trimmed String, <code>null</code> if only chars &lt;= 32, empty or null String input
+   * @return the trimmed String, <code>null</code> if only chars &lt;= 32, empty or null String
+   * input
    * @since 2.0
    */
   public static String trimToNull(String str) {
@@ -103,12 +106,12 @@ public class StringUtils {
 
   /**
    * <p>
-   * Removes control characters (char &lt;= 32) from both ends of this String returning an empty String ("") if the String is empty
-   * ("") after the trim or if it is <code>null</code>.
+   * Removes control characters (char &lt;= 32) from both ends of this String returning an empty
+   * String ("") if the String is empty ("") after the trim or if it is <code>null</code>.
    *
    * <p>
-   * The String is trimmed using {@link String#trim()}. Trim removes start and end characters &lt;= 32. To strip whitespace use
-   * {@link #stripToEmpty(String)}.
+   * The String is trimmed using {@link String#trim()}. Trim removes start and end characters &lt;=
+   * 32. To strip whitespace use {@link #stripToEmpty(String)}.
    * </p>
    *
    * <pre>
@@ -129,13 +132,14 @@ public class StringUtils {
 
   /**
    * <p>
-   * Removes control characters (char &lt;= 32) from both ends of this String, handling <code>null</code> by returning
+   * Removes control characters (char &lt;= 32) from both ends of this String, handling
+   * <code>null</code> by returning
    * <code>null</code>.
    * </p>
    *
    * <p>
-   * The String is trimmed using {@link String#trim()}. Trim removes start and end characters &lt;= 32. To strip whitespace use
-   * {@link #strip(String)}.
+   * The String is trimmed using {@link String#trim()}. Trim removes start and end characters &lt;=
+   * 32. To strip whitespace use {@link #strip(String)}.
    * </p>
    *
    * <p>
@@ -163,8 +167,8 @@ public class StringUtils {
    * </p>
    *
    * <p>
-   * <code>null</code>s are handled without exceptions. Two <code>null</code> references are considered to be equal. The comparison
-   * is case sensitive.
+   * <code>null</code>s are handled without exceptions. Two <code>null</code> references are
+   * considered to be equal. The comparison is case sensitive.
    * </p>
    *
    * <pre>
@@ -190,8 +194,8 @@ public class StringUtils {
    * </p>
    *
    * <p>
-   * <code>null</code>s are handled without exceptions. Two <code>null</code> references are considered equal. Comparison is case
-   * insensitive.
+   * <code>null</code>s are handled without exceptions. Two <code>null</code> references are
+   * considered equal. Comparison is case insensitive.
    * </p>
    *
    * <pre>
@@ -217,8 +221,8 @@ public class StringUtils {
    * </p>
    *
    * <p>
-   * <code>null</code>s are handled without exceptions. Two <code>null</code> references are considered to be equal. The comparison
-   * is case sensitive.
+   * <code>null</code>s are handled without exceptions. Two <code>null</code> references are
+   * considered to be equal. The comparison is case sensitive.
    * </p>
    *
    * <pre>
@@ -229,9 +233,10 @@ public class StringUtils {
    * StringUtils.startsWith("ABCDEF", "abc") = false
    * </pre>
    *
-   * @param str    the String to check, may be null
+   * @param str the String to check, may be null
    * @param prefix the prefix to find, may be null
-   * @return <code>true</code> if the String starts with the prefix, case sensitive, or both <code>null</code>
+   * @return <code>true</code> if the String starts with the prefix, case sensitive, or both
+   * <code>null</code>
    * @see java.lang.String#startsWith(String)
    * @since 2.4
    */
@@ -244,8 +249,8 @@ public class StringUtils {
    * Check if a String starts with a specified prefix (optionally case insensitive).
    * </p>
    *
-   * @param str        the String to check, may be null
-   * @param prefix     the prefix to find, may be null
+   * @param str the String to check, may be null
+   * @param prefix the prefix to find, may be null
    * @param ignoreCase inidicates whether the compare should ignore case (case insensitive) or not.
    * @return <code>true</code> if the String starts with the prefix or both <code>null</code>
    * @see java.lang.String#startsWith(String)
@@ -266,8 +271,8 @@ public class StringUtils {
    * </p>
    *
    * <p>
-   * <code>null</code>s are handled without exceptions. Two <code>null</code> references are considered to be equal. The comparison
-   * is case insensitive.
+   * <code>null</code>s are handled without exceptions. Two <code>null</code> references are
+   * considered to be equal. The comparison is case insensitive.
    * </p>
    *
    * <pre>
@@ -278,9 +283,10 @@ public class StringUtils {
    * StringUtils.startsWithIgnoreCase("ABCDEF", "abc") = true
    * </pre>
    *
-   * @param str    the String to check, may be null
+   * @param str the String to check, may be null
    * @param prefix the prefix to find, may be null
-   * @return <code>true</code> if the String starts with the prefix, case insensitive, or both <code>null</code>
+   * @return <code>true</code> if the String starts with the prefix, case insensitive, or both
+   * <code>null</code>
    * @see java.lang.String#startsWith(String)
    * @since 2.4
    */
@@ -290,11 +296,13 @@ public class StringUtils {
 
   /**
    * <p>
-   * Checks if the String contains only unicode digits. A decimal point is not a unicode digit and returns false.
+   * Checks if the String contains only unicode digits. A decimal point is not a unicode digit and
+   * returns false.
    * </p>
    *
    * <p>
-   * <code>null</code> will return <code>false</code>. An empty String (length()=0) will return <code>true</code>.
+   * <code>null</code> will return <code>false</code>. An empty String (length()=0) will return
+   * <code>true</code>.
    * </p>
    *
    * <pre>
@@ -325,6 +333,7 @@ public class StringUtils {
   }
 
   public static interface StringFormatter<T> {
+
     String format(T obj);
   }
 
@@ -338,7 +347,7 @@ public class StringUtils {
   }
 
   public static <T> String join(Collection<T> collection, String separator,
-                                StringFormatter<T> formatter) {
+      StringFormatter<T> formatter) {
     Iterator<T> iterator = collection.iterator();
     // handle null, zero and one elements before building a buffer
     if (iterator == null) {

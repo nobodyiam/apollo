@@ -3,7 +3,7 @@ package com.ctrip.framework.apollo.common.dto;
 import com.ctrip.framework.apollo.common.utils.InputValidator;
 import javax.validation.constraints.Pattern;
 
-public class AppDTO extends BaseDTO{
+public class AppDTO extends BaseDTO {
 
   private long id;
 

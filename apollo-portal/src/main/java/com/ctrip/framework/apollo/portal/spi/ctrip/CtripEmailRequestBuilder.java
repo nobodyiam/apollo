@@ -3,18 +3,15 @@ package com.ctrip.framework.apollo.portal.spi.ctrip;
 import com.ctrip.framework.apollo.portal.component.config.PortalConfig;
 import com.ctrip.framework.apollo.portal.entity.bo.Email;
 import com.ctrip.framework.apollo.tracer.Tracer;
-
-import org.apache.commons.lang.time.DateUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
+import org.apache.commons.lang.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class CtripEmailRequestBuilder {
 
@@ -39,7 +36,8 @@ public class CtripEmailRequestBuilder {
   @PostConstruct
   public void init() {
     try {
-      sendEmailRequestClazz = Class.forName("com.ctrip.framework.apolloctripservice.emailservice.SendEmailRequest");
+      sendEmailRequestClazz = Class
+          .forName("com.ctrip.framework.apolloctripservice.emailservice.SendEmailRequest");
 
       setSendCode = sendEmailRequestClazz.getMethod("setSendCode", String.class);
       setBodyTemplateID = sendEmailRequestClazz.getMethod("setBodyTemplateID", Integer.class);
@@ -66,8 +64,8 @@ public class CtripEmailRequestBuilder {
     setSender.invoke(emailRequest, email.getSenderEmailAddress());
     setSubject.invoke(emailRequest, email.getSubject());
     String emailBodyBuilder = "<entry><content><![CDATA[<!DOCTYPE html>" +
-            email.getBody() +
-            "]]></content></entry>";
+        email.getBody() +
+        "]]></content></entry>";
     setBodyContent.invoke(emailRequest, emailBodyBuilder);
     setRecipient.invoke(emailRequest, email.getRecipients());
 

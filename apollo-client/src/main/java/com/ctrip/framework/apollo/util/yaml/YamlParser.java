@@ -1,6 +1,7 @@
 package com.ctrip.framework.apollo.util.yaml;
 
 import com.ctrip.framework.apollo.build.ApolloInjector;
+import com.ctrip.framework.apollo.core.utils.StringUtils;
 import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.util.AbstractMap;
 import java.util.Collection;
@@ -9,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -17,14 +17,14 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.parser.ParserException;
 
-import com.ctrip.framework.apollo.core.utils.StringUtils;
-
 /**
- * Transplanted from org.springframework.beans.factory.config.YamlProcessor since apollo can't depend on Spring directly
+ * Transplanted from org.springframework.beans.factory.config.YamlProcessor since apollo can't
+ * depend on Spring directly
  *
  * @since 1.3.0
  */
 public class YamlParser {
+
   private static final Logger logger = LoggerFactory.getLogger(YamlParser.class);
 
   private PropertiesFactory propertiesFactory = ApolloInjector.getInstance(PropertiesFactory.class);
@@ -62,7 +62,9 @@ public class YamlParser {
       }
     }
     if (logger.isDebugEnabled()) {
-      logger.debug("Loaded " + count + " document" + (count > 1 ? "s" : "") + " from YAML resource: " + content);
+      logger.debug(
+          "Loaded " + count + " document" + (count > 1 ? "s" : "") + " from YAML resource: "
+              + content);
     }
     return (count > 0);
   }
@@ -111,7 +113,8 @@ public class YamlParser {
     return result;
   }
 
-  private void buildFlattenedMap(Map<String, Object> result, Map<String, Object> source, String path) {
+  private void buildFlattenedMap(Map<String, Object> result, Map<String, Object> source,
+      String path) {
     for (Map.Entry<String, Object> entry : source.entrySet()) {
       String key = entry.getKey();
       if (!StringUtils.isBlank(path)) {
@@ -144,6 +147,7 @@ public class YamlParser {
   }
 
   private interface MatchCallback {
+
     void process(Properties properties, Map<String, Object> map);
   }
 
@@ -162,7 +166,8 @@ public class YamlParser {
       try {
         return super.constructMapping(node);
       } catch (IllegalStateException ex) {
-        throw new ParserException("while parsing MappingNode", node.getStartMark(), ex.getMessage(), node.getEndMark());
+        throw new ParserException("while parsing MappingNode", node.getStartMark(), ex.getMessage(),
+            node.getEndMark());
       }
     }
 

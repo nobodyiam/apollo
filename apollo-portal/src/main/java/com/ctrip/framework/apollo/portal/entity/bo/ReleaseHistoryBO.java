@@ -1,7 +1,6 @@
 package com.ctrip.framework.apollo.portal.entity.bo;
 
 import com.ctrip.framework.apollo.common.entity.EntityPair;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;

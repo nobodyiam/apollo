@@ -1,104 +1,109 @@
 <form id="rollbackModal" class="modal fade form-horizontal" ng-submit="showRollbackAlertDialog()">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header panel-primary">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <div class="modal-title text-center">
-                    <span style="font-size: 18px;" ng-bind="toRollbackNamespace.firstRelease.name"></span>
-                    <span style="font-size: 18px;"> &nbsp;{{'Component.Rollback.To' | translate }}&nbsp;</span>
-                    <span style="font-size: 18px;" ng-bind="toRollbackNamespace.secondRelease.name"></span>
-                </div>
-            </div>
-            <div class="modal-body">
-                <div ng-if="!isRollbackTo" class="alert alert-warning" role="alert">
-                    {{'Component.Rollback.Tips' | translate }}
-                    <a target="_blank"
-                        href="{{ '/config/history.html' | prefixPath }}?#/appid={{appId}}&env={{env}}&clusterName={{toRollbackNamespace.baseInfo.clusterName}}&namespaceName={{toRollbackNamespace.baseInfo.namespaceName}}">{{'Component.Rollback.ClickToView' | translate }}</a>
-                </div>
-                <div ng-if="isRollbackTo" class="alert alert-warning" role="alert">
-                    {{'Component.RollbackTo.Tips' | translate }}
-                </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header panel-primary">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <div class="modal-title text-center">
+          <span style="font-size: 18px;" ng-bind="toRollbackNamespace.firstRelease.name"></span>
+          <span
+              style="font-size: 18px;"> &nbsp;{{'Component.Rollback.To' | translate }}&nbsp;</span>
+          <span style="font-size: 18px;" ng-bind="toRollbackNamespace.secondRelease.name"></span>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div ng-if="!isRollbackTo" class="alert alert-warning" role="alert">
+          {{'Component.Rollback.Tips' | translate }}
+          <a target="_blank"
+             href="{{ '/config/history.html' | prefixPath }}?#/appid={{appId}}&env={{env}}&clusterName={{toRollbackNamespace.baseInfo.clusterName}}&namespaceName={{toRollbackNamespace.baseInfo.namespaceName}}">{{'Component.Rollback.ClickToView'
+            | translate }}</a>
+        </div>
+        <div ng-if="isRollbackTo" class="alert alert-warning" role="alert">
+          {{'Component.RollbackTo.Tips' | translate }}
+        </div>
 
-                <div class="form-group" style="margin-top: 15px;">
-                    <!--properties format-->
-                    <div class="col-sm-12"
-                        ng-if="toRollbackNamespace.releaseCompareResult.length > 0 && toRollbackNamespace.isPropertiesFormat">
-                        <table class="table table-bordered table-striped text-center table-hover"
-                            ng-if="toRollbackNamespace.isPropertiesFormat">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        {{'Component.Rollback.ItemType' | translate }}
-                                    </th>
-                                    <th>
-                                        {{'Component.Rollback.ItemKey' | translate }}
-                                    </th>
-                                    <th>
-                                        {{'Component.Rollback.RollbackBeforeValue' | translate }}
-                                    </th>
-                                    <th>
-                                        {{'Component.Rollback.RollbackAfterValue' | translate }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
+        <div class="form-group" style="margin-top: 15px;">
+          <!--properties format-->
+          <div class="col-sm-12"
+               ng-if="toRollbackNamespace.releaseCompareResult.length > 0 && toRollbackNamespace.isPropertiesFormat">
+            <table class="table table-bordered table-striped text-center table-hover"
+                   ng-if="toRollbackNamespace.isPropertiesFormat">
+              <thead>
+              <tr>
+                <th>
+                  {{'Component.Rollback.ItemType' | translate }}
+                </th>
+                <th>
+                  {{'Component.Rollback.ItemKey' | translate }}
+                </th>
+                <th>
+                  {{'Component.Rollback.RollbackBeforeValue' | translate }}
+                </th>
+                <th>
+                  {{'Component.Rollback.RollbackAfterValue' | translate }}
+                </th>
+              </tr>
+              </thead>
+              <tbody>
 
-                                <tr ng-repeat="change in toRollbackNamespace.releaseCompareResult">
-                                    <td width="10%">
+              <tr ng-repeat="change in toRollbackNamespace.releaseCompareResult">
+                <td width="10%">
                                         <span
                                             ng-show="change.type == 'ADDED'">{{'Component.Rollback.Added' | translate }}</span>
-                                        <span
-                                            ng-show="change.type == 'MODIFIED'">{{'Component.Rollback.Modified' | translate }}</span>
-                                        <span
-                                            ng-show="change.type == 'DELETED'">{{'Component.Rollback.Deleted' | translate }}</span>
-                                    </td>
-                                    <td width="20%" ng-bind="change.entity.firstEntity.key">
+                  <span
+                      ng-show="change.type == 'MODIFIED'">{{'Component.Rollback.Modified' | translate }}</span>
+                  <span
+                      ng-show="change.type == 'DELETED'">{{'Component.Rollback.Deleted' | translate }}</span>
+                </td>
+                <td width="20%" ng-bind="change.entity.firstEntity.key">
 
-                                    </td>
-                                    <td width="35%" ng-bind="change.entity.firstEntity.value">
-                                    </td>
-                                    <td width="35%" ng-bind="change.entity.secondEntity.value">
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                </td>
+                <td width="35%" ng-bind="change.entity.firstEntity.value">
+                </td>
+                <td width="35%" ng-bind="change.entity.secondEntity.value">
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
 
-                    <!--file format -->
-                    <div class="col-sm-12"
-                        ng-if="toRollbackNamespace.releaseCompareResult.length > 0 && !toRollbackNamespace.isPropertiesFormat">
-                        <div ng-repeat="change in toRollbackNamespace.releaseCompareResult"
-                            ng-if="!toRollbackNamespace.isPropertiesFormat">
-                            <h5>{{'Component.Rollback.RollbackBeforeValue' | translate }}</h5>
-                            <textarea class="form-control no-radius" rows="20" ng-disabled="true"
-                                ng-bind="change.entity.firstEntity.value">
+          <!--file format -->
+          <div class="col-sm-12"
+               ng-if="toRollbackNamespace.releaseCompareResult.length > 0 && !toRollbackNamespace.isPropertiesFormat">
+            <div ng-repeat="change in toRollbackNamespace.releaseCompareResult"
+                 ng-if="!toRollbackNamespace.isPropertiesFormat">
+              <h5>{{'Component.Rollback.RollbackBeforeValue' | translate }}</h5>
+              <textarea class="form-control no-radius" rows="20" ng-disabled="true"
+                        ng-bind="change.entity.firstEntity.value">
                                             </textarea>
-                            <hr>
-                            <h5>{{'Component.Rollback.RollbackAfterValue' | translate }}</h5>
-                            <textarea class="form-control no-radius" rows="20" ng-disabled="true"
-                                ng-bind="change.entity.secondEntity.value">
+              <hr>
+              <h5>{{'Component.Rollback.RollbackAfterValue' | translate }}</h5>
+              <textarea class="form-control no-radius" rows="20" ng-disabled="true"
+                        ng-bind="change.entity.secondEntity.value">
                                             </textarea>
-                        </div>
-
-                    </div>
-                    <div class="col-sm-12 text-center" ng-if="toRollbackNamespace.releaseCompareResult.length == 0">
-                        <h4>
-                            {{'Component.Rollback.NoChange' | translate }}
-                        </h4>
-                    </div>
-                </div>
-
-
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default"
-                    data-dismiss="modal">{{'Common.Cancel' | translate }}</button>
-                <button type="submit" class="btn btn-danger"
-                    ng-disabled="toRollbackNamespace.rollbackBtnDisabled">{{'Component.Rollback.OpRollback' | translate }}
-                </button>
-            </div>
+
+          </div>
+          <div class="col-sm-12 text-center"
+               ng-if="toRollbackNamespace.releaseCompareResult.length == 0">
+            <h4>
+              {{'Component.Rollback.NoChange' | translate }}
+            </h4>
+          </div>
         </div>
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default"
+                data-dismiss="modal">{{'Common.Cancel' | translate }}
+        </button>
+        <button type="submit" class="btn btn-danger"
+                ng-disabled="toRollbackNamespace.rollbackBtnDisabled">
+          {{'Component.Rollback.OpRollback' | translate }}
+        </button>
+      </div>
     </div>
+  </div>
 
 </form>

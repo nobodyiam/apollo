@@ -15,7 +15,8 @@ public class ReleaseOpenApiService extends AbstractOpenApiService {
     super(client, baseUrl, gson);
   }
 
-  public OpenReleaseDTO publishNamespace(String appId, String env, String clusterName, String namespaceName,
+  public OpenReleaseDTO publishNamespace(String appId, String env, String clusterName,
+      String namespaceName,
       NamespaceReleaseDTO releaseDTO) {
     if (Strings.isNullOrEmpty(clusterName)) {
       clusterName = ConfigConsts.CLUSTER_NAME_DEFAULT;
@@ -36,12 +37,14 @@ public class ReleaseOpenApiService extends AbstractOpenApiService {
       return gson.fromJson(EntityUtils.toString(response.getEntity()), OpenReleaseDTO.class);
     } catch (Throwable ex) {
       throw new RuntimeException(String
-          .format("Release namespace: %s for appId: %s, cluster: %s in env: %s failed", namespaceName, appId,
+          .format("Release namespace: %s for appId: %s, cluster: %s in env: %s failed",
+              namespaceName, appId,
               clusterName, env), ex);
     }
   }
 
-  public OpenReleaseDTO getLatestActiveRelease(String appId, String env, String clusterName, String namespaceName) {
+  public OpenReleaseDTO getLatestActiveRelease(String appId, String env, String clusterName,
+      String namespaceName) {
     if (Strings.isNullOrEmpty(clusterName)) {
       clusterName = ConfigConsts.CLUSTER_NAME_DEFAULT;
     }
@@ -59,7 +62,9 @@ public class ReleaseOpenApiService extends AbstractOpenApiService {
       return gson.fromJson(EntityUtils.toString(response.getEntity()), OpenReleaseDTO.class);
     } catch (Throwable ex) {
       throw new RuntimeException(String
-          .format("Get latest active release for appId: %s, cluster: %s, namespace: %s in env: %s failed", appId,
+          .format(
+              "Get latest active release for appId: %s, cluster: %s, namespace: %s in env: %s failed",
+              appId,
               clusterName, namespaceName, env), ex);
     }
   }
@@ -68,12 +73,14 @@ public class ReleaseOpenApiService extends AbstractOpenApiService {
     checkNotEmpty(env, "Env");
     checkNotEmpty(operator, "Operator");
 
-    String path = String.format("envs/%s/releases/%s/rollback?operator=%s", escapePath(env), releaseId,
-        escapeParam(operator));
+    String path = String
+        .format("envs/%s/releases/%s/rollback?operator=%s", escapePath(env), releaseId,
+            escapeParam(operator));
 
     try (CloseableHttpResponse ignored = put(path, null)) {
     } catch (Throwable ex) {
-      throw new RuntimeException(String.format("Rollback release: %s in env: %s failed", releaseId, env), ex);
+      throw new RuntimeException(
+          String.format("Rollback release: %s in env: %s failed", releaseId, env), ex);
     }
   }
 }

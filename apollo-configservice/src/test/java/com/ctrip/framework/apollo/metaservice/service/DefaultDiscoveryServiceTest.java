@@ -1,6 +1,7 @@
 package com.ctrip.framework.apollo.metaservice.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -82,7 +83,8 @@ public class DefaultDiscoveryServiceTest {
     assertEquals(serviceInstance.getHomePageUrl(), serviceDTO.getHomepageUrl());
   }
 
-  private InstanceInfo mockServiceInstance(String serviceId, String instanceId, String homePageUrl) {
+  private InstanceInfo mockServiceInstance(String serviceId, String instanceId,
+      String homePageUrl) {
     InstanceInfo serviceInstance = mock(InstanceInfo.class);
     when(serviceInstance.getAppName()).thenReturn(serviceId);
     when(serviceInstance.getInstanceId()).thenReturn(instanceId);

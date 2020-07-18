@@ -1,5 +1,3 @@
-
-
 package com.ctrip.framework.apollo.portal.spi.ldap;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;

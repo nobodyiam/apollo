@@ -6,7 +6,6 @@ import com.ctrip.framework.apollo.biz.entity.Namespace;
 import com.ctrip.framework.apollo.biz.entity.ReleaseHistory;
 import com.ctrip.framework.apollo.common.constants.NamespaceBranchStatus;
 import com.ctrip.framework.apollo.common.constants.ReleaseOperation;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,11 +45,13 @@ public class NamespaceBranchServiceTest extends AbstractIntegrationTest {
   public void testUpdateBranchGrayRulesWithUpdateOnce() {
     GrayReleaseRule rule = instanceGrayReleaseRule();
 
-    namespaceBranchService.updateBranchGrayRules(testApp, testCluster, testNamespace, testBranchName, rule);
+    namespaceBranchService
+        .updateBranchGrayRules(testApp, testCluster, testNamespace, testBranchName, rule);
 
     GrayReleaseRule
         activeRule =
-        namespaceBranchService.findBranchGrayRules(testApp, testCluster, testNamespace, testBranchName);
+        namespaceBranchService
+            .findBranchGrayRules(testApp, testCluster, testNamespace, testBranchName);
 
     Assert.assertNotNull(activeRule);
     Assert.assertEquals(rule.getAppId(), activeRule.getAppId());
@@ -75,15 +76,18 @@ public class NamespaceBranchServiceTest extends AbstractIntegrationTest {
   public void testUpdateBranchGrayRulesWithUpdateTwice() {
 
     GrayReleaseRule firstRule = instanceGrayReleaseRule();
-    namespaceBranchService.updateBranchGrayRules(testApp, testCluster, testNamespace, testBranchName, firstRule);
+    namespaceBranchService
+        .updateBranchGrayRules(testApp, testCluster, testNamespace, testBranchName, firstRule);
 
     GrayReleaseRule secondRule = instanceGrayReleaseRule();
     secondRule.setRules("[{\"clientAppId\":\"branch-test\",\"clientIpList\":[\"10.38.57.112\"]}]");
-    namespaceBranchService.updateBranchGrayRules(testApp, testCluster, testNamespace, testBranchName, secondRule);
+    namespaceBranchService
+        .updateBranchGrayRules(testApp, testCluster, testNamespace, testBranchName, secondRule);
 
     GrayReleaseRule
         activeRule =
-        namespaceBranchService.findBranchGrayRules(testApp, testCluster, testNamespace, testBranchName);
+        namespaceBranchService
+            .findBranchGrayRules(testApp, testCluster, testNamespace, testBranchName);
 
     Assert.assertNotNull(secondRule);
     Assert.assertEquals(secondRule.getAppId(), activeRule.getAppId());
@@ -112,11 +116,13 @@ public class NamespaceBranchServiceTest extends AbstractIntegrationTest {
     long latestReleaseId = 100;
 
     namespaceBranchService
-        .updateRulesReleaseId(testApp, testCluster, testNamespace, testBranchName, latestReleaseId, operator);
+        .updateRulesReleaseId(testApp, testCluster, testNamespace, testBranchName, latestReleaseId,
+            operator);
 
     GrayReleaseRule
         activeRule =
-        namespaceBranchService.findBranchGrayRules(testApp, testCluster, testNamespace, testBranchName);
+        namespaceBranchService
+            .findBranchGrayRules(testApp, testCluster, testNamespace, testBranchName);
 
     Assert.assertNull(activeRule);
   }
@@ -127,16 +133,19 @@ public class NamespaceBranchServiceTest extends AbstractIntegrationTest {
   public void testUpdateRulesReleaseIdWithOldRuleExist() {
 
     GrayReleaseRule rule = instanceGrayReleaseRule();
-    namespaceBranchService.updateBranchGrayRules(testApp, testCluster, testNamespace, testBranchName, rule);
+    namespaceBranchService
+        .updateBranchGrayRules(testApp, testCluster, testNamespace, testBranchName, rule);
 
     long latestReleaseId = 100;
 
     namespaceBranchService
-        .updateRulesReleaseId(testApp, testCluster, testNamespace, testBranchName, latestReleaseId, operator);
+        .updateRulesReleaseId(testApp, testCluster, testNamespace, testBranchName, latestReleaseId,
+            operator);
 
     GrayReleaseRule
         activeRule =
-        namespaceBranchService.findBranchGrayRules(testApp, testCluster, testNamespace, testBranchName);
+        namespaceBranchService
+            .findBranchGrayRules(testApp, testCluster, testNamespace, testBranchName);
 
     Assert.assertNotNull(activeRule);
     Assert.assertEquals(Long.valueOf(latestReleaseId), activeRule.getReleaseId());
@@ -151,14 +160,17 @@ public class NamespaceBranchServiceTest extends AbstractIntegrationTest {
   public void testDeleteBranch() {
 
     GrayReleaseRule rule = instanceGrayReleaseRule();
-    namespaceBranchService.updateBranchGrayRules(testApp, testCluster, testNamespace, testBranchName, rule);
+    namespaceBranchService
+        .updateBranchGrayRules(testApp, testCluster, testNamespace, testBranchName, rule);
 
-    namespaceBranchService.deleteBranch(testApp, testCluster, testNamespace, testBranchName, NamespaceBranchStatus.DELETED, operator);
+    namespaceBranchService.deleteBranch(testApp, testCluster, testNamespace, testBranchName,
+        NamespaceBranchStatus.DELETED, operator);
 
     Namespace branch = namespaceBranchService.findBranch(testApp, testCluster, testNamespace);
     Assert.assertNull(branch);
 
-    GrayReleaseRule latestRule = namespaceBranchService.findBranchGrayRules(testApp, testCluster, testNamespace, testBranchName);
+    GrayReleaseRule latestRule = namespaceBranchService
+        .findBranchGrayRules(testApp, testCluster, testNamespace, testBranchName);
 
     Assert.assertNotNull(latestRule);
     Assert.assertEquals(NamespaceBranchStatus.DELETED, latestRule.getBranchStatus());

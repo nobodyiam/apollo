@@ -22,11 +22,11 @@ public class PermissionValidator {
 
   @Autowired
   public PermissionValidator(
-          final UserInfoHolder userInfoHolder,
-          final RolePermissionService rolePermissionService,
-          final PortalConfig portalConfig,
-          final AppNamespaceService appNamespaceService,
-          final SystemRoleManagerService systemRoleManagerService) {
+      final UserInfoHolder userInfoHolder,
+      final RolePermissionService rolePermissionService,
+      final PortalConfig portalConfig,
+      final AppNamespaceService appNamespaceService,
+      final SystemRoleManagerService systemRoleManagerService) {
     this.userInfoHolder = userInfoHolder;
     this.rolePermissionService = rolePermissionService;
     this.portalConfig = portalConfig;
@@ -43,7 +43,8 @@ public class PermissionValidator {
   public boolean hasModifyNamespacePermission(String appId, String namespaceName, String env) {
     return hasModifyNamespacePermission(appId, namespaceName) ||
         rolePermissionService.userHasPermission(userInfoHolder.getUser().getUserId(),
-            PermissionType.MODIFY_NAMESPACE, RoleUtils.buildNamespaceTargetId(appId, namespaceName, env));
+            PermissionType.MODIFY_NAMESPACE,
+            RoleUtils.buildNamespaceTargetId(appId, namespaceName, env));
   }
 
   public boolean hasReleaseNamespacePermission(String appId, String namespaceName) {
@@ -55,7 +56,8 @@ public class PermissionValidator {
   public boolean hasReleaseNamespacePermission(String appId, String namespaceName, String env) {
     return hasReleaseNamespacePermission(appId, namespaceName) ||
         rolePermissionService.userHasPermission(userInfoHolder.getUser().getUserId(),
-        PermissionType.RELEASE_NAMESPACE, RoleUtils.buildNamespaceTargetId(appId, namespaceName, env));
+            PermissionType.RELEASE_NAMESPACE,
+            RoleUtils.buildNamespaceTargetId(appId, namespaceName, env));
   }
 
   public boolean hasDeleteNamespacePermission(String appId) {
@@ -63,7 +65,8 @@ public class PermissionValidator {
   }
 
   public boolean hasOperateNamespacePermission(String appId, String namespaceName) {
-    return hasModifyNamespacePermission(appId, namespaceName) || hasReleaseNamespacePermission(appId, namespaceName);
+    return hasModifyNamespacePermission(appId, namespaceName) || hasReleaseNamespacePermission(
+        appId, namespaceName);
   }
 
   public boolean hasOperateNamespacePermission(String appId, String namespaceName, String env) {
@@ -138,7 +141,8 @@ public class PermissionValidator {
     // the manage app master permission might not be initialized, so we need to check isSuperAdmin first
     return isSuperAdmin() ||
         (hasAssignRolePermission(appId) &&
-         systemRoleManagerService.hasManageAppMasterPermission(userInfoHolder.getUser().getUserId(), appId)
+            systemRoleManagerService
+                .hasManageAppMasterPermission(userInfoHolder.getUser().getUserId(), appId)
         );
   }
 }

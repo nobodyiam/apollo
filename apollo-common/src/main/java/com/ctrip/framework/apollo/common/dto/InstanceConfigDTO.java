@@ -6,6 +6,7 @@ import java.util.Date;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class InstanceConfigDTO {
+
   private ReleaseDTO release;
   private Date releaseDeliveryTime;
   private Date dataChangeLastModifiedTime;

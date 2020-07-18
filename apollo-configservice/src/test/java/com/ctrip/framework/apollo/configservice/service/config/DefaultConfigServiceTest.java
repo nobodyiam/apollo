@@ -1,6 +1,7 @@
 package com.ctrip.framework.apollo.configservice.service.config;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -25,6 +26,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultConfigServiceTest {
+
   private DefaultConfigService configService;
   private String someClientAppId;
   private String someConfigAppId;
@@ -63,14 +65,17 @@ public class DefaultConfigServiceTest {
 
   @Test
   public void testLoadConfig() throws Exception {
-    when(releaseService.findLatestActiveRelease(someConfigAppId, someClusterName, defaultNamespaceName))
+    when(releaseService
+        .findLatestActiveRelease(someConfigAppId, someClusterName, defaultNamespaceName))
         .thenReturn(someRelease);
 
     Release release = configService
-        .loadConfig(someClientAppId, someClientIp, someConfigAppId, someClusterName, defaultNamespaceName, someDataCenter,
+        .loadConfig(someClientAppId, someClientIp, someConfigAppId, someClusterName,
+            defaultNamespaceName, someDataCenter,
             someNotificationMessages);
 
-    verify(releaseService, times(1)).findLatestActiveRelease(someConfigAppId, someClusterName, defaultNamespaceName);
+    verify(releaseService, times(1))
+        .findLatestActiveRelease(someConfigAppId, someClusterName, defaultNamespaceName);
 
     assertEquals(someRelease, release);
   }
@@ -85,22 +90,26 @@ public class DefaultConfigServiceTest {
     when(releaseService.findActiveOne(grayReleaseId)).thenReturn(grayRelease);
 
     Release release = configService
-        .loadConfig(someClientAppId, someClientIp, someConfigAppId, someClusterName, defaultNamespaceName, someDataCenter,
+        .loadConfig(someClientAppId, someClientIp, someConfigAppId, someClusterName,
+            defaultNamespaceName, someDataCenter,
             someNotificationMessages);
 
     verify(releaseService, times(1)).findActiveOne(grayReleaseId);
-    verify(releaseService, never()).findLatestActiveRelease(someConfigAppId, someClusterName, defaultNamespaceName);
+    verify(releaseService, never())
+        .findLatestActiveRelease(someConfigAppId, someClusterName, defaultNamespaceName);
 
     assertEquals(grayRelease, release);
   }
 
   @Test
   public void testLoadConfigWithReleaseNotFound() throws Exception {
-    when(releaseService.findLatestActiveRelease(someConfigAppId, someClusterName, defaultNamespaceName))
+    when(releaseService
+        .findLatestActiveRelease(someConfigAppId, someClusterName, defaultNamespaceName))
         .thenReturn(null);
 
     Release release = configService
-        .loadConfig(someClientAppId, someClientIp, someConfigAppId, someClusterName, defaultNamespaceName, someDataCenter,
+        .loadConfig(someClientAppId, someClientIp, someConfigAppId, someClusterName,
+            defaultNamespaceName, someDataCenter,
             someNotificationMessages);
 
     assertNull(release);
@@ -108,30 +117,37 @@ public class DefaultConfigServiceTest {
 
   @Test
   public void testLoadConfigWithDefaultClusterWithDataCenterRelease() throws Exception {
-    when(releaseService.findLatestActiveRelease(someConfigAppId, someDataCenter, defaultNamespaceName))
+    when(releaseService
+        .findLatestActiveRelease(someConfigAppId, someDataCenter, defaultNamespaceName))
         .thenReturn(someRelease);
 
     Release release = configService
-        .loadConfig(someClientAppId, someClientIp, someConfigAppId, defaultClusterName, defaultNamespaceName, someDataCenter,
+        .loadConfig(someClientAppId, someClientIp, someConfigAppId, defaultClusterName,
+            defaultNamespaceName, someDataCenter,
             someNotificationMessages);
 
-    verify(releaseService, times(1)).findLatestActiveRelease(someConfigAppId, someDataCenter, defaultNamespaceName);
+    verify(releaseService, times(1))
+        .findLatestActiveRelease(someConfigAppId, someDataCenter, defaultNamespaceName);
 
     assertEquals(someRelease, release);
   }
 
   @Test
   public void testLoadConfigWithDefaultClusterWithNoDataCenterRelease() throws Exception {
-    when(releaseService.findLatestActiveRelease(someConfigAppId, someDataCenter, defaultNamespaceName))
+    when(releaseService
+        .findLatestActiveRelease(someConfigAppId, someDataCenter, defaultNamespaceName))
         .thenReturn(null);
-    when(releaseService.findLatestActiveRelease(someConfigAppId, defaultClusterName, defaultNamespaceName))
+    when(releaseService
+        .findLatestActiveRelease(someConfigAppId, defaultClusterName, defaultNamespaceName))
         .thenReturn(someRelease);
 
     Release release = configService
-        .loadConfig(someClientAppId, someClientIp, someConfigAppId, defaultClusterName, defaultNamespaceName, someDataCenter,
+        .loadConfig(someClientAppId, someClientIp, someConfigAppId, defaultClusterName,
+            defaultNamespaceName, someDataCenter,
             someNotificationMessages);
 
-    verify(releaseService, times(1)).findLatestActiveRelease(someConfigAppId, someDataCenter, defaultNamespaceName);
+    verify(releaseService, times(1))
+        .findLatestActiveRelease(someConfigAppId, someDataCenter, defaultNamespaceName);
     verify(releaseService, times(1))
         .findLatestActiveRelease(someConfigAppId, defaultClusterName, defaultNamespaceName);
 

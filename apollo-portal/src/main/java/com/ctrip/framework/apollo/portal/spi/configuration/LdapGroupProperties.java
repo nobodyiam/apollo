@@ -1,5 +1,3 @@
-
-
 package com.ctrip.framework.apollo.portal.spi.configuration;
 
 /**

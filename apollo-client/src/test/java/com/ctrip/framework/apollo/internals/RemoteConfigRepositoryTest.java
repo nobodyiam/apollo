@@ -414,8 +414,8 @@ public class RemoteConfigRepositoryTest {
         return (HttpResponse<T>) someResponse;
       }
       throw new ApolloConfigStatusCodeException(someResponse.getStatusCode(),
-              String.format("Http request failed due to status code: %d",
-          someResponse.getStatusCode()));
+          String.format("Http request failed due to status code: %d",
+              someResponse.getStatusCode()));
     }
 
     @Override

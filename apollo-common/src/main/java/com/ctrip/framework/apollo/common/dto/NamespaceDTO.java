@@ -3,7 +3,8 @@ package com.ctrip.framework.apollo.common.dto;
 import com.ctrip.framework.apollo.common.utils.InputValidator;
 import javax.validation.constraints.Pattern;
 
-public class NamespaceDTO extends BaseDTO{
+public class NamespaceDTO extends BaseDTO {
+
   private long id;
 
   private String appId;

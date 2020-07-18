@@ -1,17 +1,17 @@
 package com.ctrip.framework.apollo.build;
 
-import java.util.Map;
-
 import com.ctrip.framework.apollo.internals.DefaultInjector;
 import com.ctrip.framework.apollo.internals.Injector;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
+import java.util.Map;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class MockInjector implements Injector {
+
   private static Map<Class, Object> classMap = Maps.newHashMap();
   private static Table<Class, String, Object> classTable = HashBasedTable.create();
   private static Injector delegate = new DefaultInjector();

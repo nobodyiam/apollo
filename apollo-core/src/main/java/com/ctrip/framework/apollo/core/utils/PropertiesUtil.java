@@ -8,11 +8,12 @@ import java.util.Properties;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class PropertiesUtil {
+
   /**
    * Transform the properties to string format
+   *
    * @param properties the properties object
    * @return the string containing the properties
-   * @throws IOException
    */
   public static String toString(Properties properties) throws IOException {
     StringWriter writer = new StringWriter();
@@ -24,6 +25,7 @@ public class PropertiesUtil {
 
   /**
    * filter out the first comment line
+   *
    * @param stringBuffer the string buffer
    * @return true if filtered successfully, false otherwise
    */

@@ -1,6 +1,8 @@
 package com.ctrip.framework.apollo.portal.environment;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import com.ctrip.framework.apollo.portal.component.config.PortalConfig;
 import java.util.HashMap;
@@ -44,7 +46,8 @@ public class DatabasePortalMetaServerProviderTest {
 
     databasePortalMetaServerProvider.reload();
 
-    assertEquals(newMetaServerAddress, databasePortalMetaServerProvider.getMetaServerAddress(Env.DEV));
+    assertEquals(newMetaServerAddress,
+        databasePortalMetaServerProvider.getMetaServerAddress(Env.DEV));
 
   }
 

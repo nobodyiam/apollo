@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.naming.Name;
 import javax.naming.directory.Attribute;
 import javax.naming.ldap.LdapName;
 import org.apache.commons.lang.StringUtils;
@@ -202,10 +201,11 @@ public class LdapUserService implements UserService {
 
     return ldapTemplate
         .searchForObject(groupBase, groupSearch, ctx -> {
-            List<UserInfo> userInfos = new ArrayList<>();
+          List<UserInfo> userInfos = new ArrayList<>();
 
           if (!MEMBER_UID_ATTR_NAME.equals(groupMembershipAttrName)) {
-            String[] members = ((DirContextAdapter) ctx).getStringAttributes(groupMembershipAttrName);
+            String[] members = ((DirContextAdapter) ctx)
+                .getStringAttributes(groupMembershipAttrName);
             for (String item : members) {
               LdapName ldapName = LdapUtils.newLdapName(item);
               LdapName memberRdn = LdapUtils.removeFirst(ldapName, LdapUtils.newLdapName(base));

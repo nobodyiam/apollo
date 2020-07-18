@@ -1,16 +1,18 @@
 package com.ctrip.framework.apollo.util;
 
-import java.util.List;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import java.util.List;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class ExceptionUtil {
+
   /**
-   * Assemble the detail message for the throwable with all of its cause included (at most 10 causes).
+   * Assemble the detail message for the throwable with all of its cause included (at most 10
+   * causes).
+   *
    * @param ex the exception
    * @return the message along with its causes
    */

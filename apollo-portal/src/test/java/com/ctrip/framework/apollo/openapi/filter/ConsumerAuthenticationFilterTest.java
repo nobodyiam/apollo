@@ -1,18 +1,5 @@
 package com.ctrip.framework.apollo.openapi.filter;
 
-import com.ctrip.framework.apollo.openapi.util.ConsumerAuditUtil;
-import com.ctrip.framework.apollo.openapi.util.ConsumerAuthUtil;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -21,11 +8,23 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ctrip.framework.apollo.openapi.util.ConsumerAuditUtil;
+import com.ctrip.framework.apollo.openapi.util.ConsumerAuthUtil;
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ConsumerAuthenticationFilterTest {
+
   private ConsumerAuthenticationFilter authenticationFilter;
   @Mock
   private ConsumerAuthUtil consumerAuthUtil;

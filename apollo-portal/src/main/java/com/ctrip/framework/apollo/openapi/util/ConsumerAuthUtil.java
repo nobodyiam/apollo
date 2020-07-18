@@ -1,15 +1,15 @@
 package com.ctrip.framework.apollo.openapi.util;
 
 import com.ctrip.framework.apollo.openapi.service.ConsumerService;
-import org.springframework.stereotype.Service;
-
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 @Service
 public class ConsumerAuthUtil {
+
   static final String CONSUMER_ID = "ApolloConsumerId";
   private final ConsumerService consumerService;
 

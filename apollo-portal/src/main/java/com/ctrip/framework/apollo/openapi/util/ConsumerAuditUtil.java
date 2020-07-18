@@ -7,10 +7,6 @@ import com.ctrip.framework.apollo.tracer.Tracer;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -18,14 +14,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 @Service
 public class ConsumerAuditUtil implements InitializingBean {
+
   private static final int CONSUMER_AUDIT_MAX_SIZE = 10000;
-  private BlockingQueue<ConsumerAudit> audits = Queues.newLinkedBlockingQueue(CONSUMER_AUDIT_MAX_SIZE);
+  private BlockingQueue<ConsumerAudit> audits = Queues
+      .newLinkedBlockingQueue(CONSUMER_AUDIT_MAX_SIZE);
   private final ExecutorService auditExecutorService;
   private final AtomicBoolean auditStopped;
   private int BATCH_SIZE = 100;

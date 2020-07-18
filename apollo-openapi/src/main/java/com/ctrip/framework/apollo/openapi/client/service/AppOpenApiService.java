@@ -12,6 +12,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 
 public class AppOpenApiService extends AbstractOpenApiService {
+
   private static final Type OPEN_ENV_CLUSTER_DTO_LIST_TYPE = new TypeToken<List<OpenEnvClusterDTO>>() {
   }.getType();
   private static final Type OPEN_APP_DTO_LIST_TYPE = new TypeToken<List<OpenAppDTO>>() {
@@ -27,9 +28,11 @@ public class AppOpenApiService extends AbstractOpenApiService {
     String path = String.format("apps/%s/envclusters", escapePath(appId));
 
     try (CloseableHttpResponse response = get(path)) {
-      return gson.fromJson(EntityUtils.toString(response.getEntity()), OPEN_ENV_CLUSTER_DTO_LIST_TYPE);
+      return gson
+          .fromJson(EntityUtils.toString(response.getEntity()), OPEN_ENV_CLUSTER_DTO_LIST_TYPE);
     } catch (Throwable ex) {
-      throw new RuntimeException(String.format("Load env cluster information for appId: %s failed", appId), ex);
+      throw new RuntimeException(
+          String.format("Load env cluster information for appId: %s failed", appId), ex);
     }
   }
 
@@ -44,7 +47,8 @@ public class AppOpenApiService extends AbstractOpenApiService {
     try (CloseableHttpResponse response = get(path)) {
       return gson.fromJson(EntityUtils.toString(response.getEntity()), OPEN_APP_DTO_LIST_TYPE);
     } catch (Throwable ex) {
-      throw new RuntimeException(String.format("Load app information for appIds: %s failed", appIds), ex);
+      throw new RuntimeException(
+          String.format("Load app information for appIds: %s failed", appIds), ex);
     }
   }
 }

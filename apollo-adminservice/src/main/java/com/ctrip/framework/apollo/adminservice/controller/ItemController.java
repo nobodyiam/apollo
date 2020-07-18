@@ -33,7 +33,8 @@ public class ItemController {
   private final NamespaceService namespaceService;
   private final CommitService commitService;
 
-  public ItemController(final ItemService itemService, final NamespaceService namespaceService, final CommitService commitService) {
+  public ItemController(final ItemService itemService, final NamespaceService namespaceService,
+      final CommitService commitService) {
     this.itemService = itemService;
     this.namespaceService = namespaceService;
     this.commitService = commitService;
@@ -42,8 +43,8 @@ public class ItemController {
   @PreAcquireNamespaceLock
   @PostMapping("/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/items")
   public ItemDTO create(@PathVariable("appId") String appId,
-                        @PathVariable("clusterName") String clusterName,
-                        @PathVariable("namespaceName") String namespaceName, @RequestBody ItemDTO dto) {
+      @PathVariable("clusterName") String clusterName,
+      @PathVariable("namespaceName") String namespaceName, @RequestBody ItemDTO dto) {
     Item entity = BeanUtils.transform(Item.class, dto);
 
     ConfigChangeContentBuilder builder = new ConfigChangeContentBuilder();
@@ -70,10 +71,10 @@ public class ItemController {
   @PreAcquireNamespaceLock
   @PutMapping("/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/items/{itemId}")
   public ItemDTO update(@PathVariable("appId") String appId,
-                        @PathVariable("clusterName") String clusterName,
-                        @PathVariable("namespaceName") String namespaceName,
-                        @PathVariable("itemId") long itemId,
-                        @RequestBody ItemDTO itemDTO) {
+      @PathVariable("clusterName") String clusterName,
+      @PathVariable("namespaceName") String namespaceName,
+      @PathVariable("itemId") long itemId,
+      @RequestBody ItemDTO itemDTO) {
 
     Item entity = BeanUtils.transform(Item.class, itemDTO);
 
@@ -132,19 +133,21 @@ public class ItemController {
 
   @GetMapping("/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/items")
   public List<ItemDTO> findItems(@PathVariable("appId") String appId,
-                                 @PathVariable("clusterName") String clusterName,
-                                 @PathVariable("namespaceName") String namespaceName) {
-    return BeanUtils.batchTransform(ItemDTO.class, itemService.findItemsWithOrdered(appId, clusterName, namespaceName));
+      @PathVariable("clusterName") String clusterName,
+      @PathVariable("namespaceName") String namespaceName) {
+    return BeanUtils.batchTransform(ItemDTO.class,
+        itemService.findItemsWithOrdered(appId, clusterName, namespaceName));
   }
 
   @GetMapping("/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/items/deleted")
   public List<ItemDTO> findDeletedItems(@PathVariable("appId") String appId,
-                                        @PathVariable("clusterName") String clusterName,
-                                        @PathVariable("namespaceName") String namespaceName) {
+      @PathVariable("clusterName") String clusterName,
+      @PathVariable("namespaceName") String namespaceName) {
     List<Commit> commits = commitService.find(appId, clusterName, namespaceName, null);
     if (Objects.nonNull(commits)) {
       List<Item> deletedItems = commits.stream()
-          .map(item -> ConfigChangeContentBuilder.convertJsonString(item.getChangeSets()).getDeleteItems())
+          .map(item -> ConfigChangeContentBuilder.convertJsonString(item.getChangeSets())
+              .getDeleteItems())
           .flatMap(Collection::stream)
           .collect(Collectors.toList());
       return BeanUtils.batchTransform(ItemDTO.class, deletedItems);
@@ -163,8 +166,8 @@ public class ItemController {
 
   @GetMapping("/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/items/{key:.+}")
   public ItemDTO get(@PathVariable("appId") String appId,
-                     @PathVariable("clusterName") String clusterName,
-                     @PathVariable("namespaceName") String namespaceName, @PathVariable("key") String key) {
+      @PathVariable("clusterName") String clusterName,
+      @PathVariable("namespaceName") String namespaceName, @PathVariable("key") String key) {
     Item item = itemService.findOne(appId, clusterName, namespaceName, key);
     if (item == null) {
       throw new NotFoundException(

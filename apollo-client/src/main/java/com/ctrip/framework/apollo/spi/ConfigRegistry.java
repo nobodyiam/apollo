@@ -6,11 +6,12 @@ package com.ctrip.framework.apollo.spi;
  * @author Jason Song(song_s@ctrip.com)
  */
 public interface ConfigRegistry {
+
   /**
    * Register the config factory for the namespace specified.
    *
    * @param namespace the namespace
-   * @param factory   the factory for this namespace
+   * @param factory the factory for this namespace
    */
   public void register(String namespace, ConfigFactory factory);
 

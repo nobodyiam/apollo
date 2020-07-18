@@ -1,12 +1,19 @@
 package com.ctrip.framework.apollo.biz.service;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 
 import com.ctrip.framework.apollo.biz.AbstractIntegrationTest;
 import com.ctrip.framework.apollo.biz.entity.Instance;
 import com.ctrip.framework.apollo.biz.entity.InstanceConfig;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,20 +21,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class InstanceServiceTest extends AbstractIntegrationTest {
+
   @Autowired
   private InstanceService instanceService;
 
@@ -198,8 +196,9 @@ public class InstanceServiceTest extends AbstractIntegrationTest {
 
     Page<Instance> result = instanceService.findInstancesByNamespaceAndInstanceAppId(someAppId,
         someConfigAppId, someConfigClusterName, someConfigNamespaceName, PageRequest.of(0, 10));
-    Page<Instance> anotherResult = instanceService.findInstancesByNamespaceAndInstanceAppId(anotherAppId,
-        someConfigAppId, someConfigClusterName, someConfigNamespaceName, PageRequest.of(0, 10));
+    Page<Instance> anotherResult = instanceService
+        .findInstancesByNamespaceAndInstanceAppId(anotherAppId,
+            someConfigAppId, someConfigClusterName, someConfigNamespaceName, PageRequest.of(0, 10));
 
     assertEquals(Lists.newArrayList(someInstance), result.getContent());
     assertEquals(Lists.newArrayList(anotherInstance), anotherResult.getContent());
@@ -238,9 +237,9 @@ public class InstanceServiceTest extends AbstractIntegrationTest {
   }
 
   private InstanceConfig prepareInstanceConfigForInstance(long instanceId, String configAppId,
-                                                          String configClusterName, String
-                                                              configNamespace, String releaseKey,
-                                                          Date lastModifiedTime) {
+      String configClusterName, String
+      configNamespace, String releaseKey,
+      Date lastModifiedTime) {
 
     InstanceConfig someConfig = assembleInstanceConfig(instanceId, configAppId, configClusterName,
         configNamespace, releaseKey);

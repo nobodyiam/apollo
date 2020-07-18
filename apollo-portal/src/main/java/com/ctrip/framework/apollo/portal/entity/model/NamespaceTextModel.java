@@ -2,8 +2,8 @@ package com.ctrip.framework.apollo.portal.entity.model;
 
 
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
-import com.ctrip.framework.apollo.portal.environment.Env;
 import com.ctrip.framework.apollo.core.utils.StringUtils;
+import com.ctrip.framework.apollo.portal.environment.Env;
 
 public class NamespaceTextModel implements Verifiable {
 

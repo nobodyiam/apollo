@@ -7,9 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Use this annotation to inject json property from Apollo, support the same format as Spring @Value.
+ * Use this annotation to inject json property from Apollo, support the same format as Spring
  *
- * <p>Usage example:</p>
+ * @Value. <p>Usage example:</p>
  * <pre class="code">
  * // Inject the json property value for type SomeObject.
  * // Suppose SomeObject has 2 properties, someString and someInt, then the possible config
@@ -19,7 +19,6 @@ import java.lang.annotation.Target;
  * </pre>
  *
  * Create by zhangzheng on 2018/3/6
- *
  * @see org.springframework.beans.factory.annotation.Value
  */
 @Retention(RetentionPolicy.RUNTIME)

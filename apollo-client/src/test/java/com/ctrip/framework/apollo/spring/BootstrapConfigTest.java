@@ -1,5 +1,10 @@
 package com.ctrip.framework.apollo.spring;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.spring.annotation.ApolloConfig;
@@ -8,6 +13,7 @@ import com.ctrip.framework.apollo.spring.config.PropertySourcesConstants;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
+import java.util.List;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -26,13 +32,6 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.List;
-
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
@@ -47,6 +46,7 @@ public class BootstrapConfigTest {
   @DirtiesContext
   public static class TestWithBootstrapEnabledAndDefaultNamespacesAndConditionalOn extends
       AbstractSpringIntegrationTest {
+
     private static final String someProperty = "someProperty";
     private static final String someValue = "someValue";
 
@@ -70,9 +70,11 @@ public class BootstrapConfigTest {
 
       mockedConfig = mock(Config.class);
 
-      when(mockedConfig.getPropertyNames()).thenReturn(Sets.newHashSet(TEST_BEAN_CONDITIONAL_ON_KEY, someProperty));
+      when(mockedConfig.getPropertyNames())
+          .thenReturn(Sets.newHashSet(TEST_BEAN_CONDITIONAL_ON_KEY, someProperty));
 
-      when(mockedConfig.getProperty(eq(TEST_BEAN_CONDITIONAL_ON_KEY), anyString())).thenReturn(Boolean.TRUE.toString());
+      when(mockedConfig.getProperty(eq(TEST_BEAN_CONDITIONAL_ON_KEY), anyString()))
+          .thenReturn(Boolean.TRUE.toString());
       when(mockedConfig.getProperty(eq(someProperty), anyString())).thenReturn(someValue);
 
       mockConfig(ConfigConsts.NAMESPACE_APPLICATION, mockedConfig);
@@ -117,7 +119,8 @@ public class BootstrapConfigTest {
       Config anotherConfig = mock(Config.class);
 
       when(config.getPropertyNames()).thenReturn(Sets.newHashSet(TEST_BEAN_CONDITIONAL_ON_KEY));
-      when(config.getProperty(eq(TEST_BEAN_CONDITIONAL_ON_KEY), anyString())).thenReturn(Boolean.TRUE.toString());
+      when(config.getProperty(eq(TEST_BEAN_CONDITIONAL_ON_KEY), anyString()))
+          .thenReturn(Boolean.TRUE.toString());
 
       mockConfig(ConfigConsts.NAMESPACE_APPLICATION, anotherConfig);
       mockConfig(FX_APOLLO_NAMESPACE, config);
@@ -195,7 +198,8 @@ public class BootstrapConfigTest {
       Config config = mock(Config.class);
 
       when(config.getPropertyNames()).thenReturn(Sets.newHashSet(TEST_BEAN_CONDITIONAL_ON_KEY));
-      when(config.getProperty(eq(TEST_BEAN_CONDITIONAL_ON_KEY), anyString())).thenReturn(Boolean.FALSE.toString());
+      when(config.getProperty(eq(TEST_BEAN_CONDITIONAL_ON_KEY), anyString()))
+          .thenReturn(Boolean.FALSE.toString());
 
       mockConfig(ConfigConsts.NAMESPACE_APPLICATION, config);
     }
@@ -330,7 +334,8 @@ public class BootstrapConfigTest {
       Config config = mock(Config.class);
 
       when(config.getPropertyNames()).thenReturn(Sets.newHashSet(TEST_BEAN_CONDITIONAL_ON_KEY));
-      when(config.getProperty(eq(TEST_BEAN_CONDITIONAL_ON_KEY), anyString())).thenReturn(Boolean.FALSE.toString());
+      when(config.getProperty(eq(TEST_BEAN_CONDITIONAL_ON_KEY), anyString()))
+          .thenReturn(Boolean.FALSE.toString());
 
       mockConfig(ConfigConsts.NAMESPACE_APPLICATION, config);
     }
@@ -382,7 +387,7 @@ public class BootstrapConfigTest {
   @SpringBootTest(classes = ConfigurationWithoutConditionalOnProperty.class)
   @DirtiesContext
   public static class TestWithBootstrapEnabledAndEagerLoadEnabled extends
-          AbstractSpringIntegrationTest {
+      AbstractSpringIntegrationTest {
 
     @BeforeClass
     public static void beforeClass() {
@@ -406,14 +411,16 @@ public class BootstrapConfigTest {
 
     @Test
     public void test() {
-      List<EnvironmentPostProcessor> processorList =  SpringFactoriesLoader.loadFactories(EnvironmentPostProcessor.class, getClass().getClassLoader());
+      List<EnvironmentPostProcessor> processorList = SpringFactoriesLoader
+          .loadFactories(EnvironmentPostProcessor.class, getClass().getClassLoader());
 
-      Boolean containsApollo = !Collections2.filter(processorList, new Predicate<EnvironmentPostProcessor>() {
+      Boolean containsApollo = !Collections2
+          .filter(processorList, new Predicate<EnvironmentPostProcessor>() {
             @Override
             public boolean apply(EnvironmentPostProcessor input) {
-                return input instanceof ApolloApplicationContextInitializer;
+              return input instanceof ApolloApplicationContextInitializer;
             }
-        }).isEmpty();
+          }).isEmpty();
       Assert.assertTrue(containsApollo);
     }
   }

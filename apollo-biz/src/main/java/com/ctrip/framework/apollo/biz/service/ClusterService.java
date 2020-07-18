@@ -8,13 +8,12 @@ import com.ctrip.framework.apollo.common.exception.ServiceException;
 import com.ctrip.framework.apollo.common.utils.BeanUtils;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.google.common.base.Strings;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ClusterService {
@@ -68,7 +67,7 @@ public class ClusterService {
     Cluster savedCluster = saveWithoutInstanceOfAppNamespaces(entity);
 
     namespaceService.instanceOfAppNamespaces(savedCluster.getAppId(), savedCluster.getName(),
-                                             savedCluster.getDataChangeCreatedBy());
+        savedCluster.getDataChangeCreatedBy());
 
     return savedCluster;
   }
@@ -82,7 +81,7 @@ public class ClusterService {
     Cluster cluster = clusterRepository.save(entity);
 
     auditService.audit(Cluster.class.getSimpleName(), cluster.getId(), Audit.OP.INSERT,
-                       cluster.getDataChangeCreatedBy());
+        cluster.getDataChangeCreatedBy());
 
     return cluster;
   }
@@ -112,7 +111,7 @@ public class ClusterService {
     managedCluster = clusterRepository.save(managedCluster);
 
     auditService.audit(Cluster.class.getSimpleName(), managedCluster.getId(), Audit.OP.UPDATE,
-                       managedCluster.getDataChangeLastModifiedBy());
+        managedCluster.getDataChangeLastModifiedBy());
 
     return managedCluster;
   }

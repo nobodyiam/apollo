@@ -6,7 +6,14 @@ import com.ctrip.framework.apollo.biz.repository.InstanceConfigRepository;
 import com.ctrip.framework.apollo.biz.repository.InstanceRepository;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import java.math.BigInteger;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -14,19 +21,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.math.BigInteger;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 @Service
 public class InstanceService {
+
   private final InstanceRepository instanceRepository;
   private final InstanceConfigRepository instanceConfigRepository;
 
@@ -75,7 +75,8 @@ public class InstanceService {
   public Page<Instance> findInstancesByNamespace(String appId, String clusterName, String
       namespaceName, Pageable pageable) {
     Page<InstanceConfig> instanceConfigs = instanceConfigRepository.
-        findByConfigAppIdAndConfigClusterNameAndConfigNamespaceNameAndDataChangeLastModifiedTimeAfter(appId, clusterName,
+        findByConfigAppIdAndConfigClusterNameAndConfigNamespaceNameAndDataChangeLastModifiedTimeAfter(
+            appId, clusterName,
             namespaceName, getValidInstanceConfigDate(), pageable);
 
     List<Instance> instances = Collections.emptyList();
@@ -90,8 +91,8 @@ public class InstanceService {
 
   public Page<Instance> findInstancesByNamespaceAndInstanceAppId(String instanceAppId, String
       appId, String clusterName, String
-                                                                     namespaceName, Pageable
-                                                                     pageable) {
+      namespaceName, Pageable
+      pageable) {
     Page<Object> instanceIdResult = instanceConfigRepository
         .findInstanceIdsByNamespaceAndInstanceAppId(instanceAppId, appId, clusterName,
             namespaceName, getValidInstanceConfigDate(), pageable);
@@ -104,7 +105,7 @@ public class InstanceService {
         }
 
         if (o instanceof Integer) {
-          return ((Integer)o).longValue();
+          return ((Integer) o).longValue();
         }
 
         if (o instanceof Long) {
@@ -125,13 +126,14 @@ public class InstanceService {
   }
 
   public List<InstanceConfig> findInstanceConfigsByNamespaceWithReleaseKeysNotIn(String appId,
-                                                                                 String clusterName,
-                                                                                 String
-                                                                                     namespaceName,
-                                                                                 Set<String>
-                                                                                     releaseKeysNotIn) {
+      String clusterName,
+      String
+          namespaceName,
+      Set<String>
+          releaseKeysNotIn) {
     List<InstanceConfig> instanceConfigs = instanceConfigRepository.
-        findByConfigAppIdAndConfigClusterNameAndConfigNamespaceNameAndDataChangeLastModifiedTimeAfterAndReleaseKeyNotIn(appId, clusterName,
+        findByConfigAppIdAndConfigClusterNameAndConfigNamespaceNameAndDataChangeLastModifiedTimeAfterAndReleaseKeyNotIn(
+            appId, clusterName,
             namespaceName, getValidInstanceConfigDate(), releaseKeysNotIn);
 
     if (CollectionUtils.isEmpty(instanceConfigs)) {
@@ -161,7 +163,8 @@ public class InstanceService {
 
   @Transactional
   public InstanceConfig updateInstanceConfig(InstanceConfig instanceConfig) {
-    InstanceConfig existedInstanceConfig = instanceConfigRepository.findById(instanceConfig.getId()).orElse(null);
+    InstanceConfig existedInstanceConfig = instanceConfigRepository.findById(instanceConfig.getId())
+        .orElse(null);
     Preconditions.checkArgument(existedInstanceConfig != null, String.format(
         "Instance config %d doesn't exist", instanceConfig.getId()));
 
@@ -175,7 +178,9 @@ public class InstanceService {
   }
 
   @Transactional
-  public int batchDeleteInstanceConfig(String configAppId, String configClusterName, String configNamespaceName){
-    return instanceConfigRepository.batchDelete(configAppId, configClusterName, configNamespaceName);
+  public int batchDeleteInstanceConfig(String configAppId, String configClusterName,
+      String configNamespaceName) {
+    return instanceConfigRepository
+        .batchDelete(configAppId, configClusterName, configNamespaceName);
   }
 }

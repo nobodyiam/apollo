@@ -1,9 +1,9 @@
 package com.ctrip.framework.apollo.configservice.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
-import static org.awaitility.Awaitility.*;
 
 import com.ctrip.framework.apollo.biz.config.BizConfig;
 import com.ctrip.framework.apollo.biz.entity.AccessKey;
@@ -64,17 +64,22 @@ public class AccessKeyServiceWithCacheTest {
     assertThat(accessKeyServiceWithCache.getAvailableSecrets(appId)).isEmpty();
 
     // Add access key, disable by default
-    when(accessKeyRepository.findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(new Date(0L)))
+    when(accessKeyRepository
+        .findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(
+            new Date(0L)))
         .thenReturn(Lists.newArrayList(firstAccessKey, secondAccessKey));
     when(accessKeyRepository.findAllById(anyList()))
         .thenReturn(Lists.newArrayList(firstAccessKey, secondAccessKey));
 
-    await().untilAsserted(() -> assertThat(accessKeyServiceWithCache.getAvailableSecrets(appId)).isEmpty());
+    await().untilAsserted(
+        () -> assertThat(accessKeyServiceWithCache.getAvailableSecrets(appId)).isEmpty());
 
     // Update access key, enable both of them
     firstAccessKey = assembleAccessKey(1L, appId, "secret-1", true, false, 1577808002000L);
     secondAccessKey = assembleAccessKey(2L, appId, "secret-2", true, false, 1577808003000L);
-    when(accessKeyRepository.findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(new Date(1577808001000L)))
+    when(accessKeyRepository
+        .findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(
+            new Date(1577808001000L)))
         .thenReturn(Lists.newArrayList(firstAccessKey, secondAccessKey));
     when(accessKeyRepository.findAllById(anyList()))
         .thenReturn(Lists.newArrayList(firstAccessKey, secondAccessKey));
@@ -84,7 +89,9 @@ public class AccessKeyServiceWithCacheTest {
 
     // Update access key, disable the first one
     firstAccessKey = assembleAccessKey(1L, appId, "secret-1", false, false, 1577808004000L);
-    when(accessKeyRepository.findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(new Date(1577808003000L)))
+    when(accessKeyRepository
+        .findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(
+            new Date(1577808003000L)))
         .thenReturn(Lists.newArrayList(firstAccessKey));
     when(accessKeyRepository.findAllById(anyList()))
         .thenReturn(Lists.newArrayList(firstAccessKey, secondAccessKey));
@@ -100,7 +107,9 @@ public class AccessKeyServiceWithCacheTest {
         () -> assertThat(accessKeyServiceWithCache.getAvailableSecrets(appId)).isEmpty());
 
     // Add new access key in runtime, enable by default
-    when(accessKeyRepository.findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(new Date(1577808004000L)))
+    when(accessKeyRepository
+        .findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(
+            new Date(1577808004000L)))
         .thenReturn(Lists.newArrayList(thirdAccessKey));
     when(accessKeyRepository.findAllById(anyList()))
         .thenReturn(Lists.newArrayList(firstAccessKey, thirdAccessKey));

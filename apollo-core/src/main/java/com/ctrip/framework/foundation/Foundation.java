@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Foundation {
+
   private static final Logger logger = LoggerFactory.getLogger(Foundation.class);
   private static Object lock = new Object();
 

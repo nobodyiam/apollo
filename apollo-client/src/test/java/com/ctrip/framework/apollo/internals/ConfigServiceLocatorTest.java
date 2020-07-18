@@ -19,7 +19,8 @@ public class ConfigServiceLocatorTest {
     String someConfigServiceUrl = " someConfigServiceUrl ";
     String anotherConfigServiceUrl = " anotherConfigServiceUrl ";
 
-    System.setProperty("apollo.configService", someConfigServiceUrl + "," + anotherConfigServiceUrl);
+    System
+        .setProperty("apollo.configService", someConfigServiceUrl + "," + anotherConfigServiceUrl);
 
     ConfigServiceLocator configServiceLocator = new ConfigServiceLocator();
 

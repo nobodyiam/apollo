@@ -1,17 +1,15 @@
 package com.ctrip.framework.apollo.biz.repository;
 
 import com.ctrip.framework.apollo.biz.entity.InstanceConfig;
-
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 public interface InstanceConfigRepository extends PagingAndSortingRepository<InstanceConfig, Long> {
 
@@ -25,7 +23,8 @@ public interface InstanceConfigRepository extends PagingAndSortingRepository<Ins
       String appId, String clusterName, String namespaceName, Date validDate, Pageable pageable);
 
   List<InstanceConfig> findByConfigAppIdAndConfigClusterNameAndConfigNamespaceNameAndDataChangeLastModifiedTimeAfterAndReleaseKeyNotIn(
-      String appId, String clusterName, String namespaceName, Date validDate, Set<String> releaseKey);
+      String appId, String clusterName, String namespaceName, Date validDate,
+      Set<String> releaseKey);
 
   @Modifying
   @Query("delete from InstanceConfig  where ConfigAppId=?1 and ConfigClusterName=?2 and ConfigNamespaceName = ?3")

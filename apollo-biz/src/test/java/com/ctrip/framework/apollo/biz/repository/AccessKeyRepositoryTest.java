@@ -59,7 +59,8 @@ public class AccessKeyRepositoryTest extends AbstractIntegrationTest {
     Date date = Date.from(instant);
 
     List<AccessKey> accessKeyList = accessKeyRepository
-        .findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(date);
+        .findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(
+            date);
 
     assertThat(accessKeyList).hasSize(2);
     assertThat(accessKeyList.get(0).getAppId()).isEqualTo("100004458");

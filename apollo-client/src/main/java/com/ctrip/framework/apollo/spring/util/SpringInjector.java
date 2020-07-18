@@ -11,6 +11,7 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 
 public class SpringInjector {
+
   private static volatile Injector s_injector;
   private static final Object lock = new Object();
 
@@ -21,7 +22,8 @@ public class SpringInjector {
           try {
             s_injector = Guice.createInjector(new SpringModule());
           } catch (Throwable ex) {
-            ApolloConfigException exception = new ApolloConfigException("Unable to initialize Apollo Spring Injector!", ex);
+            ApolloConfigException exception = new ApolloConfigException(
+                "Unable to initialize Apollo Spring Injector!", ex);
             Tracer.logError(exception);
             throw exception;
           }
@@ -43,6 +45,7 @@ public class SpringInjector {
   }
 
   private static class SpringModule extends AbstractModule {
+
     @Override
     protected void configure() {
       bind(PlaceholderHelper.class).in(Singleton.class);

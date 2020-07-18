@@ -120,7 +120,8 @@ public class ClientAuthenticationFilterTest {
     clientAuthenticationFilter.doFilter(request, response, filterChain);
 
     verify(response, never()).sendError(HttpServletResponse.SC_BAD_REQUEST, "InvalidAppId");
-    verify(response, never()).sendError(HttpServletResponse.SC_UNAUTHORIZED, "RequestTimeTooSkewed");
+    verify(response, never())
+        .sendError(HttpServletResponse.SC_UNAUTHORIZED, "RequestTimeTooSkewed");
     verify(response, never()).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     verify(filterChain, times(1)).doFilter(request, response);
   }

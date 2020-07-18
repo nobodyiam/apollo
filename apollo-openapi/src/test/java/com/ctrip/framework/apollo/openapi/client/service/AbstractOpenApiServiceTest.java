@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 abstract class AbstractOpenApiServiceTest {
+
   @Mock
   protected CloseableHttpClient httpClient;
   @Mock

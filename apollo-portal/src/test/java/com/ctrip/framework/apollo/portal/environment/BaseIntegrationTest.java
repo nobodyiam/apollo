@@ -1,18 +1,19 @@
 package com.ctrip.framework.apollo.portal.environment;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.junit.After;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.ServerSocket;
 
 public abstract class BaseIntegrationTest {
+
   protected static final int PORT = findFreePort();
   private Server server;
 
@@ -59,8 +60,9 @@ public abstract class BaseIntegrationTest {
   /**
    * Returns a free port number on localhost.
    *
-   * Heavily inspired from org.eclipse.jdt.launching.SocketUtil (to avoid a dependency to JDT just because of this).
-   * Slightly improved with close() missing in JDT. And throws exception instead of returning -1.
+   * Heavily inspired from org.eclipse.jdt.launching.SocketUtil (to avoid a dependency to JDT just
+   * because of this). Slightly improved with close() missing in JDT. And throws exception instead
+   * of returning -1.
    *
    * @return a free port number on localhost
    * @throws IllegalStateException if unable to find a free port
@@ -86,6 +88,7 @@ public abstract class BaseIntegrationTest {
         }
       }
     }
-    throw new IllegalStateException("Could not find a free TCP/IP port to start embedded Jetty HTTP Server on");
+    throw new IllegalStateException(
+        "Could not find a free TCP/IP port to start embedded Jetty HTTP Server on");
   }
 }

@@ -6,13 +6,12 @@ import com.ctrip.framework.apollo.portal.entity.po.Favorite;
 import com.ctrip.framework.apollo.portal.repository.FavoriteRepository;
 import com.ctrip.framework.apollo.portal.spi.UserInfoHolder;
 import com.ctrip.framework.apollo.portal.spi.UserService;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class FavoriteService {
@@ -43,10 +42,11 @@ public class FavoriteService {
     //user can only add himself favorite app
     if (!loginUser.equals(user)) {
       throw new BadRequestException("add favorite fail. "
-                                    + "because favorite's user is not current login user.");
+          + "because favorite's user is not current login user.");
     }
 
-    Favorite checkedFavorite = favoriteRepository.findByUserIdAndAppId(loginUser.getUserId(), favorite.getAppId());
+    Favorite checkedFavorite = favoriteRepository
+        .findByUserIdAndAppId(loginUser.getUserId(), favorite.getAppId());
     if (checkedFavorite != null) {
       return checkedFavorite;
     }
@@ -77,7 +77,8 @@ public class FavoriteService {
 
     //search by userId
     if (isAppIdEmpty && !isUserIdEmpty) {
-      return favoriteRepository.findByUserIdOrderByPositionAscDataChangeCreatedTimeAsc(userId, page);
+      return favoriteRepository
+          .findByUserIdOrderByPositionAscDataChangeCreatedTimeAsc(userId, page);
     }
 
     //search by appId
@@ -104,7 +105,8 @@ public class FavoriteService {
     checkUserOperatePermission(favorite);
 
     String userId = favorite.getUserId();
-    Favorite firstFavorite = favoriteRepository.findFirstByUserIdOrderByPositionAscDataChangeCreatedTimeAsc(userId);
+    Favorite firstFavorite = favoriteRepository
+        .findFirstByUserIdOrderByPositionAscDataChangeCreatedTimeAsc(userId);
     long minPosition = firstFavorite.getPosition();
 
     favorite.setPosition(minPosition - 1);

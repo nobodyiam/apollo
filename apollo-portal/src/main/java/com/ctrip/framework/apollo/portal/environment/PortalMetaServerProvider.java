@@ -1,12 +1,9 @@
 package com.ctrip.framework.apollo.portal.environment;
 
 /**
- * For the supporting of multiple meta server address providers.
- * From configuration file,
- * from OS environment,
- * From database,
- * ...
- * Just implement this interface
+ * For the supporting of multiple meta server address providers. From configuration file, from OS
+ * environment, From database, ... Just implement this interface
+ *
  * @author wxq
  */
 public interface PortalMetaServerProvider {

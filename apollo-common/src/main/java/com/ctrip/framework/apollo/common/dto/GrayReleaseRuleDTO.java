@@ -2,7 +2,6 @@ package com.ctrip.framework.apollo.common.dto;
 
 
 import com.google.common.collect.Sets;
-
 import java.util.Set;
 
 public class GrayReleaseRuleDTO extends BaseDTO {
@@ -19,7 +18,8 @@ public class GrayReleaseRuleDTO extends BaseDTO {
 
   private Long releaseId;
 
-  public GrayReleaseRuleDTO(String appId, String clusterName, String namespaceName, String branchName) {
+  public GrayReleaseRuleDTO(String appId, String clusterName, String namespaceName,
+      String branchName) {
     this.appId = appId;
     this.clusterName = clusterName;
     this.namespaceName = namespaceName;

@@ -7,6 +7,7 @@ import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 @SpringBootApplication
 @EnableEurekaServer
 public class LocalAdminServiceApplication {
+
   public static void main(String[] args) {
     new SpringApplicationBuilder(LocalAdminServiceApplication.class).run(args);
   }

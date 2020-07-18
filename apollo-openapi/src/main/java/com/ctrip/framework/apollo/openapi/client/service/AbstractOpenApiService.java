@@ -22,6 +22,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 
 abstract class AbstractOpenApiService {
+
   private static final Escaper pathEscaper = UrlEscapers.urlPathSegmentEscaper();
   private static final Escaper queryParamEscaper = UrlEscapers.urlFormParameterEscaper();
 
@@ -68,7 +69,8 @@ abstract class AbstractOpenApiService {
     return queryParamEscaper.escape(param);
   }
 
-  private CloseableHttpResponse execute(HttpEntityEnclosingRequestBase requestBase, Object entity) throws IOException {
+  private CloseableHttpResponse execute(HttpEntityEnclosingRequestBase requestBase, Object entity)
+      throws IOException {
     requestBase.setEntity(new StringEntity(gson.toJson(entity), ContentType.APPLICATION_JSON));
 
     return execute(requestBase);
@@ -100,7 +102,8 @@ abstract class AbstractOpenApiService {
   }
 
   protected void checkNotEmpty(String value, String name) {
-    Preconditions.checkArgument(!Strings.isNullOrEmpty(value), name + " should not be null or empty");
+    Preconditions
+        .checkArgument(!Strings.isNullOrEmpty(value), name + " should not be null or empty");
   }
 
 }

@@ -15,6 +15,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 
 public class NamespaceOpenApiService extends AbstractOpenApiService {
+
   private static final Type OPEN_NAMESPACE_DTO_LIST_TYPE = new TypeToken<List<OpenNamespaceDTO>>() {
   }.getType();
 
@@ -22,7 +23,8 @@ public class NamespaceOpenApiService extends AbstractOpenApiService {
     super(client, baseUrl, gson);
   }
 
-  public OpenNamespaceDTO getNamespace(String appId, String env, String clusterName, String namespaceName) {
+  public OpenNamespaceDTO getNamespace(String appId, String env, String clusterName,
+      String namespaceName) {
     if (Strings.isNullOrEmpty(clusterName)) {
       clusterName = ConfigConsts.CLUSTER_NAME_DEFAULT;
     }
@@ -33,14 +35,16 @@ public class NamespaceOpenApiService extends AbstractOpenApiService {
     checkNotEmpty(appId, "App id");
     checkNotEmpty(env, "Env");
 
-    String path = String.format("envs/%s/apps/%s/clusters/%s/namespaces/%s", escapePath(env), escapePath(appId),
-        escapePath(clusterName), escapePath(namespaceName));
+    String path = String
+        .format("envs/%s/apps/%s/clusters/%s/namespaces/%s", escapePath(env), escapePath(appId),
+            escapePath(clusterName), escapePath(namespaceName));
 
     try (CloseableHttpResponse response = get(path)) {
       return gson.fromJson(EntityUtils.toString(response.getEntity()), OpenNamespaceDTO.class);
     } catch (Throwable ex) {
       throw new RuntimeException(String
-          .format("Get namespace for appId: %s, cluster: %s, namespace: %s in env: %s failed", appId, clusterName,
+          .format("Get namespace for appId: %s, cluster: %s, namespace: %s in env: %s failed",
+              appId, clusterName,
               namespaceName, env), ex);
     }
   }
@@ -53,14 +57,17 @@ public class NamespaceOpenApiService extends AbstractOpenApiService {
     checkNotEmpty(appId, "App id");
     checkNotEmpty(env, "Env");
 
-    String path = String.format("envs/%s/apps/%s/clusters/%s/namespaces", escapePath(env), escapePath(appId),
-        escapePath(clusterName));
+    String path = String
+        .format("envs/%s/apps/%s/clusters/%s/namespaces", escapePath(env), escapePath(appId),
+            escapePath(clusterName));
 
     try (CloseableHttpResponse response = get(path)) {
-      return gson.fromJson(EntityUtils.toString(response.getEntity()), OPEN_NAMESPACE_DTO_LIST_TYPE);
+      return gson
+          .fromJson(EntityUtils.toString(response.getEntity()), OPEN_NAMESPACE_DTO_LIST_TYPE);
     } catch (Throwable ex) {
       throw new RuntimeException(String
-          .format("Get namespaces for appId: %s, cluster: %s in env: %s failed", appId, clusterName, env), ex);
+          .format("Get namespaces for appId: %s, cluster: %s in env: %s failed", appId, clusterName,
+              env), ex);
     }
   }
 
@@ -79,12 +86,14 @@ public class NamespaceOpenApiService extends AbstractOpenApiService {
       return gson.fromJson(EntityUtils.toString(response.getEntity()), OpenAppNamespaceDTO.class);
     } catch (Throwable ex) {
       throw new RuntimeException(String
-          .format("Create app namespace: %s for appId: %s, format: %s failed", appNamespaceDTO.getName(),
+          .format("Create app namespace: %s for appId: %s, format: %s failed",
+              appNamespaceDTO.getName(),
               appNamespaceDTO.getAppId(), appNamespaceDTO.getFormat()), ex);
     }
   }
 
-  public OpenNamespaceLockDTO getNamespaceLock(String appId, String env, String clusterName, String namespaceName) {
+  public OpenNamespaceLockDTO getNamespaceLock(String appId, String env, String clusterName,
+      String namespaceName) {
     if (Strings.isNullOrEmpty(clusterName)) {
       clusterName = ConfigConsts.CLUSTER_NAME_DEFAULT;
     }
@@ -95,14 +104,16 @@ public class NamespaceOpenApiService extends AbstractOpenApiService {
     checkNotEmpty(appId, "App id");
     checkNotEmpty(env, "Env");
 
-    String path = String.format("envs/%s/apps/%s/clusters/%s/namespaces/%s/lock", escapePath(env), escapePath(appId),
+    String path = String.format("envs/%s/apps/%s/clusters/%s/namespaces/%s/lock", escapePath(env),
+        escapePath(appId),
         escapePath(clusterName), escapePath(namespaceName));
 
     try (CloseableHttpResponse response = get(path)) {
       return gson.fromJson(EntityUtils.toString(response.getEntity()), OpenNamespaceLockDTO.class);
     } catch (Throwable ex) {
       throw new RuntimeException(String
-          .format("Get namespace lock for appId: %s, cluster: %s, namespace: %s in env: %s failed", appId, clusterName,
+          .format("Get namespace lock for appId: %s, cluster: %s, namespace: %s in env: %s failed",
+              appId, clusterName,
               namespaceName, env), ex);
     }
   }

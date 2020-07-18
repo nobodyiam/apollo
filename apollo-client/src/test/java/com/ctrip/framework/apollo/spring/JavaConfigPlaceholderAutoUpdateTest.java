@@ -49,12 +49,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int newTimeout = 1001;
     int newBatch = 2001;
 
-    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout), BATCH_PROPERTY,
+    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+        BATCH_PROPERTY,
         String.valueOf(initialBatch));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig1.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig1.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
@@ -62,7 +64,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     assertEquals(initialBatch, bean.getBatch());
 
     Properties newProperties =
-        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY, String.valueOf(newBatch));
+        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY,
+            String.valueOf(newBatch));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
 
@@ -82,14 +85,16 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     YamlConfigFile configFile = prepareYamlConfigFile("application.yaml",
         readYamlContentAsConfigFileProperties("case1.yaml"));
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig12.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig12.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(initialBatch, bean.getBatch());
 
-    configFile.onRepositoryChange("application.yaml", readYamlContentAsConfigFileProperties("case1-new.yaml"));
+    configFile.onRepositoryChange("application.yaml",
+        readYamlContentAsConfigFileProperties("case1-new.yaml"));
 
     TimeUnit.MILLISECONDS.sleep(100);
 
@@ -104,12 +109,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int newTimeout = 1001;
     int newBatch = 2001;
 
-    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout), BATCH_PROPERTY,
+    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+        BATCH_PROPERTY,
         String.valueOf(initialBatch));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig8.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig8.class);
 
     TestJavaConfigBean javaConfigBean = context.getBean(TestJavaConfigBean.class);
     TestXmlBean xmlBean = context.getBean(TestXmlBean.class);
@@ -120,7 +127,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     assertEquals(initialBatch, xmlBean.getBatch());
 
     Properties newProperties =
-        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY, String.valueOf(newBatch));
+        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY,
+            String.valueOf(newBatch));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
 
@@ -142,7 +150,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     YamlConfigFile configFile = prepareYamlConfigFile("application.yaml",
         readYamlContentAsConfigFileProperties("case1.yaml"));
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig13.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig13.class);
 
     TestJavaConfigBean javaConfigBean = context.getBean(TestJavaConfigBean.class);
     TestXmlBean xmlBean = context.getBean(TestXmlBean.class);
@@ -152,7 +161,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     assertEquals(initialTimeout, xmlBean.getTimeout());
     assertEquals(initialBatch, xmlBean.getBatch());
 
-    configFile.onRepositoryChange("application.yaml", readYamlContentAsConfigFileProperties("case1-new.yaml"));
+    configFile.onRepositoryChange("application.yaml",
+        readYamlContentAsConfigFileProperties("case1-new.yaml"));
 
     TimeUnit.MILLISECONDS.sleep(100);
 
@@ -174,12 +184,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     MockInjector.setInstance(ConfigUtil.class, mockConfigUtil);
 
-    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout), BATCH_PROPERTY,
+    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+        BATCH_PROPERTY,
         String.valueOf(initialBatch));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig1.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig1.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
@@ -187,7 +199,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     assertEquals(initialBatch, bean.getBatch());
 
     Properties newProperties =
-        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY, String.valueOf(newBatch));
+        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY,
+            String.valueOf(newBatch));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
 
@@ -204,22 +217,28 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int newTimeout = 1001;
     int newBatch = 2001;
 
-    Properties applicationProperties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout));
-    Properties fxApolloProperties = assembleProperties(BATCH_PROPERTY, String.valueOf(initialBatch));
+    Properties applicationProperties = assembleProperties(TIMEOUT_PROPERTY,
+        String.valueOf(initialTimeout));
+    Properties fxApolloProperties = assembleProperties(BATCH_PROPERTY,
+        String.valueOf(initialBatch));
 
-    SimpleConfig applicationConfig = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, applicationProperties);
+    SimpleConfig applicationConfig = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION,
+        applicationProperties);
     SimpleConfig fxApolloConfig = prepareConfig(FX_APOLLO_NAMESPACE, fxApolloProperties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig2.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig2.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(initialBatch, bean.getBatch());
 
-    Properties newApplicationProperties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout));
+    Properties newApplicationProperties = assembleProperties(TIMEOUT_PROPERTY,
+        String.valueOf(newTimeout));
 
-    applicationConfig.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newApplicationProperties);
+    applicationConfig
+        .onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newApplicationProperties);
 
     TimeUnit.MILLISECONDS.sleep(100);
 
@@ -244,21 +263,25 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int someNewTimeout = 1001;
     int someNewBatch = 2001;
 
-    Properties applicationProperties = assembleProperties(BATCH_PROPERTY, String.valueOf(someBatch));
+    Properties applicationProperties = assembleProperties(BATCH_PROPERTY,
+        String.valueOf(someBatch));
     Properties fxApolloProperties =
-        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(someTimeout), BATCH_PROPERTY, String.valueOf(anotherBatch));
+        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(someTimeout), BATCH_PROPERTY,
+            String.valueOf(anotherBatch));
 
     prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, applicationProperties);
     SimpleConfig fxApolloConfig = prepareConfig(FX_APOLLO_NAMESPACE, fxApolloProperties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig2.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig2.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
     assertEquals(someTimeout, bean.getTimeout());
     assertEquals(someBatch, bean.getBatch());
 
-    Properties newFxApolloProperties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(someNewTimeout),
+    Properties newFxApolloProperties = assembleProperties(TIMEOUT_PROPERTY,
+        String.valueOf(someNewTimeout),
         BATCH_PROPERTY, String.valueOf(someNewBatch));
 
     fxApolloConfig.onRepositoryChange(FX_APOLLO_NAMESPACE, newFxApolloProperties);
@@ -270,7 +293,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   }
 
   @Test
-  public void testAutoUpdateWithMultipleNamespacesWithSamePropertiesWithYamlFile() throws Exception {
+  public void testAutoUpdateWithMultipleNamespacesWithSamePropertiesWithYamlFile()
+      throws Exception {
     int someTimeout = 1000;
     int someBatch = 2000;
     int anotherBatch = 3000;
@@ -279,18 +303,21 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     YamlConfigFile configFile = prepareYamlConfigFile("application.yml",
         readYamlContentAsConfigFileProperties("case2.yml"));
     Properties fxApolloProperties =
-        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(someTimeout), BATCH_PROPERTY, String.valueOf(anotherBatch));
+        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(someTimeout), BATCH_PROPERTY,
+            String.valueOf(anotherBatch));
 
     prepareConfig(FX_APOLLO_NAMESPACE, fxApolloProperties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig14.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig14.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
     assertEquals(someTimeout, bean.getTimeout());
     assertEquals(someBatch, bean.getBatch());
 
-    configFile.onRepositoryChange("application.yml", readYamlContentAsConfigFileProperties("case2-new.yml"));
+    configFile.onRepositoryChange("application.yml",
+        readYamlContentAsConfigFileProperties("case2-new.yml"));
 
     TimeUnit.MILLISECONDS.sleep(100);
 
@@ -304,11 +331,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int newTimeout = 1001;
     int newBatch = 2001;
 
-    Properties applicationProperties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout));
+    Properties applicationProperties = assembleProperties(TIMEOUT_PROPERTY,
+        String.valueOf(initialTimeout));
 
-    SimpleConfig applicationConfig = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, applicationProperties);
+    SimpleConfig applicationConfig = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION,
+        applicationProperties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig1.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig1.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
@@ -316,9 +346,11 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     assertEquals(DEFAULT_BATCH, bean.getBatch());
 
     Properties newApplicationProperties =
-        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY, String.valueOf(newBatch));
+        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY,
+            String.valueOf(newBatch));
 
-    applicationConfig.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newApplicationProperties);
+    applicationConfig
+        .onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newApplicationProperties);
 
     TimeUnit.MILLISECONDS.sleep(100);
 
@@ -335,14 +367,16 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     YamlConfigFile configFile = prepareYamlConfigFile("application.yaml",
         readYamlContentAsConfigFileProperties("case3.yaml"));
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig12.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig12.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(DEFAULT_BATCH, bean.getBatch());
 
-    configFile.onRepositoryChange("application.yaml", readYamlContentAsConfigFileProperties("case3-new.yaml"));
+    configFile.onRepositoryChange("application.yaml",
+        readYamlContentAsConfigFileProperties("case3-new.yaml"));
 
     TimeUnit.MILLISECONDS.sleep(100);
 
@@ -361,21 +395,26 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     String anotherIrrelevantValue = "anotherIrrelevantValue";
 
     Properties applicationProperties =
-        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout), someIrrelevantKey, someIrrelevantValue);
+        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout), someIrrelevantKey,
+            someIrrelevantValue);
 
-    SimpleConfig applicationConfig = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, applicationProperties);
+    SimpleConfig applicationConfig = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION,
+        applicationProperties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig1.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig1.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(DEFAULT_BATCH, bean.getBatch());
 
-    Properties newApplicationProperties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+    Properties newApplicationProperties = assembleProperties(TIMEOUT_PROPERTY,
+        String.valueOf(initialTimeout),
         anotherIrrelevantKey, String.valueOf(anotherIrrelevantValue));
 
-    applicationConfig.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newApplicationProperties);
+    applicationConfig
+        .onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newApplicationProperties);
 
     TimeUnit.MILLISECONDS.sleep(100);
 
@@ -388,12 +427,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int initialTimeout = 1000;
     int initialBatch = 2000;
 
-    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout), BATCH_PROPERTY,
+    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+        BATCH_PROPERTY,
         String.valueOf(initialBatch));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig1.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig1.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
@@ -418,14 +459,16 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     YamlConfigFile configFile = prepareYamlConfigFile("application.yaml",
         readYamlContentAsConfigFileProperties("case4.yaml"));
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig12.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig12.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(initialBatch, bean.getBatch());
 
-    configFile.onRepositoryChange("application.yaml", readYamlContentAsConfigFileProperties("case4-new.yaml"));
+    configFile.onRepositoryChange("application.yaml",
+        readYamlContentAsConfigFileProperties("case4-new.yaml"));
 
     TimeUnit.MILLISECONDS.sleep(100);
 
@@ -439,14 +482,18 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int someBatch = 2000;
     int anotherBatch = 3000;
 
-    Properties applicationProperties = assembleProperties(BATCH_PROPERTY, String.valueOf(someBatch));
+    Properties applicationProperties = assembleProperties(BATCH_PROPERTY,
+        String.valueOf(someBatch));
     Properties fxApolloProperties =
-        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(someTimeout), BATCH_PROPERTY, String.valueOf(anotherBatch));
+        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(someTimeout), BATCH_PROPERTY,
+            String.valueOf(anotherBatch));
 
-    SimpleConfig applicationConfig = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, applicationProperties);
+    SimpleConfig applicationConfig = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION,
+        applicationProperties);
     prepareConfig(FX_APOLLO_NAMESPACE, fxApolloProperties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig2.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig2.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
@@ -469,12 +516,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int initialBatch = 2000;
     int newTimeout = 1001;
 
-    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout), BATCH_PROPERTY,
+    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+        BATCH_PROPERTY,
         String.valueOf(initialBatch));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig6.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig6.class);
 
     TestJavaConfigBean5 bean = context.getBean(TestJavaConfigBean5.class);
 
@@ -498,12 +547,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int newTimeout = 1001;
     String newBatch = "newBatch";
 
-    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout), BATCH_PROPERTY,
+    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+        BATCH_PROPERTY,
         String.valueOf(initialBatch));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig1.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig1.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
@@ -530,14 +581,16 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     YamlConfigFile configFile = prepareYamlConfigFile("application.yaml",
         readYamlContentAsConfigFileProperties("case5.yaml"));
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig12.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig12.class);
 
     TestJavaConfigBean bean = context.getBean(TestJavaConfigBean.class);
 
     assertEquals(initialTimeout, bean.getTimeout());
     assertEquals(initialBatch, bean.getBatch());
 
-    configFile.onRepositoryChange("application.yaml", readYamlContentAsConfigFileProperties("case5-new.yaml"));
+    configFile.onRepositoryChange("application.yaml",
+        readYamlContentAsConfigFileProperties("case5-new.yaml"));
 
     TimeUnit.MILLISECONDS.sleep(300);
 
@@ -552,12 +605,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int newTimeout = 1001;
     int newBatch = 2001;
 
-    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout), BATCH_PROPERTY,
+    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+        BATCH_PROPERTY,
         String.valueOf(initialBatch));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig3.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig3.class);
 
     TestJavaConfigBean2 bean = context.getBean(TestJavaConfigBean2.class);
 
@@ -565,7 +620,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     assertEquals(initialBatch, bean.getBatch());
 
     Properties newProperties =
-        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY, String.valueOf(newBatch));
+        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY,
+            String.valueOf(newBatch));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
 
@@ -583,12 +639,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int newTimeout = 1001;
     int newBatch = 2001;
 
-    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout), BATCH_PROPERTY,
+    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+        BATCH_PROPERTY,
         String.valueOf(initialBatch));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig7.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig7.class);
 
     TestJavaConfigBean2 bean = context.getBean(TestJavaConfigBean2.class);
 
@@ -596,7 +654,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     assertEquals(initialBatch, bean.getBatch());
 
     Properties newProperties =
-        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY, String.valueOf(newBatch));
+        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY,
+            String.valueOf(newBatch));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
 
@@ -614,12 +673,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int newTimeout = 1001;
     int newBatch = 2001;
 
-    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout), BATCH_PROPERTY,
+    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+        BATCH_PROPERTY,
         String.valueOf(initialBatch));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig4.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig4.class);
 
     TestJavaConfigBean3 bean = context.getBean(TestJavaConfigBean3.class);
 
@@ -627,7 +688,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     assertEquals(initialBatch, bean.getBatch());
 
     Properties newProperties =
-        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY, String.valueOf(newBatch));
+        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY,
+            String.valueOf(newBatch));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
 
@@ -645,12 +707,14 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int newTimeout = 1001;
     int newBatch = 2001;
 
-    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout), BATCH_PROPERTY,
+    Properties properties = assembleProperties(TIMEOUT_PROPERTY, String.valueOf(initialTimeout),
+        BATCH_PROPERTY,
         String.valueOf(initialBatch));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig5.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig5.class);
 
     TestJavaConfigBean4 bean = context.getBean(TestJavaConfigBean4.class);
 
@@ -658,7 +722,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     assertEquals(initialBatch, bean.getBatch());
 
     Properties newProperties =
-        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY, String.valueOf(newBatch));
+        assembleProperties(TIMEOUT_PROPERTY, String.valueOf(newTimeout), BATCH_PROPERTY,
+            String.valueOf(newBatch));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
 
@@ -677,18 +742,21 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int someValue = 1234;
     int someNewValue = 2345;
 
-    Properties properties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue, ANOTHER_KEY_PROPERTY, anotherKeyValue,
+    Properties properties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue,
+        ANOTHER_KEY_PROPERTY, anotherKeyValue,
         String.format("%s.%s", someKeyValue, anotherKeyValue), String.valueOf(someValue));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(NestedPropertyConfig1.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        NestedPropertyConfig1.class);
 
     TestNestedPropertyBean bean = context.getBean(TestNestedPropertyBean.class);
 
     assertEquals(someValue, bean.getNestedProperty());
 
-    Properties newProperties = assembleProperties(SOME_KEY_PROPERTY, newKeyValue, ANOTHER_KEY_PROPERTY, anotherKeyValue,
+    Properties newProperties = assembleProperties(SOME_KEY_PROPERTY, newKeyValue,
+        ANOTHER_KEY_PROPERTY, anotherKeyValue,
         String.format("%s.%s", newKeyValue, anotherKeyValue), String.valueOf(someNewValue));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
@@ -705,19 +773,23 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int someValue = 1234;
     int someNewValue = 2345;
 
-    Properties properties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue, ANOTHER_KEY_PROPERTY, anotherKeyValue,
+    Properties properties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue,
+        ANOTHER_KEY_PROPERTY, anotherKeyValue,
         String.format("%s.%s", someKeyValue, anotherKeyValue), String.valueOf(someValue));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(NestedPropertyConfig1.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        NestedPropertyConfig1.class);
 
     TestNestedPropertyBean bean = context.getBean(TestNestedPropertyBean.class);
 
     assertEquals(someValue, bean.getNestedProperty());
 
-    Properties newProperties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue, ANOTHER_KEY_PROPERTY,
-        anotherKeyValue, String.format("%s.%s", someKeyValue, anotherKeyValue), String.valueOf(someNewValue));
+    Properties newProperties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue,
+        ANOTHER_KEY_PROPERTY,
+        anotherKeyValue, String.format("%s.%s", someKeyValue, anotherKeyValue),
+        String.valueOf(someNewValue));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
 
@@ -735,17 +807,21 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int someNewValue = 2345;
 
     Properties properties =
-        assembleProperties(SOME_KEY_PROPERTY, someKeyValue, ANOTHER_KEY_PROPERTY, String.valueOf(someValue));
+        assembleProperties(SOME_KEY_PROPERTY, someKeyValue, ANOTHER_KEY_PROPERTY,
+            String.valueOf(someValue));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(NestedPropertyConfig2.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        NestedPropertyConfig2.class);
 
-    TestNestedPropertyBeanWithDefaultValue bean = context.getBean(TestNestedPropertyBeanWithDefaultValue.class);
+    TestNestedPropertyBeanWithDefaultValue bean = context
+        .getBean(TestNestedPropertyBeanWithDefaultValue.class);
 
     assertEquals(someValue, bean.getNestedProperty());
 
-    Properties newProperties = assembleProperties(SOME_KEY_PROPERTY, someNewKeyValue, ANOTHER_KEY_PROPERTY,
+    Properties newProperties = assembleProperties(SOME_KEY_PROPERTY, someNewKeyValue,
+        ANOTHER_KEY_PROPERTY,
         String.valueOf(someValue), someNewKeyValue, String.valueOf(someNewValue));
 
     config.onRepositoryChange(ConfigConsts.NAMESPACE_APPLICATION, newProperties);
@@ -767,20 +843,24 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
     int someValue = 1234;
     int someNewValue = 2345;
 
-    Properties properties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue, ANOTHER_KEY_PROPERTY, anotherKeyValue,
+    Properties properties = assembleProperties(SOME_KEY_PROPERTY, someKeyValue,
+        ANOTHER_KEY_PROPERTY, anotherKeyValue,
         someKeyValue, someNestedPlaceholder);
 
     properties.setProperty(someNestedKey, String.valueOf(someValue));
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(NestedPropertyConfig2.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        NestedPropertyConfig2.class);
 
-    TestNestedPropertyBeanWithDefaultValue bean = context.getBean(TestNestedPropertyBeanWithDefaultValue.class);
+    TestNestedPropertyBeanWithDefaultValue bean = context
+        .getBean(TestNestedPropertyBeanWithDefaultValue.class);
 
     assertEquals(someValue, bean.getNestedProperty());
 
-    Properties newProperties = assembleProperties(SOME_KEY_PROPERTY, someNewKeyValue, ANOTHER_KEY_PROPERTY,
+    Properties newProperties = assembleProperties(SOME_KEY_PROPERTY, someNewKeyValue,
+        ANOTHER_KEY_PROPERTY,
         anotherKeyValue, someNewKeyValue, anotherNestedPlaceholder);
 
     newProperties.setProperty(anotherNestedKey, String.valueOf(someNewValue));
@@ -836,7 +916,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig9.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig9.class);
 
     TestAllKindsOfDataTypesBean bean = context.getBean(TestAllKindsOfDataTypesBean.class);
 
@@ -894,7 +975,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig10.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig10.class);
 
     TestApolloJsonValue bean = context.getBean(TestApolloJsonValue.class);
 
@@ -921,7 +1003,8 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig10.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig10.class);
 
     TestApolloJsonValue bean = context.getBean(TestApolloJsonValue.class);
 
@@ -948,9 +1031,11 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
 
     SimpleConfig config = prepareConfig(ConfigConsts.NAMESPACE_APPLICATION, properties);
 
-    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig11.class);
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+        AppConfig11.class);
 
-    TestApolloJsonValueWithDefaultValue bean = context.getBean(TestApolloJsonValueWithDefaultValue.class);
+    TestApolloJsonValueWithDefaultValue bean = context
+        .getBean(TestApolloJsonValueWithDefaultValue.class);
 
     JsonBean jsonBean = bean.getJsonBean();
 
@@ -972,6 +1057,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   @Configuration
   @EnableApolloConfig
   static class AppConfig1 {
+
     @Bean
     TestJavaConfigBean testJavaConfigBean() {
       return new TestJavaConfigBean();
@@ -981,6 +1067,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   @Configuration
   @EnableApolloConfig({"application", "FX.apollo"})
   static class AppConfig2 {
+
     @Bean
     TestJavaConfigBean testJavaConfigBean() {
       return new TestJavaConfigBean();
@@ -990,11 +1077,13 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   @Configuration
   @EnableApolloConfig
   static class AppConfig3 {
+
     /**
      * This case won't get auto updated
      */
     @Bean
-    TestJavaConfigBean2 testJavaConfigBean2(@Value("${timeout:100}") int timeout, @Value("${batch:200}") int batch) {
+    TestJavaConfigBean2 testJavaConfigBean2(@Value("${timeout:100}") int timeout,
+        @Value("${batch:200}") int batch) {
       TestJavaConfigBean2 bean = new TestJavaConfigBean2();
 
       bean.setTimeout(timeout);
@@ -1005,15 +1094,18 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   }
 
   @Configuration
-  @ComponentScan(includeFilters = {@Filter(type = FilterType.ANNOTATION, value = {Component.class})},
+  @ComponentScan(includeFilters = {
+      @Filter(type = FilterType.ANNOTATION, value = {Component.class})},
       excludeFilters = {@Filter(type = FilterType.ANNOTATION, value = {Configuration.class})})
   @EnableApolloConfig
   static class AppConfig4 {
+
   }
 
   @Configuration
   @EnableApolloConfig
   static class AppConfig5 {
+
     @Bean
     TestJavaConfigBean4 testJavaConfigBean() {
       return new TestJavaConfigBean4();
@@ -1023,6 +1115,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   @Configuration
   @EnableApolloConfig
   static class AppConfig6 {
+
     @Bean
     TestJavaConfigBean5 testJavaConfigBean() {
       return new TestJavaConfigBean5();
@@ -1052,6 +1145,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   @EnableApolloConfig
   @ImportResource("spring/XmlConfigPlaceholderTest1.xml")
   static class AppConfig8 {
+
     @Bean
     TestJavaConfigBean testJavaConfigBean() {
       return new TestJavaConfigBean();
@@ -1061,6 +1155,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   @Configuration
   @EnableApolloConfig
   static class AppConfig9 {
+
     @Bean
     TestAllKindsOfDataTypesBean testAllKindsOfDataTypesBean() {
       return new TestAllKindsOfDataTypesBean();
@@ -1070,6 +1165,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   @Configuration
   @EnableApolloConfig
   static class NestedPropertyConfig1 {
+
     @Bean
     TestNestedPropertyBean testNestedPropertyBean() {
       return new TestNestedPropertyBean();
@@ -1079,6 +1175,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   @Configuration
   @EnableApolloConfig
   static class NestedPropertyConfig2 {
+
     @Bean
     TestNestedPropertyBeanWithDefaultValue testNestedPropertyBean() {
       return new TestNestedPropertyBeanWithDefaultValue();
@@ -1108,6 +1205,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   @Configuration
   @EnableApolloConfig("application.yaMl")
   static class AppConfig12 {
+
     @Bean
     TestJavaConfigBean testJavaConfigBean() {
       return new TestJavaConfigBean();
@@ -1118,6 +1216,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   @EnableApolloConfig("application.yaml")
   @ImportResource("spring/XmlConfigPlaceholderTest11.xml")
   static class AppConfig13 {
+
     @Bean
     TestJavaConfigBean testJavaConfigBean() {
       return new TestJavaConfigBean();
@@ -1127,6 +1226,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   @Configuration
   @EnableApolloConfig({"application.yml", "FX.apollo"})
   static class AppConfig14 {
+
     @Bean
     TestJavaConfigBean testJavaConfigBean() {
       return new TestJavaConfigBean();
@@ -1154,6 +1254,7 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
   }
 
   static class TestJavaConfigBean2 {
+
     private int timeout;
     private int batch;
 
@@ -1179,11 +1280,13 @@ public class JavaConfigPlaceholderAutoUpdateTest extends AbstractSpringIntegrati
    */
   @Component
   static class TestJavaConfigBean3 {
+
     private final int timeout;
     private final int batch;
 
     @Autowired
-    public TestJavaConfigBean3(@Value("${timeout:100}") int timeout, @Value("${batch:200}") int batch) {
+    public TestJavaConfigBean3(@Value("${timeout:100}") int timeout,
+        @Value("${batch:200}") int batch) {
       this.timeout = timeout;
       this.batch = batch;
     }

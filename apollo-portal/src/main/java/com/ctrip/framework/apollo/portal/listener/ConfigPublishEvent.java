@@ -1,7 +1,6 @@
 package com.ctrip.framework.apollo.portal.listener;
 
 import com.ctrip.framework.apollo.portal.environment.Env;
-
 import org.springframework.context.ApplicationEvent;
 
 public class ConfigPublishEvent extends ApplicationEvent {
@@ -18,7 +17,7 @@ public class ConfigPublishEvent extends ApplicationEvent {
     return new ConfigPublishEvent(info);
   }
 
-  public ConfigPublishInfo getConfigPublishInfo(){
+  public ConfigPublishInfo getConfigPublishInfo() {
     return configPublishInfo;
   }
 
@@ -37,12 +36,12 @@ public class ConfigPublishEvent extends ApplicationEvent {
     return this;
   }
 
-  public ConfigPublishEvent withReleaseId(long releaseId){
+  public ConfigPublishEvent withReleaseId(long releaseId) {
     configPublishInfo.setReleaseId(releaseId);
     return this;
   }
 
-  public ConfigPublishEvent withPreviousReleaseId(long previousReleaseId){
+  public ConfigPublishEvent withPreviousReleaseId(long previousReleaseId) {
     configPublishInfo.setPreviousReleaseId(previousReleaseId);
     return this;
   }

@@ -8,8 +8,10 @@ import java.util.Iterator;
 
 public class RoleUtils {
 
-  private static final Joiner STRING_JOINER = Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR).skipNulls();
-  private static final Splitter STRING_SPLITTER = Splitter.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR)
+  private static final Joiner STRING_JOINER = Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR)
+      .skipNulls();
+  private static final Splitter STRING_SPLITTER = Splitter
+      .on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR)
       .omitEmptyStrings().trimResults();
 
   public static String buildAppMasterRoleName(String appId) {
@@ -28,14 +30,14 @@ public class RoleUtils {
   }
 
   public static String extractAppIdFromRoleName(String roleName) {
-     Iterator<String> parts = STRING_SPLITTER.split(roleName).iterator();
-     if (parts.hasNext()) {
-       String roleType = parts.next();
-       if (RoleType.isValidRoleType(roleType) && parts.hasNext()) {
-         return parts.next();
-       }
-     }
-     return null;
+    Iterator<String> parts = STRING_SPLITTER.split(roleName).iterator();
+    if (parts.hasNext()) {
+      String roleType = parts.next();
+      if (RoleType.isValidRoleType(roleType) && parts.hasNext()) {
+        return parts.next();
+      }
+    }
+    return null;
   }
 
   public static String buildAppRoleName(String appId, String roleType) {
@@ -46,7 +48,8 @@ public class RoleUtils {
     return buildModifyNamespaceRoleName(appId, namespaceName, null);
   }
 
-  public static String buildModifyNamespaceRoleName(String appId, String namespaceName, String env) {
+  public static String buildModifyNamespaceRoleName(String appId, String namespaceName,
+      String env) {
     return STRING_JOINER.join(RoleType.MODIFY_NAMESPACE, appId, namespaceName, env);
   }
 
@@ -58,7 +61,8 @@ public class RoleUtils {
     return buildReleaseNamespaceRoleName(appId, namespaceName, null);
   }
 
-  public static String buildReleaseNamespaceRoleName(String appId, String namespaceName, String env) {
+  public static String buildReleaseNamespaceRoleName(String appId, String namespaceName,
+      String env) {
     return STRING_JOINER.join(RoleType.RELEASE_NAMESPACE, appId, namespaceName, env);
   }
 
@@ -66,12 +70,14 @@ public class RoleUtils {
     return buildNamespaceRoleName(appId, namespaceName, roleType, null);
   }
 
-  public static String buildNamespaceRoleName(String appId, String namespaceName, String roleType, String env) {
+  public static String buildNamespaceRoleName(String appId, String namespaceName, String roleType,
+      String env) {
     return STRING_JOINER.join(roleType, appId, namespaceName, env);
   }
 
   public static String buildReleaseDefaultNamespaceRoleName(String appId) {
-    return STRING_JOINER.join(RoleType.RELEASE_NAMESPACE, appId, ConfigConsts.NAMESPACE_APPLICATION);
+    return STRING_JOINER
+        .join(RoleType.RELEASE_NAMESPACE, appId, ConfigConsts.NAMESPACE_APPLICATION);
   }
 
   public static String buildNamespaceTargetId(String appId, String namespaceName) {
@@ -86,7 +92,8 @@ public class RoleUtils {
     return STRING_JOINER.join(appId, ConfigConsts.NAMESPACE_APPLICATION);
   }
 
-  public static String buildCreateApplicationRoleName(String permissionType, String permissionTargetId) {
+  public static String buildCreateApplicationRoleName(String permissionType,
+      String permissionTargetId) {
     return STRING_JOINER.join(permissionType, permissionTargetId);
   }
 }

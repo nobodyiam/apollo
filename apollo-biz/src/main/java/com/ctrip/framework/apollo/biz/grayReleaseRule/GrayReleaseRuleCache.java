@@ -1,13 +1,13 @@
 package com.ctrip.framework.apollo.biz.grayReleaseRule;
 
 import com.ctrip.framework.apollo.common.dto.GrayReleaseRuleItemDTO;
-
 import java.util.Set;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class GrayReleaseRuleCache implements Comparable<GrayReleaseRuleCache> {
+
   private long ruleId;
   private String branchName;
   private String namespaceName;

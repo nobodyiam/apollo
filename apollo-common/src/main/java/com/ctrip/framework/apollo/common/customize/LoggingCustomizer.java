@@ -1,24 +1,23 @@
 package com.ctrip.framework.apollo.common.customize;
 
-import com.google.common.base.Strings;
-
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.Appender;
 import com.ctrip.framework.apollo.tracer.Tracer;
 import com.ctrip.framework.foundation.Foundation;
-
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.Appender;
-
 /**
  * clogging config.only used in ctrip
+ *
  * @author Jason Song(song_s@ctrip.com)
  */
 public abstract class LoggingCustomizer implements InitializingBean {
+
   private static final Logger logger = LoggerFactory.getLogger(LoggingCustomizer.class);
   private static final String cLoggingAppenderClass =
       "com.ctrip.framework.clogging.agent.appender.CLoggingAppender";
@@ -47,7 +46,6 @@ public abstract class LoggingCustomizer implements InitializingBean {
       return;
     }
 
-
     LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
     Class clazz = Class.forName(cLoggingAppenderClass);
     Appender cLoggingAppender = (Appender) clazz.newInstance();
@@ -70,13 +68,11 @@ public abstract class LoggingCustomizer implements InitializingBean {
 
   /**
    * clogging server url
-   * @return
    */
   protected abstract String cloggingUrl();
 
   /**
    * clogging server port
-   * @return
    */
   protected abstract String cloggingPort();
 

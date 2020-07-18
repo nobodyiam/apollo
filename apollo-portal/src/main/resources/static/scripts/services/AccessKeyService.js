@@ -1,95 +1,96 @@
-appService.service('AccessKeyService', ['$resource', '$q', 'AppUtil', function ($resource, $q, AppUtil) {
-    var access_key_resource = $resource('', {}, {
+appService.service('AccessKeyService',
+    ['$resource', '$q', 'AppUtil', function ($resource, $q, AppUtil) {
+      var access_key_resource = $resource('', {}, {
         load_access_keys: {
-            method: 'GET',
-            isArray: true,
-            url: AppUtil.prefixPath() + '/apps/:appId/envs/:env/accesskeys'
+          method: 'GET',
+          isArray: true,
+          url: AppUtil.prefixPath() + '/apps/:appId/envs/:env/accesskeys'
         },
         create_access_key: {
-            method: 'POST',
-            url: AppUtil.prefixPath() + '/apps/:appId/envs/:env/accesskeys'
+          method: 'POST',
+          url: AppUtil.prefixPath() + '/apps/:appId/envs/:env/accesskeys'
         },
         remove_access_key: {
-            method: 'DELETE',
-            url: AppUtil.prefixPath() + '/apps/:appId/envs/:env/accesskeys/:id'
+          method: 'DELETE',
+          url: AppUtil.prefixPath() + '/apps/:appId/envs/:env/accesskeys/:id'
         },
         enable_access_key: {
-            method: 'PUT',
-            url: AppUtil.prefixPath() + '/apps/:appId/envs/:env/accesskeys/:id/enable'
+          method: 'PUT',
+          url: AppUtil.prefixPath() + '/apps/:appId/envs/:env/accesskeys/:id/enable'
         },
         disable_access_key: {
-            method: 'PUT',
-            url: AppUtil.prefixPath() + '/apps/:appId/envs/:env/accesskeys/:id/disable'
+          method: 'PUT',
+          url: AppUtil.prefixPath() + '/apps/:appId/envs/:env/accesskeys/:id/disable'
         }
-    });
-    return {
+      });
+      return {
         load_access_keys: function (appId, env) {
-            var d = $q.defer();
-            access_key_resource.load_access_keys({
-                    appId: appId,
-                    env: env
-                },
-                function (result) {
-                    d.resolve(result);
-                }, function (result) {
-                    d.reject(result);
-                });
-            return d.promise;
+          var d = $q.defer();
+          access_key_resource.load_access_keys({
+                appId: appId,
+                env: env
+              },
+              function (result) {
+                d.resolve(result);
+              }, function (result) {
+                d.reject(result);
+              });
+          return d.promise;
         },
         create_access_key: function (appId, env, user) {
-            var d = $q.defer();
-            access_key_resource.create_access_key({
-                    appId: appId,
-                    env: env
-                }, { dataChangeCreatedBy: user },
-                function (result) {
-                    d.resolve(result);
-                }, function (result) {
-                    d.reject(result);
-                });
-            return d.promise;
+          var d = $q.defer();
+          access_key_resource.create_access_key({
+                appId: appId,
+                env: env
+              }, {dataChangeCreatedBy: user},
+              function (result) {
+                d.resolve(result);
+              }, function (result) {
+                d.reject(result);
+              });
+          return d.promise;
         },
         remove_access_key: function (appId, env, id) {
-            var d = $q.defer();
-            access_key_resource.remove_access_key({
-                    appId: appId,
-                    env: env,
-                    id: id
-                },
-                function (result) {
-                    d.resolve(result);
-                }, function (result) {
-                    d.reject(result);
-                });
-            return d.promise;
+          var d = $q.defer();
+          access_key_resource.remove_access_key({
+                appId: appId,
+                env: env,
+                id: id
+              },
+              function (result) {
+                d.resolve(result);
+              }, function (result) {
+                d.reject(result);
+              });
+          return d.promise;
         },
         enable_access_key: function (appId, env, id) {
-            var d = $q.defer();
-            access_key_resource.enable_access_key({
-                    appId: appId,
-                    env: env,
-                    id: id
-                }, {},
-                function (result) {
-                    d.resolve(result);
-                }, function (result) {
-                    d.reject(result);
-                });
-            return d.promise;
+          var d = $q.defer();
+          access_key_resource.enable_access_key({
+                appId: appId,
+                env: env,
+                id: id
+              }, {},
+              function (result) {
+                d.resolve(result);
+              }, function (result) {
+                d.reject(result);
+              });
+          return d.promise;
         },
         disable_access_key: function (appId, env, id) {
-            var d = $q.defer();
-            access_key_resource.disable_access_key({
-                    appId: appId,
-                    env: env,
-                    id: id
-                }, {},
-                function (result) {
-                    d.resolve(result);
-                }, function (result) {
-                    d.reject(result);
-                });
-            return d.promise;
+          var d = $q.defer();
+          access_key_resource.disable_access_key({
+                appId: appId,
+                env: env,
+                id: id
+              }, {},
+              function (result) {
+                d.resolve(result);
+              }, function (result) {
+                d.reject(result);
+              });
+          return d.promise;
         }
-    }
-}]);
+      }
+    }]);

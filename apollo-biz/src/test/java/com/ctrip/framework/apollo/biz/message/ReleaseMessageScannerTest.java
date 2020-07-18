@@ -1,28 +1,25 @@
 package com.ctrip.framework.apollo.biz.message;
 
-import com.ctrip.framework.apollo.biz.config.BizConfig;
-import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.SettableFuture;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import com.ctrip.framework.apollo.biz.AbstractUnitTest;
+import com.ctrip.framework.apollo.biz.config.BizConfig;
 import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
 import com.ctrip.framework.apollo.biz.repository.ReleaseMessageRepository;
-
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.SettableFuture;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class ReleaseMessageScannerTest extends AbstractUnitTest {
+
   private ReleaseMessageScanner releaseMessageScanner;
   @Mock
   private ReleaseMessageRepository releaseMessageRepository;
@@ -61,7 +58,8 @@ public class ReleaseMessageScannerTest extends AbstractUnitTest {
     assertEquals(someId, someListenerMessage.getId());
 
     SettableFuture<ReleaseMessage> anotherListenerFuture = SettableFuture.create();
-    ReleaseMessageListener anotherListener = (message, channel) -> anotherListenerFuture.set(message);
+    ReleaseMessageListener anotherListener = (message, channel) -> anotherListenerFuture
+        .set(message);
     releaseMessageScanner.addMessageListener(anotherListener);
 
     String anotherMessage = "anotherMessage";

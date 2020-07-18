@@ -4,6 +4,7 @@ package com.ctrip.framework.apollo.common.constants;
  * @author Jason Song(song_s@ctrip.com)
  */
 public interface ReleaseOperation {
+
   int NORMAL_RELEASE = 0;
   int ROLLBACK = 1;
   int GRAY_RELEASE = 2;

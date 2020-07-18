@@ -58,7 +58,7 @@ public class ApolloJsonValueProcessor extends ApolloProcessor implements BeanFac
     boolean accessible = field.isAccessible();
     field.setAccessible(true);
     ReflectionUtils
-        .setField(field, bean, parseJsonValue((String)propertyValue, field.getGenericType()));
+        .setField(field, bean, parseJsonValue((String) propertyValue, field.getGenericType()));
     field.setAccessible(accessible);
 
     if (configUtil.isAutoUpdateInjectedSpringPropertiesEnabled()) {
@@ -94,7 +94,7 @@ public class ApolloJsonValueProcessor extends ApolloProcessor implements BeanFac
 
     boolean accessible = method.isAccessible();
     method.setAccessible(true);
-    ReflectionUtils.invokeMethod(method, bean, parseJsonValue((String)propertyValue, types[0]));
+    ReflectionUtils.invokeMethod(method, bean, parseJsonValue((String) propertyValue, types[0]));
     method.setAccessible(accessible);
 
     if (configUtil.isAutoUpdateInjectedSpringPropertiesEnabled()) {

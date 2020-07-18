@@ -7,14 +7,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ctrip.framework.foundation.internals.provider.DefaultServerProvider;
-
 public class DefaultServerProviderTest {
+
   private DefaultServerProvider defaultServerProvider;
 
   @Before

@@ -2,54 +2,55 @@ package com.ctrip.framework.apollo.openapi.dto;
 
 import java.util.Set;
 
-public class OpenGrayReleaseRuleDTO extends BaseDTO{
-    private String appId;
+public class OpenGrayReleaseRuleDTO extends BaseDTO {
 
-    private String clusterName;
+  private String appId;
 
-    private String namespaceName;
+  private String clusterName;
 
-    private String branchName;
+  private String namespaceName;
 
-    private Set<OpenGrayReleaseRuleItemDTO> ruleItems;
+  private String branchName;
 
-    public String getAppId() {
-        return appId;
-    }
+  private Set<OpenGrayReleaseRuleItemDTO> ruleItems;
 
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
+  public String getAppId() {
+    return appId;
+  }
 
-    public String getClusterName() {
-        return clusterName;
-    }
+  public void setAppId(String appId) {
+    this.appId = appId;
+  }
 
-    public void setClusterName(String clusterName) {
-        this.clusterName = clusterName;
-    }
+  public String getClusterName() {
+    return clusterName;
+  }
 
-    public String getNamespaceName() {
-        return namespaceName;
-    }
+  public void setClusterName(String clusterName) {
+    this.clusterName = clusterName;
+  }
 
-    public void setNamespaceName(String namespaceName) {
-        this.namespaceName = namespaceName;
-    }
+  public String getNamespaceName() {
+    return namespaceName;
+  }
 
-    public String getBranchName() {
-        return branchName;
-    }
+  public void setNamespaceName(String namespaceName) {
+    this.namespaceName = namespaceName;
+  }
 
-    public void setBranchName(String branchName) {
-        this.branchName = branchName;
-    }
+  public String getBranchName() {
+    return branchName;
+  }
 
-    public Set<OpenGrayReleaseRuleItemDTO> getRuleItems() {
-        return ruleItems;
-    }
+  public void setBranchName(String branchName) {
+    this.branchName = branchName;
+  }
 
-    public void setRuleItems(Set<OpenGrayReleaseRuleItemDTO> ruleItems) {
-        this.ruleItems = ruleItems;
-    }
+  public Set<OpenGrayReleaseRuleItemDTO> getRuleItems() {
+    return ruleItems;
+  }
+
+  public void setRuleItems(Set<OpenGrayReleaseRuleItemDTO> ruleItems) {
+    this.ruleItems = ruleItems;
+  }
 }

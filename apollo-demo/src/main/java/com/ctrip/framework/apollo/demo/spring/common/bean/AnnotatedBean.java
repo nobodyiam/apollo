@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Component("annotatedBean")
 public class AnnotatedBean {
+
   private static final Logger logger = LoggerFactory.getLogger(AnnotatedBean.class);
 
   private int timeout;
@@ -20,8 +21,7 @@ public class AnnotatedBean {
 
   /**
    * ApolloJsonValue annotated on fields example, the default value is specified as empty list - []
-   * <br />
-   * jsonBeanProperty=[{"someString":"hello","someInt":100},{"someString":"world!","someInt":200}]
+   * <br /> jsonBeanProperty=[{"someString":"hello","someInt":100},{"someString":"world!","someInt":200}]
    */
   @ApolloJsonValue("${jsonBeanProperty:[]}")
   private List<JsonBean> anotherJsonBeans;
@@ -40,8 +40,7 @@ public class AnnotatedBean {
 
   /**
    * ApolloJsonValue annotated on methods example, the default value is specified as empty list - []
-   * <br />
-   * jsonBeanProperty=[{"someString":"hello","someInt":100},{"someString":"world!","someInt":200}]
+   * <br /> jsonBeanProperty=[{"someString":"hello","someInt":100},{"someString":"world!","someInt":200}]
    */
   @ApolloJsonValue("${jsonBeanProperty:[]}")
   public void setJsonBeans(List<JsonBean> jsonBeans) {
@@ -51,10 +50,11 @@ public class AnnotatedBean {
 
   @Override
   public String toString() {
-    return String.format("[AnnotatedBean] timeout: %d, batch: %d, jsonBeans: %s", timeout, batch, jsonBeans);
+    return String
+        .format("[AnnotatedBean] timeout: %d, batch: %d, jsonBeans: %s", timeout, batch, jsonBeans);
   }
 
-  private static class JsonBean{
+  private static class JsonBean {
 
     private String someString;
     private int someInt;

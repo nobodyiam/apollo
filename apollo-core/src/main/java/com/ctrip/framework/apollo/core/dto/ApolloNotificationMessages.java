@@ -2,13 +2,13 @@ package com.ctrip.framework.apollo.core.dto;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-
 import java.util.Map;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class ApolloNotificationMessages {
+
   private Map<String, Long> details;
 
   public ApolloNotificationMessages() {

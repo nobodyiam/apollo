@@ -10,9 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
 @Configuration
 @Profile("ctrip")
 public class WebContextConfiguration {
@@ -20,7 +17,8 @@ public class WebContextConfiguration {
   private final PortalConfig portalConfig;
   private final UserInfoHolder userInfoHolder;
 
-  public WebContextConfiguration(final PortalConfig portalConfig, final UserInfoHolder userInfoHolder) {
+  public WebContextConfiguration(final PortalConfig portalConfig,
+      final UserInfoHolder userInfoHolder) {
     this.portalConfig = portalConfig;
     this.userInfoHolder = userInfoHolder;
   }

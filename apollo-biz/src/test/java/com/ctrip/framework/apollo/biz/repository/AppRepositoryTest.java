@@ -2,12 +2,11 @@ package com.ctrip.framework.apollo.biz.repository;
 
 import com.ctrip.framework.apollo.biz.AbstractIntegrationTest;
 import com.ctrip.framework.apollo.common.entity.App;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class AppRepositoryTest extends AbstractIntegrationTest{
+public class AppRepositoryTest extends AbstractIntegrationTest {
 
   @Autowired
   private AppRepository appRepository;

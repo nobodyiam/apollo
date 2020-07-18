@@ -7,7 +7,7 @@ import com.ctrip.framework.apollo.common.dto.ClusterDTO;
 import com.ctrip.framework.apollo.common.dto.ItemChangeSets;
 import com.ctrip.framework.apollo.common.dto.ItemDTO;
 import com.ctrip.framework.apollo.common.dto.NamespaceDTO;
-
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 public class ItemSetControllerTest extends AbstractControllerTest {
 
@@ -49,7 +47,7 @@ public class ItemSetControllerTest extends AbstractControllerTest {
     itemSet.setDataChangeLastModifiedBy("created");
     RestTemplate createdTemplate = (new TestRestTemplate()).getRestTemplate();
     createdTemplate.setMessageConverters(restTemplate.getMessageConverters());
-    
+
     int createdSize = 3;
     for (int i = 0; i < createdSize; i++) {
       ItemDTO item = new ItemDTO();
@@ -98,7 +96,7 @@ public class ItemSetControllerTest extends AbstractControllerTest {
     createChangeSet.setDataChangeLastModifiedBy("created");
     RestTemplate createdRestTemplate = (new TestRestTemplate()).getRestTemplate();
     createdRestTemplate.setMessageConverters(restTemplate.getMessageConverters());
-    
+
     int createdSize = 3;
     for (int i = 0; i < createdSize; i++) {
       ItemDTO item = new ItemDTO();
@@ -125,7 +123,7 @@ public class ItemSetControllerTest extends AbstractControllerTest {
 
     RestTemplate updatedRestTemplate = (new TestRestTemplate()).getRestTemplate();
     updatedRestTemplate.setMessageConverters(restTemplate.getMessageConverters());
-    
+
     int updatedSize = 2;
     for (int i = 0; i < updatedSize; i++) {
       items[i].setValue("updated_value_" + i);
@@ -172,7 +170,7 @@ public class ItemSetControllerTest extends AbstractControllerTest {
     createChangeSet.setDataChangeLastModifiedBy("created");
     RestTemplate createdTemplate = (new TestRestTemplate()).getRestTemplate();
     createdTemplate.setMessageConverters(restTemplate.getMessageConverters());
-    
+
     int createdSize = 3;
     for (int i = 0; i < createdSize; i++) {
       ItemDTO item = new ItemDTO();
@@ -198,7 +196,7 @@ public class ItemSetControllerTest extends AbstractControllerTest {
     deleteChangeSet.setDataChangeLastModifiedBy("deleted");
     RestTemplate deletedTemplate = (new TestRestTemplate()).getRestTemplate();
     deletedTemplate.setMessageConverters(restTemplate.getMessageConverters());
-    
+
     int deletedSize = 1;
     for (int i = 0; i < deletedSize; i++) {
       items[i].setValue("deleted_value_" + i);

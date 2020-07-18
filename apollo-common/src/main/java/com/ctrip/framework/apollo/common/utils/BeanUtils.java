@@ -1,11 +1,6 @@
 package com.ctrip.framework.apollo.common.utils;
 
 import com.ctrip.framework.apollo.common.exception.BeanUtilsException;
-
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.util.CollectionUtils;
-
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -15,6 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.util.CollectionUtils;
 
 
 public class BeanUtils {
@@ -67,7 +65,7 @@ public class BeanUtils {
     for (PropertyDescriptor pd : pds) {
       Object srcValue = src.getPropertyValue(pd.getName());
       if (srcValue == null) {
-          emptyNames.add(pd.getName());
+        emptyNames.add(pd.getName());
       }
     }
     String[] result = new String[emptyNames.size()];
@@ -94,7 +92,7 @@ public class BeanUtils {
       Class<?> clazz = list.get(0).getClass();
       Field field = deepFindField(clazz, key);
       if (field == null) {
-          throw new IllegalArgumentException("Could not find the key");
+        throw new IllegalArgumentException("Could not find the key");
       }
       field.setAccessible(true);
       for (Object o : list) {
@@ -124,7 +122,7 @@ public class BeanUtils {
       Class<?> clazz = list.get(0).getClass();
       Field field = deepFindField(clazz, key);
       if (field == null) {
-          throw new IllegalArgumentException("Could not find the key");
+        throw new IllegalArgumentException("Could not find the key");
       }
       field.setAccessible(true);
       for (Object o : list) {
@@ -156,11 +154,11 @@ public class BeanUtils {
       Class<?> clazz = list.get(0).getClass();
       Field field = deepFindField(clazz, key);
       if (field == null) {
-          throw new IllegalArgumentException("Could not find the key");
+        throw new IllegalArgumentException("Could not find the key");
       }
       field.setAccessible(true);
       for (Object o : list) {
-        set.add((K)field.get(o));
+        set.add((K) field.get(o));
       }
     } catch (Exception e) {
       throw new BeanUtilsException(e);
@@ -217,8 +215,6 @@ public class BeanUtils {
 
   /**
    *
-   * @param source
-   * @param target
    */
   public static void copyProperties(Object source, Object target, String... ignoreProperties) {
     org.springframework.beans.BeanUtils.copyProperties(source, target, ignoreProperties);
@@ -226,13 +222,11 @@ public class BeanUtils {
 
   /**
    * The copy will ignore <em>BaseEntity</em> field
-   *
-   * @param source
-   * @param target
    */
   public static void copyEntityProperties(Object source, Object target) {
     org.springframework.beans.BeanUtils.copyProperties(source, target, COPY_IGNORED_PROPERTIES);
   }
 
-  private static final String[] COPY_IGNORED_PROPERTIES = {"id", "dataChangeCreatedBy", "dataChangeCreatedTime", "dataChangeLastModifiedTime"};
+  private static final String[] COPY_IGNORED_PROPERTIES = {"id", "dataChangeCreatedBy",
+      "dataChangeCreatedTime", "dataChangeLastModifiedTime"};
 }

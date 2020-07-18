@@ -1,13 +1,11 @@
 package com.ctrip.framework.apollo.biz.entity;
 
 import com.ctrip.framework.apollo.common.entity.BaseEntity;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "Namespace")
@@ -24,7 +22,7 @@ public class Namespace extends BaseEntity {
   @Column(name = "NamespaceName", nullable = false)
   private String namespaceName;
 
-  public Namespace(){
+  public Namespace() {
 
   }
 

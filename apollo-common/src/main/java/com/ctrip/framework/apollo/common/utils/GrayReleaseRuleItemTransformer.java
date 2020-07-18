@@ -1,10 +1,8 @@
 package com.ctrip.framework.apollo.common.utils;
 
+import com.ctrip.framework.apollo.common.dto.GrayReleaseRuleItemDTO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-import com.ctrip.framework.apollo.common.dto.GrayReleaseRuleItemDTO;
-
 import java.lang.reflect.Type;
 import java.util.Set;
 
@@ -12,6 +10,7 @@ import java.util.Set;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class GrayReleaseRuleItemTransformer {
+
   private static final Gson gson = new Gson();
   private static final Type grayReleaseRuleItemsType = new TypeToken<Set<GrayReleaseRuleItemDTO>>() {
   }.getType();

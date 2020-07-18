@@ -1,33 +1,31 @@
 package com.ctrip.framework.apollo.portal.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.ctrip.framework.apollo.common.dto.ItemChangeSets;
 import com.ctrip.framework.apollo.common.dto.ItemDTO;
 import com.ctrip.framework.apollo.common.dto.NamespaceDTO;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
-import com.ctrip.framework.apollo.portal.environment.Env;
 import com.ctrip.framework.apollo.portal.AbstractUnitTest;
 import com.ctrip.framework.apollo.portal.api.AdminServiceAPI;
-import com.ctrip.framework.apollo.portal.spi.UserInfoHolder;
-import com.ctrip.framework.apollo.portal.entity.bo.UserInfo;
 import com.ctrip.framework.apollo.portal.component.txtresolver.PropertyResolver;
+import com.ctrip.framework.apollo.portal.entity.bo.UserInfo;
 import com.ctrip.framework.apollo.portal.entity.model.NamespaceTextModel;
 import com.ctrip.framework.apollo.portal.entity.vo.ItemDiffs;
 import com.ctrip.framework.apollo.portal.entity.vo.NamespaceIdentifier;
-
+import com.ctrip.framework.apollo.portal.environment.Env;
+import com.ctrip.framework.apollo.portal.spi.UserInfoHolder;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ConfigServiceTest extends AbstractUnitTest {
 
@@ -109,7 +107,8 @@ public class ConfigServiceTest extends AbstractUnitTest {
         generateNamespaceIdentifier(appId, env, clusterName, namespaceName);
     NamespaceDTO namespaceDTO = generateNamespaceDTO(appId, clusterName, namespaceName);
 
-    when(namespaceAPI.loadNamespace(appId, Env.valueOf(env), clusterName, namespaceName)).thenReturn(namespaceDTO);
+    when(namespaceAPI.loadNamespace(appId, Env.valueOf(env), clusterName, namespaceName))
+        .thenReturn(namespaceDTO);
     when(itemAPI.findItems(appId, Env.valueOf(env), clusterName, namespaceName)).thenReturn(null);
 
     UserInfo userInfo = new UserInfo();
@@ -152,8 +151,10 @@ public class ConfigServiceTest extends AbstractUnitTest {
         generateNamespaceIdentifier(appId, env, clusterName, namespaceName);
     NamespaceDTO namespaceDTO = generateNamespaceDTO(appId, clusterName, namespaceName);
 
-    when(namespaceAPI.loadNamespace(appId, Env.valueOf(env), clusterName, namespaceName)).thenReturn(namespaceDTO);
-    when(itemAPI.findItems(appId, Env.valueOf(env), clusterName, namespaceName)).thenReturn(targetItems);
+    when(namespaceAPI.loadNamespace(appId, Env.valueOf(env), clusterName, namespaceName))
+        .thenReturn(namespaceDTO);
+    when(itemAPI.findItems(appId, Env.valueOf(env), clusterName, namespaceName))
+        .thenReturn(targetItems);
 
     UserInfo userInfo = new UserInfo();
     userInfo.setUserId("test");
@@ -197,7 +198,8 @@ public class ConfigServiceTest extends AbstractUnitTest {
 
   }
 
-  private NamespaceDTO generateNamespaceDTO(String appId, String clusterName, String namespaceName) {
+  private NamespaceDTO generateNamespaceDTO(String appId, String clusterName,
+      String namespaceName) {
     NamespaceDTO namespaceDTO = new NamespaceDTO();
     namespaceDTO.setAppId(appId);
     namespaceDTO.setId(1);
@@ -206,8 +208,9 @@ public class ConfigServiceTest extends AbstractUnitTest {
     return namespaceDTO;
   }
 
-  private List<NamespaceIdentifier> generateNamespaceIdentifier(String appId, String env, String clusterName,
-                                                                String namespaceName) {
+  private List<NamespaceIdentifier> generateNamespaceIdentifier(String appId, String env,
+      String clusterName,
+      String namespaceName) {
     NamespaceIdentifier targetNamespace = new NamespaceIdentifier();
     targetNamespace.setAppId(appId);
     targetNamespace.setEnv(env);

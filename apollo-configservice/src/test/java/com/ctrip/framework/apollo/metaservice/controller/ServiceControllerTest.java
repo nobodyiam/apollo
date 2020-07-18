@@ -1,6 +1,7 @@
 package com.ctrip.framework.apollo.metaservice.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.ctrip.framework.apollo.core.ServiceNameConsts;

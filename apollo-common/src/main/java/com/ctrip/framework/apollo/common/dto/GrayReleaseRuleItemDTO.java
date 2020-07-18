@@ -1,15 +1,15 @@
 package com.ctrip.framework.apollo.common.dto;
 
-import com.google.common.collect.Sets;
-
-import java.util.Set;
-
 import static com.google.common.base.MoreObjects.toStringHelper;
+
+import com.google.common.collect.Sets;
+import java.util.Set;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class GrayReleaseRuleItemDTO {
+
   public static final String ALL_IP = "*";
 
   private String clientAppId;

@@ -1,5 +1,13 @@
 package com.ctrip.framework.apollo.configservice.controller;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
 import com.ctrip.framework.apollo.biz.grayReleaseRule.GrayReleaseRulesHolder;
 import com.ctrip.framework.apollo.biz.message.Topics;
@@ -13,6 +21,11 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,22 +35,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Type;
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigFileControllerTest {
+
   @Mock
   private ConfigController configController;
   @Mock
@@ -97,14 +100,16 @@ public class ConfigFileControllerTest {
 
     String cacheKey =
         configFileController
-            .assembleCacheKey(ConfigFileController.ConfigFileOutputFormat.PROPERTIES, someAppId, someClusterName, someNamespace, someDataCenter);
+            .assembleCacheKey(ConfigFileController.ConfigFileOutputFormat.PROPERTIES, someAppId,
+                someClusterName, someNamespace, someDataCenter);
 
     Map<String, String> configurations =
         ImmutableMap.of(someKey, someValue, anotherKey, anotherValue);
     ApolloConfig someApolloConfig = mock(ApolloConfig.class);
     when(someApolloConfig.getConfigurations()).thenReturn(configurations);
     when(configController
-        .queryConfig(someAppId, someClusterName, someNamespace, someDataCenter, "-1", someClientIp, null,
+        .queryConfig(someAppId, someClusterName, someNamespace, someDataCenter, "-1", someClientIp,
+            null,
             someRequest, someResponse)).thenReturn(someApolloConfig);
     when(watchKeysUtil
         .assembleAllWatchKeys(someAppId, someClusterName, someNamespace, someDataCenter))
@@ -134,7 +139,8 @@ public class ConfigFileControllerTest {
     assertEquals(response, anotherResponse);
 
     verify(configController, times(1))
-        .queryConfig(someAppId, someClusterName, someNamespace, someDataCenter, "-1", someClientIp, null,
+        .queryConfig(someAppId, someClusterName, someNamespace, someDataCenter, "-1", someClientIp,
+            null,
             someRequest, someResponse);
   }
 
@@ -143,7 +149,8 @@ public class ConfigFileControllerTest {
     String someKey = "someKey";
     String someValue = "someValue";
     Gson gson = new Gson();
-    Type responseType = new TypeToken<Map<String, String>>(){}.getType();
+    Type responseType = new TypeToken<Map<String, String>>() {
+    }.getType();
 
     String someWatchKey = "someWatchKey";
     Set<String> watchKeys = Sets.newHashSet(someWatchKey);
@@ -152,7 +159,8 @@ public class ConfigFileControllerTest {
         ImmutableMap.of(someKey, someValue);
     ApolloConfig someApolloConfig = mock(ApolloConfig.class);
     when(configController
-        .queryConfig(someAppId, someClusterName, someNamespace, someDataCenter, "-1", someClientIp, null,
+        .queryConfig(someAppId, someClusterName, someNamespace, someDataCenter, "-1", someClientIp,
+            null,
             someRequest, someResponse)).thenReturn(someApolloConfig);
     when(someApolloConfig.getConfigurations()).thenReturn(configurations);
     when(watchKeysUtil
@@ -173,7 +181,8 @@ public class ConfigFileControllerTest {
     String someKey = "someKey";
     String someValue = "someValue";
     Gson gson = new Gson();
-    Type responseType = new TypeToken<Map<String, String>>(){}.getType();
+    Type responseType = new TypeToken<Map<String, String>>() {
+    }.getType();
 
     Map<String, String> configurations =
         ImmutableMap.of(someKey, someValue);
@@ -184,7 +193,8 @@ public class ConfigFileControllerTest {
     ApolloConfig someApolloConfig = mock(ApolloConfig.class);
     when(someApolloConfig.getConfigurations()).thenReturn(configurations);
     when(configController
-        .queryConfig(someAppId, someClusterName, someNamespace, someDataCenter, "-1", someClientIp, null,
+        .queryConfig(someAppId, someClusterName, someNamespace, someDataCenter, "-1", someClientIp,
+            null,
             someRequest, someResponse)).thenReturn(someApolloConfig);
 
     ResponseEntity<String> response =
@@ -198,7 +208,8 @@ public class ConfigFileControllerTest {
                 someClientIp, someRequest, someResponse);
 
     verify(configController, times(2))
-        .queryConfig(someAppId, someClusterName, someNamespace, someDataCenter, "-1", someClientIp, null,
+        .queryConfig(someAppId, someClusterName, someNamespace, someDataCenter, "-1", someClientIp,
+            null,
             someRequest, someResponse);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());

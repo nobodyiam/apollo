@@ -1,5 +1,13 @@
 package com.ctrip.framework.apollo.biz.message;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ctrip.framework.apollo.biz.AbstractUnitTest;
 import com.ctrip.framework.apollo.biz.entity.ReleaseMessage;
 import com.ctrip.framework.apollo.biz.repository.ReleaseMessageRepository;
@@ -8,13 +16,11 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
-public class DatabaseMessageSenderTest extends AbstractUnitTest{
+public class DatabaseMessageSenderTest extends AbstractUnitTest {
+
   private DatabaseMessageSender messageSender;
   @Mock
   private ReleaseMessageRepository releaseMessageRepository;
@@ -53,7 +59,8 @@ public class DatabaseMessageSenderTest extends AbstractUnitTest{
   @Test(expected = RuntimeException.class)
   public void testSendMessageFailed() throws Exception {
     String someMessage = "some-message";
-    when(releaseMessageRepository.save(any(ReleaseMessage.class))).thenThrow(new RuntimeException());
+    when(releaseMessageRepository.save(any(ReleaseMessage.class)))
+        .thenThrow(new RuntimeException());
 
     messageSender.sendMessage(someMessage, Topics.APOLLO_RELEASE_TOPIC);
   }

@@ -21,8 +21,6 @@ public interface PropertiesFactory {
    * instance of {@link com.ctrip.framework.apollo.util.OrderedProperties}.
    * 2. else return a new instance of {@link Properties}
    * </pre>
-   *
-   * @return
    */
   public Properties getPropertiesInstance();
 }

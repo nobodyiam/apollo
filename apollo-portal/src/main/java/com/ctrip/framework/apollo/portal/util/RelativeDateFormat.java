@@ -1,12 +1,12 @@
 package com.ctrip.framework.apollo.portal.util;
 
-import org.apache.commons.lang.time.FastDateFormat;
-
 import java.util.Calendar;
 import java.util.Date;
+import org.apache.commons.lang.time.FastDateFormat;
 
 
 public class RelativeDateFormat {
+
   private static final FastDateFormat TIMESTAMP_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd");
   private static final long ONE_MINUTE = 60000L;
   private static final long ONE_HOUR = 3600000L;

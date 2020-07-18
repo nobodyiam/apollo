@@ -1,11 +1,8 @@
 package com.ctrip.framework.apollo.core.utils;
 
-import com.ctrip.framework.apollo.core.utils.StringUtils;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.util.ArrayList;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class StringUtilsTest {
 
@@ -34,9 +31,9 @@ public class StringUtilsTest {
   @Test
   public void testIsContainEmpty() {
     Assert.assertFalse(StringUtils.isContainEmpty(null));
-    Assert.assertFalse(StringUtils.isContainEmpty(new String[] {}));
-    Assert.assertFalse(StringUtils.isContainEmpty(new String[] {"1"}));
-    Assert.assertTrue(StringUtils.isContainEmpty(new String[] {null}));
+    Assert.assertFalse(StringUtils.isContainEmpty(new String[]{}));
+    Assert.assertFalse(StringUtils.isContainEmpty(new String[]{"1"}));
+    Assert.assertTrue(StringUtils.isContainEmpty(new String[]{null}));
   }
 
   @Test

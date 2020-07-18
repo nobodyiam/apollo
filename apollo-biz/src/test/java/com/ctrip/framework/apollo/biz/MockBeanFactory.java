@@ -39,7 +39,7 @@ public class MockBeanFactory {
   }
 
   public static Release mockRelease(long releaseId, String releaseKey, String appId,
-                                    String clusterName, String groupName, String configurations) {
+      String clusterName, String groupName, String configurations) {
     Release instance = new Release();
 
     instance.setId(releaseId);
@@ -52,7 +52,8 @@ public class MockBeanFactory {
     return instance;
   }
 
-  public static Item mockItem(long id, long namespaceId, String itemKey, String itemValue, int lineNum) {
+  public static Item mockItem(long id, long namespaceId, String itemKey, String itemValue,
+      int lineNum) {
     Item item = new Item();
     item.setId(id);
     item.setKey(itemKey);

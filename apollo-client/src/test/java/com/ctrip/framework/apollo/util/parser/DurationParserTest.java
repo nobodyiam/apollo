@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 public class DurationParserTest {
+
   private Parsers.DurationParser durationParser = Parsers.forDuration();
 
   @Test

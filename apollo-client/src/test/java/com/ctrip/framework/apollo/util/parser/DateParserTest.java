@@ -6,13 +6,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
 import org.junit.Test;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class DateParserTest {
+
   private Parsers.DateParser dateParser = Parsers.forDate();
 
   private String shortDateText = "2016-09-28";
@@ -84,11 +84,13 @@ public class DateParserTest {
     assertEquals(expected, dateParser.parse(text, format));
   }
 
-  private void checkWithFormatAndLocale(Date expected, String text, String format, Locale locale) throws Exception {
+  private void checkWithFormatAndLocale(Date expected, String text, String format, Locale locale)
+      throws Exception {
     assertEquals(expected, dateParser.parse(text, format, locale));
   }
 
-  private Date assembleDate(int year, int month, int day, int hour, int minute, int second, int millisecond) {
+  private Date assembleDate(int year, int month, int day, int hour, int minute, int second,
+      int millisecond) {
     Calendar date = Calendar.getInstance();
     date.set(year, month - 1, day, hour, minute, second); //Month in Calendar is 0 based
     date.set(Calendar.MILLISECOND, millisecond);

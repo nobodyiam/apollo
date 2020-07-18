@@ -126,7 +126,8 @@ public class AccessKeyServiceWithCache implements InitializingBean {
     while (hasMore && !Thread.currentThread().isInterrupted()) {
       //current batch is 500
       List<AccessKey> accessKeys = accessKeyRepository
-          .findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(lastTimeScanned);
+          .findFirst500ByDataChangeLastModifiedTimeGreaterThanOrderByDataChangeLastModifiedTimeAsc(
+              lastTimeScanned);
       if (CollectionUtils.isEmpty(accessKeys)) {
         break;
       }
@@ -140,9 +141,11 @@ public class AccessKeyServiceWithCache implements InitializingBean {
 
       // In order to avoid missing some records at the last time, we need to scan records at this time individually
       if (hasMore) {
-        List<AccessKey> lastModifiedTimeAccessKeys = accessKeyRepository.findByDataChangeLastModifiedTime(lastTimeScanned);
+        List<AccessKey> lastModifiedTimeAccessKeys = accessKeyRepository
+            .findByDataChangeLastModifiedTime(lastTimeScanned);
         mergeAccessKeys(lastModifiedTimeAccessKeys);
-        logger.info("Loaded {} new/updated Accesskey at lastModifiedTime {}", scanned, lastTimeScanned);
+        logger.info("Loaded {} new/updated Accesskey at lastModifiedTime {}", scanned,
+            lastTimeScanned);
       }
     }
   }

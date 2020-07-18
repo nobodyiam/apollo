@@ -4,6 +4,7 @@ package com.ctrip.framework.apollo.portal.entity.vo;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class Organization {
+
   private String orgId;
   private String orgName;
 

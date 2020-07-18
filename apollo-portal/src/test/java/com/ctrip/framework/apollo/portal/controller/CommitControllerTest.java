@@ -1,12 +1,13 @@
 package com.ctrip.framework.apollo.portal.controller;
 
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
 import com.ctrip.framework.apollo.portal.AbstractIntegrationTest;
 import java.util.List;
 import org.junit.Test;
 import org.springframework.web.client.HttpClientErrorException;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 /**
  * Created by kezhenxu at 2019/1/14 12:49.
@@ -36,7 +37,8 @@ public class CommitControllerTest extends AbstractIntegrationTest {
       fail("should throw");
     } catch (final HttpClientErrorException e) {
       assertThat(
-          new String(e.getResponseBodyAsByteArray()), containsString("size should be positive number")
+          new String(e.getResponseBodyAsByteArray()),
+          containsString("size should be positive number")
       );
     }
   }

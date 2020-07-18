@@ -4,13 +4,11 @@ import com.ctrip.framework.apollo.common.dto.ItemChangeSets;
 import com.ctrip.framework.apollo.common.dto.ItemDTO;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.portal.AbstractUnitTest;
-
+import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 public class FileTextResolverTest extends AbstractUnitTest {
 
@@ -21,7 +19,7 @@ public class FileTextResolverTest extends AbstractUnitTest {
   private final long NAMESPACE = 1000;
 
   @Test
-  public void testCreateItem(){
+  public void testCreateItem() {
     ItemChangeSets changeSets = resolver.resolve(NAMESPACE, CONFIG_TEXT, Collections.emptyList());
 
     Assert.assertEquals(1, changeSets.getCreateItems().size());
@@ -34,13 +32,14 @@ public class FileTextResolverTest extends AbstractUnitTest {
   }
 
   @Test
-  public void testUpdateItem(){
+  public void testUpdateItem() {
     ItemDTO existedItem = new ItemDTO();
     existedItem.setId(1000);
     existedItem.setKey(ConfigConsts.CONFIG_FILE_CONTENT_KEY);
     existedItem.setValue("before");
 
-    ItemChangeSets changeSets = resolver.resolve(NAMESPACE, CONFIG_TEXT, Arrays.asList(existedItem));
+    ItemChangeSets changeSets = resolver
+        .resolve(NAMESPACE, CONFIG_TEXT, Arrays.asList(existedItem));
 
     Assert.assertEquals(0, changeSets.getCreateItems().size());
     Assert.assertEquals(1, changeSets.getUpdateItems().size());

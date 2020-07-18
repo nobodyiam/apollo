@@ -1,16 +1,16 @@
 package com.ctrip.framework.apollo.portal.spi.ctrip;
 
-import com.google.gson.Gson;
-
 import com.ctrip.framework.apollo.common.entity.App;
-import com.ctrip.framework.apollo.portal.environment.Env;
 import com.ctrip.framework.apollo.portal.component.config.PortalConfig;
 import com.ctrip.framework.apollo.portal.entity.bo.ReleaseHistoryBO;
+import com.ctrip.framework.apollo.portal.environment.Env;
 import com.ctrip.framework.apollo.portal.service.AppService;
 import com.ctrip.framework.apollo.portal.service.ReleaseService;
 import com.ctrip.framework.apollo.portal.spi.MQService;
 import com.ctrip.framework.apollo.tracer.Tracer;
-
+import com.google.gson.Gson;
+import java.util.Arrays;
+import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,15 +20,12 @@ import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-
-import javax.annotation.PostConstruct;
-
 
 public class CtripMQService implements MQService {
 
   private static final org.apache.commons.lang.time.FastDateFormat
-      TIMESTAMP_FORMAT = org.apache.commons.lang.time.FastDateFormat.getInstance("yyyy-MM-dd hh:mm:ss");
+      TIMESTAMP_FORMAT = org.apache.commons.lang.time.FastDateFormat
+      .getInstance("yyyy-MM-dd hh:mm:ss");
   private static final String CONFIG_PUBLISH_NOTIFY_TO_NOC_TOPIC = "ops.noc.record.created";
 
   private Gson gson = new Gson();
@@ -46,7 +43,8 @@ public class CtripMQService implements MQService {
   public void init() {
     restTemplate = new RestTemplate();
 
-    SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
+    SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
+        .getRequestFactory();
     rf.setReadTimeout(portalConfig.readTimeout());
     rf.setConnectTimeout(portalConfig.connectTimeout());
 
@@ -83,14 +81,15 @@ public class CtripMQService implements MQService {
     msg.setAssginee(releaseHistory.getOperator());
     msg.setOperation_time(TIMESTAMP_FORMAT.format(releaseHistory.getReleaseTime()));
     msg.setDesc(gson.toJson(releaseService.compare(env, releaseHistory.getPreviousReleaseId(),
-                                                   releaseHistory.getReleaseId())));
+        releaseHistory.getReleaseId())));
 
     return msg;
   }
 
   private void sendMsg(String serverAddress, String topic, Object msg) {
     HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.parseMediaType(MediaType.APPLICATION_OCTET_STREAM + ";charset=UTF-8"));
+    headers.setContentType(
+        MediaType.parseMediaType(MediaType.APPLICATION_OCTET_STREAM + ";charset=UTF-8"));
     HttpEntity<Object> request = new HttpEntity<>(msg, headers);
 
     try {

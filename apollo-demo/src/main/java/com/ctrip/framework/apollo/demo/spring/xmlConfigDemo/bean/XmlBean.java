@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class XmlBean {
+
   private static final Logger logger = LoggerFactory.getLogger(XmlBean.class);
 
   private int timeout;

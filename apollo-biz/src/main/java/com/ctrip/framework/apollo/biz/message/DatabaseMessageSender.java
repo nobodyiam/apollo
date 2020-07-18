@@ -6,12 +6,6 @@ import com.ctrip.framework.apollo.core.utils.ApolloThreadFactory;
 import com.ctrip.framework.apollo.tracer.Tracer;
 import com.ctrip.framework.apollo.tracer.spi.Transaction;
 import com.google.common.collect.Queues;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
@@ -19,12 +13,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 @Component
 public class DatabaseMessageSender implements MessageSender {
+
   private static final Logger logger = LoggerFactory.getLogger(DatabaseMessageSender.class);
   private static final int CLEAN_QUEUE_MAX_SIZE = 100;
   private BlockingQueue<Long> toClean = Queues.newLinkedBlockingQueue(CLEAN_QUEUE_MAX_SIZE);
@@ -34,7 +34,8 @@ public class DatabaseMessageSender implements MessageSender {
   private final ReleaseMessageRepository releaseMessageRepository;
 
   public DatabaseMessageSender(final ReleaseMessageRepository releaseMessageRepository) {
-    cleanExecutorService = Executors.newSingleThreadExecutor(ApolloThreadFactory.create("DatabaseMessageSender", true));
+    cleanExecutorService = Executors
+        .newSingleThreadExecutor(ApolloThreadFactory.create("DatabaseMessageSender", true));
     cleanStopped = new AtomicBoolean(false);
     this.releaseMessageRepository = releaseMessageRepository;
   }
@@ -89,14 +90,16 @@ public class DatabaseMessageSender implements MessageSender {
     }
     boolean hasMore = true;
     while (hasMore && !Thread.currentThread().isInterrupted()) {
-      List<ReleaseMessage> messages = releaseMessageRepository.findFirst100ByMessageAndIdLessThanOrderByIdAsc(
-          releaseMessage.getMessage(), releaseMessage.getId());
+      List<ReleaseMessage> messages = releaseMessageRepository
+          .findFirst100ByMessageAndIdLessThanOrderByIdAsc(
+              releaseMessage.getMessage(), releaseMessage.getId());
 
       releaseMessageRepository.deleteAll(messages);
       hasMore = messages.size() == 100;
 
       messages.forEach(toRemove -> Tracer.logEvent(
-          String.format("ReleaseMessage.Clean.%s", toRemove.getMessage()), String.valueOf(toRemove.getId())));
+          String.format("ReleaseMessage.Clean.%s", toRemove.getMessage()),
+          String.valueOf(toRemove.getId())));
     }
   }
 

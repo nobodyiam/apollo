@@ -1,19 +1,17 @@
 package com.ctrip.framework.apollo.portal.repository;
 
 import com.ctrip.framework.apollo.portal.entity.po.Permission;
-
+import java.util.Collection;
+import java.util.List;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
-
-import java.util.Collection;
-import java.util.List;
-import org.springframework.data.repository.query.Param;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public interface PermissionRepository extends PagingAndSortingRepository<Permission, Long> {
+
   /**
    * find permission by permission type and targetId
    */
@@ -23,7 +21,7 @@ public interface PermissionRepository extends PagingAndSortingRepository<Permiss
    * find permissions by permission types and targetId
    */
   List<Permission> findByPermissionTypeInAndTargetId(Collection<String> permissionTypes,
-                                                     String targetId);
+      String targetId);
 
   @Query("SELECT p.id from Permission p where p.targetId = ?1 or p.targetId like CONCAT(?1, '+%')")
   List<Long> findPermissionIdsByAppId(String appId);

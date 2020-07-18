@@ -37,7 +37,8 @@ public class EmbeddedApollo extends ExternalResource {
   private static ConfigServiceLocator CONFIG_SERVICE_LOCATOR;
 
   private final Gson gson = new Gson();
-  private final Map<String, Map<String, String>> addedOrModifiedPropertiesOfNamespace = Maps.newConcurrentMap();
+  private final Map<String, Map<String, String>> addedOrModifiedPropertiesOfNamespace = Maps
+      .newConcurrentMap();
   private final Map<String, Set<String>> deletedKeysOfNamespace = Maps.newConcurrentMap();
 
   private MockWebServer server;
@@ -46,7 +47,8 @@ public class EmbeddedApollo extends ExternalResource {
     try {
       System.setProperty("apollo.longPollingInitialDelayInMills", "0");
       CONFIG_SERVICE_LOCATOR = ApolloInjector.getInstance(ConfigServiceLocator.class);
-      CONFIG_SERVICE_LOCATOR_CLEAR = ConfigServiceLocator.class.getDeclaredMethod("initConfigServices");
+      CONFIG_SERVICE_LOCATOR_CLEAR = ConfigServiceLocator.class
+          .getDeclaredMethod("initConfigServices");
       CONFIG_SERVICE_LOCATOR_CLEAR.setAccessible(true);
     } catch (NoSuchMethodException e) {
       e.printStackTrace();
@@ -111,7 +113,8 @@ public class EmbeddedApollo extends ExternalResource {
     for (String propertyName : prop.stringPropertyNames()) {
       configurations.put(propertyName, prop.getProperty(propertyName));
     }
-    ApolloConfig apolloConfig = new ApolloConfig("someAppId", "someCluster", namespace, "someReleaseKey");
+    ApolloConfig apolloConfig = new ApolloConfig("someAppId", "someCluster", namespace,
+        "someReleaseKey");
 
     Map<String, String> mergedConfigurations = mergeOverriddenProperties(namespace, configurations);
     apolloConfig.setConfigurations(mergedConfigurations);
@@ -119,11 +122,13 @@ public class EmbeddedApollo extends ExternalResource {
   }
 
   private String mockLongPollBody(String notificationsStr) {
-    List<ApolloConfigNotification> oldNotifications = gson.fromJson(notificationsStr, notificationType);
+    List<ApolloConfigNotification> oldNotifications = gson
+        .fromJson(notificationsStr, notificationType);
     List<ApolloConfigNotification> newNotifications = new ArrayList<>();
     for (ApolloConfigNotification notification : oldNotifications) {
       newNotifications
-          .add(new ApolloConfigNotification(notification.getNamespaceName(), notification.getNotificationId() + 1));
+          .add(new ApolloConfigNotification(notification.getNamespaceName(),
+              notification.getNotificationId() + 1));
     }
     return gson.toJson(newNotifications);
   }
@@ -131,7 +136,8 @@ public class EmbeddedApollo extends ExternalResource {
   /**
    * 合并用户对namespace的修改
    */
-  private Map<String, String> mergeOverriddenProperties(String namespace, Map<String, String> configurations) {
+  private Map<String, String> mergeOverriddenProperties(String namespace,
+      Map<String, String> configurations) {
     if (addedOrModifiedPropertiesOfNamespace.containsKey(namespace)) {
       configurations.putAll(addedOrModifiedPropertiesOfNamespace.get(namespace));
     }

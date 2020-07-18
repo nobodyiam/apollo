@@ -10,12 +10,22 @@ import com.ctrip.framework.apollo.openapi.service.ConsumerService;
 import com.ctrip.framework.apollo.portal.environment.Env;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
@@ -23,7 +33,8 @@ import java.util.*;
 @RestController
 public class ConsumerController {
 
-  private static final Date DEFAULT_EXPIRES = new GregorianCalendar(2099, Calendar.JANUARY, 1).getTime();
+  private static final Date DEFAULT_EXPIRES = new GregorianCalendar(2099, Calendar.JANUARY, 1)
+      .getTime();
 
   private final ConsumerService consumerService;
 
@@ -36,12 +47,12 @@ public class ConsumerController {
   @PreAuthorize(value = "@permissionValidator.isSuperAdmin()")
   @PostMapping(value = "/consumers")
   public ConsumerToken createConsumer(@RequestBody Consumer consumer,
-                                      @RequestParam(value = "expires", required = false)
-                                      @DateTimeFormat(pattern = "yyyyMMddHHmmss") Date
-                                          expires) {
+      @RequestParam(value = "expires", required = false)
+      @DateTimeFormat(pattern = "yyyyMMddHHmmss") Date
+          expires) {
 
     if (StringUtils.isContainEmpty(consumer.getAppId(), consumer.getName(),
-                                   consumer.getOwnerName(), consumer.getOrgId())) {
+        consumer.getOwnerName(), consumer.getOrgId())) {
       throw new BadRequestException("Params(appId、name、ownerName、orgId) can not be empty.");
     }
 
@@ -62,9 +73,9 @@ public class ConsumerController {
   @PreAuthorize(value = "@permissionValidator.isSuperAdmin()")
   @PostMapping(value = "/consumers/{token}/assign-role")
   public List<ConsumerRole> assignNamespaceRoleToConsumer(@PathVariable String token,
-                                                          @RequestParam String type,
-                                                          @RequestParam(required = false) String envs,
-                                                          @RequestBody NamespaceDTO namespace) {
+      @RequestParam String type,
+      @RequestParam(required = false) String envs,
+      @RequestBody NamespaceDTO namespace) {
 
     String appId = namespace.getAppId();
     String namespaceName = namespace.getNamespaceName();
@@ -78,7 +89,7 @@ public class ConsumerController {
     if (StringUtils.isEmpty(namespaceName)) {
       throw new BadRequestException("Params(NamespaceName) can not be empty.");
     }
-    if (null != envs){
+    if (null != envs) {
       String[] envArray = envs.split(",");
       List<String> envList = Lists.newArrayList();
       // validate env parameter
@@ -94,14 +105,14 @@ public class ConsumerController {
 
       List<ConsumerRole> consumeRoles = new ArrayList<>();
       for (String env : envList) {
-        consumeRoles.addAll(consumerService.assignNamespaceRoleToConsumer(token, appId, namespaceName, env));
+        consumeRoles.addAll(
+            consumerService.assignNamespaceRoleToConsumer(token, appId, namespaceName, env));
       }
       return consumeRoles;
     }
 
     return consumerService.assignNamespaceRoleToConsumer(token, appId, namespaceName);
   }
-
 
 
 }

@@ -6,11 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * load meta server addressed from database.
- * PortalDB.ServerConfig
+ * load meta server addressed from database. PortalDB.ServerConfig
  */
 class DatabasePortalMetaServerProvider implements PortalMetaServerProvider {
-  private static final Logger logger = LoggerFactory.getLogger(DatabasePortalMetaServerProvider.class);
+
+  private static final Logger logger = LoggerFactory
+      .getLogger(DatabasePortalMetaServerProvider.class);
 
   /**
    * read config from database

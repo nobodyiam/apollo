@@ -6,6 +6,7 @@ import com.ctrip.framework.apollo.enums.PropertyChangeType;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class ConfigFileChangeEvent {
+
   private final String namespace;
   private final String oldValue;
   private final String newValue;

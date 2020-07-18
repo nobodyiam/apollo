@@ -6,7 +6,7 @@ import com.ctrip.framework.apollo.biz.repository.AppRepository;
 import com.ctrip.framework.apollo.biz.repository.ClusterRepository;
 import com.ctrip.framework.apollo.biz.repository.NamespaceRepository;
 import com.ctrip.framework.apollo.common.entity.App;
-
+import java.util.Date;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
-
-import java.util.Date;
 
 public class AdminServiceTransactionTest extends AbstractIntegrationTest {
 

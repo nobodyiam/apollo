@@ -8,6 +8,7 @@ import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
  * @author Jason Song(song_s@ctrip.com)
  */
 public interface ConfigFactory {
+
   /**
    * Create the config instance for the namespace.
    *
@@ -18,6 +19,7 @@ public interface ConfigFactory {
 
   /**
    * Create the config file instance for the namespace
+   *
    * @param namespace the namespace
    * @return the newly created config file instance
    */

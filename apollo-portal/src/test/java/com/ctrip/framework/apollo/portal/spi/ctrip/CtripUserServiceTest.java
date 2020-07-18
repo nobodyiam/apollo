@@ -1,12 +1,18 @@
 package com.ctrip.framework.apollo.portal.spi.ctrip;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 import com.ctrip.framework.apollo.portal.AbstractUnitTest;
 import com.ctrip.framework.apollo.portal.component.config.PortalConfig;
 import com.ctrip.framework.apollo.portal.entity.bo.UserInfo;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -19,19 +25,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
-public class CtripUserServiceTest extends AbstractUnitTest{
+public class CtripUserServiceTest extends AbstractUnitTest {
+
   private CtripUserService ctripUserService;
   private String someUserServiceUrl;
   private String someUserServiceToken;
@@ -224,8 +222,8 @@ public class CtripUserServiceTest extends AbstractUnitTest{
   }
 
   private CtripUserService.UserServiceResponse assembleUserServiceResponse(String userId,
-                                                                           String name,
-                                                                           String email) {
+      String name,
+      String email) {
     CtripUserService.UserServiceResponse response = new CtripUserService.UserServiceResponse();
     response.setEmpaccount(userId);
     response.setDisplayname(name);

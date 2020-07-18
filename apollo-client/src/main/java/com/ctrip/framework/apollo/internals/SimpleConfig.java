@@ -1,26 +1,25 @@
 package com.ctrip.framework.apollo.internals;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ctrip.framework.apollo.model.ConfigChange;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.ctrip.framework.apollo.tracer.Tracer;
 import com.ctrip.framework.apollo.util.ExceptionUtil;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public class SimpleConfig extends AbstractConfig implements RepositoryChangeListener {
+
   private static final Logger logger = LoggerFactory.getLogger(SimpleConfig.class);
   private final String m_namespace;
   private final ConfigRepository m_configRepository;
@@ -30,7 +29,7 @@ public class SimpleConfig extends AbstractConfig implements RepositoryChangeList
   /**
    * Constructor.
    *
-   * @param namespace        the namespace for this config instance
+   * @param namespace the namespace for this config instance
    * @param configRepository the config repository for this config instance
    */
   public SimpleConfig(String namespace, ConfigRepository configRepository) {
@@ -84,7 +83,8 @@ public class SimpleConfig extends AbstractConfig implements RepositoryChangeList
     Properties newConfigProperties = propertiesFactory.getPropertiesInstance();
     newConfigProperties.putAll(newProperties);
 
-    List<ConfigChange> changes = calcPropertyChanges(namespace, m_configProperties, newConfigProperties);
+    List<ConfigChange> changes = calcPropertyChanges(namespace, m_configProperties,
+        newConfigProperties);
     Map<String, ConfigChange> changeMap = Maps.uniqueIndex(changes,
         new Function<ConfigChange, String>() {
           @Override

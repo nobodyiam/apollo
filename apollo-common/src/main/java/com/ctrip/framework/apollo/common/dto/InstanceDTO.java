@@ -7,6 +7,7 @@ import java.util.List;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class InstanceDTO {
+
   private long id;
 
   private String appId;

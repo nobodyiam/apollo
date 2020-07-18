@@ -3,7 +3,7 @@ package com.ctrip.framework.apollo.core.enums;
 import com.ctrip.framework.apollo.core.utils.StringUtils;
 
 public final class EnvUtils {
-  
+
   public static Env transformEnv(String envName) {
     if (StringUtils.isBlank(envName)) {
       return Env.UNKNOWN;

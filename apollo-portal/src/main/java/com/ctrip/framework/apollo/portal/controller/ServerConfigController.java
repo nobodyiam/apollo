@@ -23,7 +23,8 @@ public class ServerConfigController {
   private final ServerConfigRepository serverConfigRepository;
   private final UserInfoHolder userInfoHolder;
 
-  public ServerConfigController(final ServerConfigRepository serverConfigRepository, final UserInfoHolder userInfoHolder) {
+  public ServerConfigController(final ServerConfigRepository serverConfigRepository,
+      final UserInfoHolder userInfoHolder) {
     this.serverConfigRepository = serverConfigRepository;
     this.userInfoHolder = userInfoHolder;
   }

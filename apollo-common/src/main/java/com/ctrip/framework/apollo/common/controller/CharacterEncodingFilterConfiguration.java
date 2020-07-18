@@ -1,11 +1,10 @@
 package com.ctrip.framework.apollo.common.controller;
 
+import javax.servlet.DispatcherType;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.CharacterEncodingFilter;
-
-import javax.servlet.DispatcherType;
 
 @Configuration
 public class CharacterEncodingFilterConfiguration {

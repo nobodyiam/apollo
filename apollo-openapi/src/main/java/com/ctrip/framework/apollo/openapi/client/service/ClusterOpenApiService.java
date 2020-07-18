@@ -29,7 +29,8 @@ public class ClusterOpenApiService extends AbstractOpenApiService {
       return gson.fromJson(EntityUtils.toString(response.getEntity()), OpenClusterDTO.class);
     } catch (Throwable ex) {
       throw new RuntimeException(String
-          .format("Get cluster for appId: %s, cluster: %s in env: %s failed", appId, clusterName, env), ex);
+          .format("Get cluster for appId: %s, cluster: %s in env: %s failed", appId, clusterName,
+              env), ex);
     }
   }
 
@@ -39,7 +40,8 @@ public class ClusterOpenApiService extends AbstractOpenApiService {
     checkNotEmpty(openClusterDTO.getName(), "Cluster name");
     checkNotEmpty(openClusterDTO.getDataChangeCreatedBy(), "Created by");
 
-    String path = String.format("envs/%s/apps/%s/clusters", escapePath(env), escapePath(openClusterDTO.getAppId()));
+    String path = String
+        .format("envs/%s/apps/%s/clusters", escapePath(env), escapePath(openClusterDTO.getAppId()));
 
     try (CloseableHttpResponse response = post(path, openClusterDTO)) {
       return gson.fromJson(EntityUtils.toString(response.getEntity()), OpenClusterDTO.class);

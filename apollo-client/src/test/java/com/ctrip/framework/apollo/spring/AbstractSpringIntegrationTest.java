@@ -3,7 +3,13 @@ package com.ctrip.framework.apollo.spring;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigFile;
+import com.ctrip.framework.apollo.ConfigService;
+import com.ctrip.framework.apollo.build.MockInjector;
 import com.ctrip.framework.apollo.core.ConfigConsts;
+import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
+import com.ctrip.framework.apollo.internals.ConfigManager;
 import com.ctrip.framework.apollo.internals.ConfigRepository;
 import com.ctrip.framework.apollo.internals.DefaultInjector;
 import com.ctrip.framework.apollo.internals.SimpleConfig;
@@ -11,6 +17,7 @@ import com.ctrip.framework.apollo.internals.YamlConfigFile;
 import com.ctrip.framework.apollo.spring.config.PropertySourcesProcessor;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.google.common.base.Charsets;
+import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
@@ -18,24 +25,16 @@ import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
-
 import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.util.ReflectionUtils;
 
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigFile;
-import com.ctrip.framework.apollo.ConfigService;
-import com.ctrip.framework.apollo.build.MockInjector;
-import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
-import com.ctrip.framework.apollo.internals.ConfigManager;
-import com.google.common.collect.Maps;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 public abstract class AbstractSpringIntegrationTest {
+
   private static final Map<String, Config> CONFIG_REGISTRY = Maps.newHashMap();
   private static final Map<String, ConfigFile> CONFIG_FILE_REGISTRY = Maps.newHashMap();
   private static Method CONFIG_SERVICE_RESET;
@@ -74,7 +73,8 @@ public abstract class AbstractSpringIntegrationTest {
     return config;
   }
 
-  protected static Properties readYamlContentAsConfigFileProperties(String caseName) throws IOException {
+  protected static Properties readYamlContentAsConfigFileProperties(String caseName)
+      throws IOException {
     File file = new File("src/test/resources/spring/yaml/" + caseName);
 
     String yamlContent = Files.toString(file, Charsets.UTF_8);
@@ -85,7 +85,8 @@ public abstract class AbstractSpringIntegrationTest {
     return properties;
   }
 
-  protected static YamlConfigFile prepareYamlConfigFile(String namespaceNameWithFormat, Properties properties) {
+  protected static YamlConfigFile prepareYamlConfigFile(String namespaceNameWithFormat,
+      Properties properties) {
     ConfigRepository configRepository = mock(ConfigRepository.class);
 
     when(configRepository.getConfig()).thenReturn(properties);
@@ -123,7 +124,8 @@ public abstract class AbstractSpringIntegrationTest {
     return properties;
   }
 
-  protected Date assembleDate(int year, int month, int day, int hour, int minute, int second, int millisecond) {
+  protected Date assembleDate(int year, int month, int day, int hour, int minute, int second,
+      int millisecond) {
     Calendar date = Calendar.getInstance();
     date.set(year, month - 1, day, hour, minute, second); //Month in Calendar is 0 based
     date.set(Calendar.MILLISECOND, millisecond);
@@ -175,7 +177,8 @@ public abstract class AbstractSpringIntegrationTest {
 
     @Override
     public ConfigFile getConfigFile(String namespace, ConfigFileFormat configFileFormat) {
-      ConfigFile configFile = CONFIG_FILE_REGISTRY.get(String.format("%s.%s", namespace, configFileFormat.getValue()));
+      ConfigFile configFile = CONFIG_FILE_REGISTRY
+          .get(String.format("%s.%s", namespace, configFileFormat.getValue()));
       if (configFile != null) {
         return configFile;
       }

@@ -2,6 +2,7 @@ package com.ctrip.framework.apollo.portal.controller;
 
 import com.ctrip.framework.apollo.portal.entity.po.Favorite;
 import com.ctrip.framework.apollo.portal.service.FavoriteService;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 public class FavoriteController {
@@ -31,9 +30,10 @@ public class FavoriteController {
 
 
   @GetMapping("/favorites")
-  public List<Favorite> findFavorites(@RequestParam(value = "userId", required = false) String userId,
-                                      @RequestParam(value = "appId", required = false) String appId,
-                                      Pageable page) {
+  public List<Favorite> findFavorites(
+      @RequestParam(value = "userId", required = false) String userId,
+      @RequestParam(value = "appId", required = false) String appId,
+      Pageable page) {
     return favoriteService.search(userId, appId, page);
   }
 

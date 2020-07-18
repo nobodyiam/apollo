@@ -26,7 +26,8 @@ public class DefaultPortalMetaServerProviderTest extends AbstractUnitTest {
 
   @Test
   public void testFromPropertyFile() {
-    assertEquals("http://localhost:8080", defaultPortalMetaServerProvider.getMetaServerAddress(Env.LOCAL));
+    assertEquals("http://localhost:8080",
+        defaultPortalMetaServerProvider.getMetaServerAddress(Env.LOCAL));
     assertEquals("${dev_meta}", defaultPortalMetaServerProvider.getMetaServerAddress(Env.DEV));
     assertEquals("${pro_meta}", defaultPortalMetaServerProvider.getMetaServerAddress(Env.PRO));
   }

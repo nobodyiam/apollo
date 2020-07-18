@@ -1,20 +1,20 @@
 package com.ctrip.framework.foundation.internals.provider;
 
+import com.ctrip.framework.foundation.internals.Utils;
+import com.ctrip.framework.foundation.internals.io.BOMInputStream;
+import com.ctrip.framework.foundation.spi.provider.Provider;
+import com.ctrip.framework.foundation.spi.provider.ServerProvider;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
-
-import com.ctrip.framework.foundation.internals.Utils;
-import com.ctrip.framework.foundation.internals.io.BOMInputStream;
-import com.ctrip.framework.foundation.spi.provider.Provider;
-import com.ctrip.framework.foundation.spi.provider.ServerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DefaultServerProvider implements ServerProvider {
+
   private static final Logger logger = LoggerFactory.getLogger(DefaultServerProvider.class);
   private static final String SERVER_PROPERTIES_LINUX = "/opt/settings/server.properties";
   private static final String SERVER_PROPERTIES_WINDOWS = "C:/opt/settings/server.properties";
@@ -48,7 +48,8 @@ public class DefaultServerProvider implements ServerProvider {
     try {
       if (in != null) {
         try {
-          m_serverProperties.load(new InputStreamReader(new BOMInputStream(in), StandardCharsets.UTF_8));
+          m_serverProperties
+              .load(new InputStreamReader(new BOMInputStream(in), StandardCharsets.UTF_8));
         } finally {
           in.close();
         }
@@ -127,7 +128,8 @@ public class DefaultServerProvider implements ServerProvider {
 
     // 4. Set environment to null.
     m_env = null;
-    logger.info("Environment is set to null. Because it is not available in either (1) JVM system property 'env', (2) OS env variable 'ENV' nor (3) property 'env' from the properties InputStream.");
+    logger.info(
+        "Environment is set to null. Because it is not available in either (1) JVM system property 'env', (2) OS env variable 'ENV' nor (3) property 'env' from the properties InputStream.");
   }
 
   private void initDataCenter() {
@@ -157,12 +159,14 @@ public class DefaultServerProvider implements ServerProvider {
 
     // 4. Set Data Center to null.
     m_dc = null;
-    logger.debug("Data Center is set to null. Because it is not available in either (1) JVM system property 'idc', (2) OS env variable 'IDC' nor (3) property 'idc' from the properties InputStream.");
+    logger.debug(
+        "Data Center is set to null. Because it is not available in either (1) JVM system property 'idc', (2) OS env variable 'IDC' nor (3) property 'idc' from the properties InputStream.");
   }
 
   @Override
   public String toString() {
-    return "environment [" + getEnvType() + "] data center [" + getDataCenter() + "] properties: " + m_serverProperties
+    return "environment [" + getEnvType() + "] data center [" + getDataCenter() + "] properties: "
+        + m_serverProperties
         + " (DefaultServerProvider)";
   }
 }

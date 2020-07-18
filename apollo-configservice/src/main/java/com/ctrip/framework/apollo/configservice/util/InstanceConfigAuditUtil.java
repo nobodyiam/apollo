@@ -1,24 +1,17 @@
 package com.ctrip.framework.apollo.configservice.util;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
-
 import com.ctrip.framework.apollo.biz.entity.Instance;
 import com.ctrip.framework.apollo.biz.entity.InstanceConfig;
 import com.ctrip.framework.apollo.biz.service.InstanceService;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.utils.ApolloThreadFactory;
 import com.ctrip.framework.apollo.tracer.Tracer;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
-
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -27,16 +20,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 @Service
 public class InstanceConfigAuditUtil implements InitializingBean {
+
   private static final int INSTANCE_CONFIG_AUDIT_MAX_SIZE = 10000;
   private static final int INSTANCE_CACHE_MAX_SIZE = 50000;
   private static final int INSTANCE_CONFIG_CACHE_MAX_SIZE = 50000;
-  private static final long OFFER_TIME_LAST_MODIFIED_TIME_THRESHOLD_IN_MILLI = TimeUnit.MINUTES.toMillis(10);//10 minutes
+  private static final long OFFER_TIME_LAST_MODIFIED_TIME_THRESHOLD_IN_MILLI = TimeUnit.MINUTES
+      .toMillis(10);//10 minutes
   private static final Joiner STRING_JOINER = Joiner.on(ConfigConsts.CLUSTER_NAMESPACE_SEPARATOR);
   private final ExecutorService auditExecutorService;
   private final AtomicBoolean auditStopped;
@@ -139,7 +137,6 @@ public class InstanceConfigAuditUtil implements InitializingBean {
     instance.setDataCenter(auditModel.getDataCenter());
     instance.setIp(auditModel.getIp());
 
-
     try {
       return instanceService.createInstance(instance).getId();
     } catch (DataIntegrityViolationException ex) {
@@ -175,11 +172,13 @@ public class InstanceConfigAuditUtil implements InitializingBean {
     return STRING_JOINER.join(keyParts);
   }
 
-  private String assembleInstanceConfigKey(long instanceId, String configAppId, String configNamespace) {
+  private String assembleInstanceConfigKey(long instanceId, String configAppId,
+      String configNamespace) {
     return STRING_JOINER.join(instanceId, configAppId, configNamespace);
   }
 
   public static class InstanceConfigAuditModel {
+
     private String appId;
     private String clusterName;
     private String dataCenter;
@@ -192,7 +191,7 @@ public class InstanceConfigAuditUtil implements InitializingBean {
 
     public InstanceConfigAuditModel(String appId, String clusterName, String dataCenter, String
         clientIp, String configAppId, String configClusterName, String configNamespace, String
-                                        releaseKey) {
+        releaseKey) {
       this.offerTime = new Date();
       this.appId = appId;
       this.clusterName = clusterName;
@@ -243,10 +242,10 @@ public class InstanceConfigAuditUtil implements InitializingBean {
     @Override
     public boolean equals(Object o) {
       if (this == o) {
-          return true;
+        return true;
       }
       if (o == null || getClass() != o.getClass()) {
-          return false;
+        return false;
       }
       InstanceConfigAuditModel model = (InstanceConfigAuditModel) o;
       return Objects.equals(appId, model.appId) &&

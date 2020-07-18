@@ -6,6 +6,7 @@ import com.ctrip.framework.apollo.tracer.spi.Transaction;
  * @author Jason Song(song_s@ctrip.com)
  */
 public class NullTransaction implements Transaction {
+
   @Override
   public void setStatus(String status) {
   }

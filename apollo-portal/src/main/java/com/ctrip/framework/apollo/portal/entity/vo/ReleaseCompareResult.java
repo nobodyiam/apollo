@@ -3,7 +3,6 @@ package com.ctrip.framework.apollo.portal.entity.vo;
 import com.ctrip.framework.apollo.common.entity.EntityPair;
 import com.ctrip.framework.apollo.portal.entity.bo.KVEntity;
 import com.ctrip.framework.apollo.portal.enums.ChangeType;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,7 +14,7 @@ public class ReleaseCompareResult {
     changes.add(new Change(type, new EntityPair<>(firstEntity, secondEntity)));
   }
 
-  public boolean hasContent(){
+  public boolean hasContent() {
     return !changes.isEmpty();
   }
 

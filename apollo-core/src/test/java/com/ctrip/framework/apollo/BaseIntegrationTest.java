@@ -21,6 +21,7 @@ import org.junit.After;
 import org.junit.Before;
 
 public abstract class BaseIntegrationTest {
+
   protected static final int PORT = findFreePort();
   private Server server;
 
@@ -77,8 +78,9 @@ public abstract class BaseIntegrationTest {
   /**
    * Returns a free port number on localhost.
    *
-   * Heavily inspired from org.eclipse.jdt.launching.SocketUtil (to avoid a dependency to JDT just because of this).
-   * Slightly improved with close() missing in JDT. And throws exception instead of returning -1.
+   * Heavily inspired from org.eclipse.jdt.launching.SocketUtil (to avoid a dependency to JDT just
+   * because of this). Slightly improved with close() missing in JDT. And throws exception instead
+   * of returning -1.
    *
    * @return a free port number on localhost
    * @throws IllegalStateException if unable to find a free port
@@ -104,6 +106,7 @@ public abstract class BaseIntegrationTest {
         }
       }
     }
-    throw new IllegalStateException("Could not find a free TCP/IP port to start embedded Jetty HTTP Server on");
+    throw new IllegalStateException(
+        "Could not find a free TCP/IP port to start embedded Jetty HTTP Server on");
   }
 }
