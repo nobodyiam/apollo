@@ -20,7 +20,7 @@ $ helm search repo apollo
 
 ## 4. Deployments of apollo-configservice and apollo-adminservice
 
-### 4.1 Installation
+### 4.1 Install
 
 apollo-configservice and apollo-adminservice should be installed per environment, so it is suggested to indicate environment in the release name, e.g. `apollo-service-dev`
 
@@ -32,21 +32,22 @@ $ helm install apollo-service-dev \
     --set configdb.service.enabled=true \
     --set configService.replicaCount=1 \
     --set adminService.replicaCount=1 \
+    -n your-namespace \
     apollo/apollo-service
 ```
 
 Or customize it with values.yaml
 
 ```bash
-$ helm install apollo-service-dev -f values.yaml apollo/apollo-service 
+$ helm install apollo-service-dev -f values.yaml -n your-namespace apollo/apollo-service 
 ```
 
-### 4.2 Uninstallation
+### 4.2 Uninstall
 
 To uninstall/delete the `apollo-service-dev` deployment:
 
 ```bash
-$ helm uninstall apollo-service-dev
+$ helm uninstall -n your-namespace apollo-service-dev
 ```
 
 ### 4.3 Configuration
@@ -64,7 +65,7 @@ The following table lists the configurable parameters of the apollo-service char
 | `configdb.service.enabled` | Whether to create a Kubernetes Service for `configdb.host` or not. Set it to `true` if `configdb.host` is an endpoint outside of the kubernetes cluster | `false` |
 | `configdb.service.fullNameOverride` | Override the service name for apollo config db | `nil` |
 | `configdb.service.port` | The port for the service of apollo config db | `3306` |
-| `configdb.service.type` | The service type of apollo config db: `ClusterIP` or `ExternalName` | `ClusterIP` |
+| `configdb.service.type` | The service type of apollo config db: `ClusterIP` or `ExternalName`. If the host is a DNS name, please specify `ExternalName` as the service type, e.g. xxx.mysql.rds.aliyuncs.com | `ClusterIP` |
 | `configService.fullNameOverride` | Override the deployment name for apollo-configservice | `nil` |
 | `configService.replicaCount` | Replica count of apollo-configservice | `2` |
 | `configService.containerPort` | Container port of apollo-configservice | `8080` |
@@ -108,9 +109,47 @@ The following table lists the configurable parameters of the apollo-service char
 | `adminService.tolerations` | The tolerations definition of apollo-adminservice | `[]` |
 | `adminService.affinity` | The affinity definition of apollo-adminservice | `{}` |
 
+### 4.4 Sample
+
+1. ConfigDB host is an IP outside of kubernetes cluster
+
+```yaml
+configdb:
+  host: 1.2.3.4
+  dbName: ApolloConfigDBName
+  userName: someUserName
+  password: somePassword
+  connectionStringProperties: characterEncoding=utf8&useSSL=false
+  service:
+    enabled: true
+```
+
+2. ConfigDB host is a dns name outside of kubernetes cluster
+
+```yaml
+configdb:
+  host: xxx.mysql.rds.aliyuncs.com
+  dbName: ApolloConfigDBName
+  userName: someUserName
+  password: somePassword
+  connectionStringProperties: characterEncoding=utf8&useSSL=false
+  service:
+    enabled: true
+    type: ExternalName
+```
+3. ConfigDB host is a kubernetes service
+
+```yaml
+configdb:
+  host: apollodb-mysql.mysql
+  dbName: ApolloConfigDBName
+  userName: someUserName
+  password: somePassword
+  connectionStringProperties: characterEncoding=utf8&useSSL=false
+```
 ## 5. Deployments of apollo-portal
 
-### 5.1 Installation
+### 5.1 Install
 
 To install the apollo-portal chart with the release name `apollo-portal`:
 
@@ -124,13 +163,14 @@ $ helm install apollo-portal \
     --set config.metaServers.dev=http://apollo-service-dev-apollo-configservice:8080 \
     --set config.metaServers.pro=http://apollo-service-pro-apollo-configservice:8080 \
     --set replicaCount=1 \
+    -n your-namespace \
     apollo/apollo-portal
 ```
 
 Or customize it with values.yaml
 
 ```bash
-$ helm install apollo-portal -f values.yaml apollo/apollo-portal 
+$ helm install apollo-portal -f values.yaml -n your-namespace apollo/apollo-portal 
 ```
 
 ### 5.2 Uninstallation
@@ -138,7 +178,7 @@ $ helm install apollo-portal -f values.yaml apollo/apollo-portal
 To uninstall/delete the `apollo-portal` deployment:
 
 ```bash
-$ helm uninstall apollo-portal
+$ helm uninstall -n your-namespace apollo-portal
 ```
 
 ### 5.3 Configuration
@@ -174,6 +214,7 @@ The following table lists the configurable parameters of the apollo-portal chart
 | `tolerations` | The tolerations definition of apollo-portal | `[]` |
 | `affinity` | The affinity definition of apollo-portal | `{}` |
 | `config.envs` | specify the env names, e.g. dev,pro | `nil` |
+| `config.contextPath` | specify the context path, e.g. `/apollo`, then users could access portal via `http://{portal_address}/apollo` | `nil` |
 | `config.metaServers` | specify the meta servers, e.g.<br />`dev: http://apollo-configservice-dev:8080`<br />`pro: http://apollo-configservice-pro:8080` | `{}` |
 | `portaldb.host` | The host for apollo portal db | `nil`                              |
 | `portaldb.port` | The port for apollo portal db | `3306` |
@@ -184,4 +225,104 @@ The following table lists the configurable parameters of the apollo-portal chart
 | `portaldb.service.enabled` | Whether to create a Kubernetes Service for `portaldb.host` or not. Set it to `true` if `portaldb.host` is an endpoint outside of the kubernetes cluster | `false` |
 | `portaldb.service.fullNameOverride` | Override the service name for apollo portal db | `nil` |
 | `portaldb.service.port` | The port for the service of apollo portal db | `3306` |
-| `portaldb.service.type` | The service type of apollo portal db: `ClusterIP` or `ExternalName` | `ClusterIP` |
+| `portaldb.service.type` | The service type of apollo portal db: `ClusterIP` or `ExternalName`. If the host is a DNS name, please specify `ExternalName` as the service type, e.g. xxx.mysql.rds.aliyuncs.com | `ClusterIP` |
+
+### 5.4 Sample
+
+1. PortalDB host is an IP outside of kubernetes cluster
+
+```yaml
+portaldb:
+  host: 1.2.3.4
+  dbName: ApolloPortalDBName
+  userName: someUserName
+  password: somePassword
+  connectionStringProperties: characterEncoding=utf8&useSSL=false
+  service:
+    enabled: true
+```
+
+2. PortalDB host is a dns name outside of kubernetes cluster
+
+```yaml
+portaldb:
+  host: xxx.mysql.rds.aliyuncs.com
+  dbName: ApolloPortalDBName
+  userName: someUserName
+  password: somePassword
+  connectionStringProperties: characterEncoding=utf8&useSSL=false
+  service:
+    enabled: true
+    type: ExternalName
+```
+3. PortalDB host is a kubernetes service
+
+```yaml
+portaldb:
+  host: apollodb-mysql.mysql
+  dbName: ApolloPortalDBName
+  userName: someUserName
+  password: somePassword
+  connectionStringProperties: characterEncoding=utf8&useSSL=false
+```
+
+4. Specify environments
+
+```yaml
+config:
+  envs: dev,pro
+  metaServers:
+    dev: http://apollo-service-dev-apollo-configservice:8080
+    pro: http://apollo-service-pro-apollo-configservice:8080
+```
+
+5. Expose service as Load Balancer
+
+```yaml
+service:
+  type: LoadBalancer
+```
+
+6. Expose service as Ingress
+
+```yaml
+ingress:
+  enabled: true
+  hosts:
+    - paths:
+        - /
+```
+
+7. Expose service as Ingress with custom path `/apollo`
+
+```yaml
+# use /apollo as root, should specify config.contextPath as /apollo
+ingress:
+  enabled: true
+  hosts:
+    - paths:
+        - /apollo
+
+config:
+  ...
+  contextPath: /apollo
+  ...
+```
+
+8. Expose service as Ingress with session affinity
+
+```yaml
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/session-cookie-conditional-samesite-none: "true"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+  hosts:
+    - host: xxx.somedomain.com # host is required to make session affinity work
+      paths:
+        - /
+```

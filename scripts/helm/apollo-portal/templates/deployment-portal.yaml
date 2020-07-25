@@ -13,6 +13,9 @@ data:
     {{- if .Values.config.envs }}
     apollo.portal.envs = {{ .Values.config.envs }}
     {{- end }}
+    {{- if .Values.config.contextPath }}
+    server.servlet.context-path = {{ .Values.config.contextPath }}
+    {{- end }}
   apollo-env.properties: |
     {{- range $env, $address := .Values.config.metaServers }}
     {{ $env }}.meta = {{ $address }}
@@ -82,7 +85,7 @@ spec:
             periodSeconds: {{ .Values.liveness.periodSeconds }}
           readinessProbe:
             httpGet:
-              path: /health
+              path: {{ .Values.config.contextPath }}/health
               port: {{ .Values.containerPort }}
             initialDelaySeconds: {{ .Values.readiness.initialDelaySeconds }}
             periodSeconds: {{ .Values.readiness.periodSeconds }}

@@ -40,6 +40,8 @@ config:
   # dev: http://apollo-configservice-dev:8080
   # pro: http://apollo-configservice-pro:8080
   metaServers: {}
+  # specify the context path, e.g. /apollo
+  contextPath: ""
 
 portaldb:
   name: apollo-portaldb
