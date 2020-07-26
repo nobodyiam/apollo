@@ -20,6 +20,10 @@ data:
     {{- range $env, $address := .Values.config.metaServers }}
     {{ $env }}.meta = {{ $address }}
     {{- end }}
+{{- range $fileName, $content := .Values.config.files }}
+{{ $fileName | indent 2 }}: |
+{{ $content | indent 4 }}
+{{- end }}
 
 ---
 kind: Deployment
@@ -55,6 +59,10 @@ spec:
                 path: application-github.properties
               - key: apollo-env.properties
                 path: apollo-env.properties
+            {{- range $fileName, $content := .Values.config.files }}
+              - key: {{ $fileName }}
+                path: {{ $fileName }}
+            {{- end }}
             defaultMode: 420
       containers:
         - name: {{ .Values.name }}
@@ -64,12 +72,12 @@ spec:
             - name: http
               containerPort: {{ .Values.containerPort }}
               protocol: TCP
-          {{- with .Values.env }}
           env:
-          {{- range $key, $value := . }}
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.config.profiles | quote }}
+          {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
               value: {{ $value }}
-          {{- end }}
           {{- end }}
           volumeMounts:
             - name: configmap-{{ $portalFullName }}
@@ -78,6 +86,11 @@ spec:
             - name: configmap-{{ $portalFullName }}
               mountPath: /apollo-portal/config/apollo-env.properties
               subPath: apollo-env.properties
+          {{- range $fileName, $content := .Values.config.files }}
+            - name: configmap-{{ $portalFullName }}
+              mountPath: /apollo-portal/config/{{ $fileName }}
+              subPath: {{ $fileName }}
+          {{- end }}
           livenessProbe:
             tcpSocket:
               port: {{ .Values.containerPort }}

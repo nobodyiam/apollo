@@ -80,6 +80,7 @@ The following table lists the configurable parameters of the apollo-service char
 | `configService.liveness.periodSeconds` | The period seconds of liveness probe | `10` |
 | `configService.readiness.initialDelaySeconds` | The initial delay seconds of readiness probe | `30` |
 | `configService.readiness.periodSeconds` | The period seconds of readiness probe | `5` |
+| `configService.config.profiles` | specify the spring profiles to activate | `github,kubernetes` |
 | `configService.config.configServiceUrlOverride` | Override `apollo.config-service.url`: config service url to be accessed by apollo-client | `nil` |
 | `configService.config.adminServiceUrlOverride` | Override `apollo.admin-service.url`: admin service url to be accessed by apollo-portal | `nil` |
 | `configService.env` | Environment variables passed to the container, e.g. <br />`JAVA_OPTS: -Xss256k` | `{}` |
@@ -102,6 +103,7 @@ The following table lists the configurable parameters of the apollo-service char
 | `adminService.liveness.periodSeconds` | The period seconds of liveness probe | `10` |
 | `adminService.readiness.initialDelaySeconds` | The initial delay seconds of readiness probe | `30` |
 | `adminService.readiness.periodSeconds` | The period seconds of readiness probe | `5` |
+| `adminService.config.profiles` | specify the spring profiles to activate | `github,kubernetes` |
 | `adminService.env` | Environment variables passed to the container, e.g. <br />`JAVA_OPTS: -Xss256k` | `{}` |
 | `adminService.strategy` | The deployment strategy of apollo-adminservice | `{}` |
 | `adminService.resources` | The resources definition of apollo-adminservice | `{}` |
@@ -213,9 +215,11 @@ The following table lists the configurable parameters of the apollo-portal chart
 | `nodeSelector` | The node selector definition of apollo-portal | `{}` |
 | `tolerations` | The tolerations definition of apollo-portal | `[]` |
 | `affinity` | The affinity definition of apollo-portal | `{}` |
+| `config.profiles` | specify the spring profiles to activate | `github,auth` |
 | `config.envs` | specify the env names, e.g. dev,pro | `nil` |
 | `config.contextPath` | specify the context path, e.g. `/apollo`, then users could access portal via `http://{portal_address}/apollo` | `nil` |
 | `config.metaServers` | specify the meta servers, e.g.<br />`dev: http://apollo-configservice-dev:8080`<br />`pro: http://apollo-configservice-pro:8080` | `{}` |
+| `config.files` | specify the extra config files for apollo-portal, e.g. application-ldap.yml | `{}` |
 | `portaldb.host` | The host for apollo portal db | `nil`                              |
 | `portaldb.port` | The port for apollo portal db | `3306` |
 | `portaldb.dbName` | The database name for apollo portal db | `ApolloPortalDB`                                     |
@@ -325,4 +329,30 @@ ingress:
     - host: xxx.somedomain.com # host is required to make session affinity work
       paths:
         - /
+```
+
+9. Enable LDAP support
+
+```yaml
+config:
+  ...
+  profiles: github,ldap
+  ...
+  files:
+    application-ldap.yml: |
+      spring:
+        ldap:
+          base: "dc=example,dc=org"
+          username: "cn=admin,dc=example,dc=org"
+          password: "password"
+          searchFilter: "(uid={0})"
+          urls:
+          - "ldap://xxx.somedomain.com:389"
+
+      ldap:
+        mapping:
+          objectClass: "inetOrgPerson"
+          loginId: "uid"
+          userDisplayName: "cn"
+          email: "mail"
 ```

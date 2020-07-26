@@ -56,7 +56,7 @@ spec:
               protocol: TCP
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: 'github,kubernetes'
+              value: {{ .Values.configService.config.profiles | quote }}
           {{- range $key, $value := .Values.configService.env }}
             - name: {{ $key }}
               value: {{ $value }}

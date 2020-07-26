@@ -37,6 +37,8 @@ configService:
     initialDelaySeconds: 30
     periodSeconds: 5
   config:
+    # spring profiles to activate
+    profiles: "github,kubernetes"
     # override apollo.config-service.url: config service url to be accessed by apollo-client 
     configServiceUrlOverride: ""
     # override apollo.admin-service.url: admin service url to be accessed by apollo-portal 
@@ -69,6 +71,9 @@ adminService:
   readiness:
     initialDelaySeconds: 30
     periodSeconds: 5
+  config:
+    # spring profiles to activate
+    profiles: "github,kubernetes"
   # environment variables passed to the container, e.g. JAVA_OPTS
   env: {}
   strategy: {}
