@@ -173,4 +173,11 @@ public class BizConfig extends RefreshableConfig {
     return defaultValue;
   }
 
+  public boolean isAdminServiceAccessControlEnabled() {
+    return getBooleanProperty("admin-service.access.control.enabled", false);
+  }
+
+  public String getAdminServiceAccessTokens() {
+    return getValue("admin-service.access.tokens");
+  }
 }

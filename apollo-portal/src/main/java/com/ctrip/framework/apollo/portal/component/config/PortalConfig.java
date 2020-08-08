@@ -223,6 +223,10 @@ public class PortalConfig extends RefreshableConfig {
     return getBooleanProperty(SystemRoleManagerService.MANAGE_APP_MASTER_LIMIT_SWITCH_KEY, false);
   }
 
+  public String getAdminServiceAccessTokens() {
+    return getValue("admin-service.access.tokens");
+  }
+
   /***
    * The following configurations are used in ctrip profile
    **/

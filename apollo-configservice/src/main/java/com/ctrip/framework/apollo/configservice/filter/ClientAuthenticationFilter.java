@@ -3,6 +3,7 @@ package com.ctrip.framework.apollo.configservice.filter;
 import com.ctrip.framework.apollo.configservice.util.AccessKeyUtil;
 import com.ctrip.framework.apollo.core.signature.Signature;
 import com.ctrip.framework.apollo.core.utils.StringUtils;
+import com.google.common.net.HttpHeaders;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +54,7 @@ public class ClientAuthenticationFilter implements Filter {
     List<String> availableSecrets = accessKeyUtil.findAvailableSecret(appId);
     if (!CollectionUtils.isEmpty(availableSecrets)) {
       String timestamp = request.getHeader(Signature.HTTP_HEADER_TIMESTAMP);
-      String authorization = request.getHeader(Signature.HTTP_HEADER_AUTHORIZATION);
+      String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
       // check timestamp, valid within 1 minute
       if (!checkTimestamp(timestamp)) {
