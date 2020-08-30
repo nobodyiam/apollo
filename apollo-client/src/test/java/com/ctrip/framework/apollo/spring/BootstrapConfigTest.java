@@ -407,13 +407,13 @@ public class BootstrapConfigTest {
     @Test
     public void test() {
       List<EnvironmentPostProcessor> processorList =  SpringFactoriesLoader.loadFactories(EnvironmentPostProcessor.class, getClass().getClassLoader());
-
-      Boolean containsApollo = !Collections2.filter(processorList, new Predicate<EnvironmentPostProcessor>() {
-            @Override
-            public boolean apply(EnvironmentPostProcessor input) {
-                return input instanceof ApolloApplicationContextInitializer;
-            }
-        }).isEmpty();
+      boolean containsApollo = false;
+      for (EnvironmentPostProcessor postProcessor : processorList) {
+        if (postProcessor instanceof ApolloApplicationContextInitializer) {
+          containsApollo = true;
+          break;
+        }
+      }
       Assert.assertTrue(containsApollo);
     }
   }
