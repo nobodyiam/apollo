@@ -22,9 +22,12 @@
     window.$docsify = {
       alias: {
         '/.*/_navbar.md': '/_navbar.md',
+        '/zh/(.*)': 'zh/$1',
         '/en/(.*)': 'en/$1',
       },
       auto2top: true,
+      // Only coverpage is loaded when visiting the home page.
+      onlyCover: true,
       coverpage: true,
       loadSidebar: true,
       loadNavbar: true,
@@ -35,13 +38,15 @@
       repo: 'https://github.com/ctripcorp/apollo/',
       search: {
         noData: {
-          '/zh/': 'No results!',
           '/': '没有结果!',
+          '/zh/': '没有结果!',
+          '/en/': 'No results!',
         },
         paths: 'auto',
         placeholder: {
-          '/zh/': 'Search',
           '/': '搜索',
+          '/zh/': '搜索',
+          '/en/': 'Search',
         },
       },
     };
