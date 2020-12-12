@@ -72,7 +72,7 @@ app.id=YOUR-APP-ID
 
 文件位置参考如下：
 
-![app-id-location](https://github.com/ctripcorp/apollo/blob/master/apollo-client/doc/pic/app-id-location.png)
+![app-id-location](https://raw.githubusercontent.com/ctripcorp/apollo/master/apollo-client/doc/pic/app-id-location.png)
 
 > 注：app.id是用来标识应用身份的唯一id，格式为string。
 
@@ -174,7 +174,7 @@ Apollo客户端会把从服务端获取到的配置在本地文件系统缓存�
 * appId就是应用自己的appId，如100004458
 * cluster就是应用使用的集群，一般在本地模式下没有做过配置的话，就是default
 * namespace就是应用使用的配置namespace，一般是application
-![client-local-cache](https://github.com/ctripcorp/apollo/blob/master/apollo-client/doc/pic/client-local-cache.png)
+![client-local-cache](https://raw.githubusercontent.com/ctripcorp/apollo/master/apollo-client/doc/pic/client-local-cache.png)
 
 文件内容以properties格式存储，比如如果有两个key，一个是request.timeout，另一个是batch，那么文件内容就是如下格式：
 ```properties
@@ -892,7 +892,7 @@ appId就是应用的appId，如100004458。
 * appId就是应用自己的appId，如100004458
 * cluster就是应用使用的集群，一般在本地模式下没有做过配置的话，就是default
 * namespace就是应用使用的配置namespace，一般是application
-![client-local-cache](https://github.com/ctripcorp/apollo/blob/master/apollo-client/doc/pic/client-local-cache.png)
+![client-local-cache](https://raw.githubusercontent.com/ctripcorp/apollo/master/apollo-client/doc/pic/client-local-cache.png)
 
 文件内容以properties格式存储，比如如果有两个key，一个是request.timeout，另一个是batch，那么文件内容就是如下格式：
 ```properties
