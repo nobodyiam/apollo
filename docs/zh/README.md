@@ -1,13 +1,6 @@
-<img src="https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/logo/logo-simple.png" alt="apollo-logo" width="60%">
+<img src="https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/logo/logo-simple.png" alt="apollo-logo" width="40%">
 
-# Apollo - A reliable configuration management system
-
-[![Build Status](https://github.com/ctripcorp/apollo/workflows/build/badge.svg)](https://github.com/ctripcorp/apollo/actions)
-[![GitHub Release](https://img.shields.io/github/release/ctripcorp/apollo.svg)](https://github.com/ctripcorp/apollo/releases)
-[![Maven Central Repo](https://img.shields.io/maven-central/v/com.ctrip.framework.apollo/apollo.svg)](https://mvnrepository.com/artifact/com.ctrip.framework.apollo/apollo-client)
-[![codecov.io](https://codecov.io/github/ctripcorp/apollo/coverage.svg?branch=master)](https://codecov.io/github/ctripcorp/apollo?branch=master)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
+# Introduction
 
 Apollo（阿波罗）是携程框架部门研发的分布式配置中心，能够集中化管理应用不同环境、不同集群的配置，配置修改后能够实时推送到应用端，并且具备规范的权限、流程治理等特性，适用于微服务配置管理场景。
 
@@ -535,7 +528,3 @@ The project is licensed under the [Apache 2 license](https://github.com/ctripcor
 # Awards
 
 <img src="https://raw.githubusercontent.com/ctripcorp/apollo-community/master/images/awards/oschina-2018-award.jpg" width="240px" alt="2018 年度最受欢迎中国开源软件">
-
-# Stargazers over time
-
-[![Stargazers over time](https://starcharts.herokuapp.com/ctripcorp/apollo.svg)](https://starcharts.herokuapp.com/ctripcorp/apollo)

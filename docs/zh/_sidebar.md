@@ -1,3 +1,5 @@
+- [HOME](zh/README.md)
+
 - 设计文档
 
   - [Apollo配置中心设计](zh/设计文档/Apollo配置中心设计.md)
