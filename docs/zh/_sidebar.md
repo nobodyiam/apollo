@@ -33,4 +33,7 @@
     * [常见问题回答](zh/FAQ/FAQ.md)
     * [部署&开发遇到的常见问题](zh/FAQ/部署&开发遇到的常见问题.md)
 
+* 其它
+   * [Apollo性能测试报告](zh/其它/Apollo性能测试.md)
+
 - [Releases](https://github.com/ctripcorp/apollo/releases)
