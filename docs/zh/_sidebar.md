@@ -29,4 +29,8 @@
     * [Apollo实践案例](zh/系统使用文档/Apollo-实践案例.md)
     * [Apollo安全相关最佳实践](zh/系统使用文档/Apollo使用指南?id=_71-安全相关)
 
+* FAQ
+    * [常见问题回答](zh/FAQ/FAQ.md)
+    * [部署&开发遇到的常见问题](zh/FAQ/部署&开发遇到的常见问题.md)
+
 - [Releases](https://github.com/ctripcorp/apollo/releases)
