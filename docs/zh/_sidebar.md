@@ -23,7 +23,7 @@
 * 系统使用文档
     * [Apollo使用指南](zh/系统使用文档/Apollo使用指南.md)
     * [Java客户端使用指南](zh/系统使用文档/Java客户端使用指南.md)
-    * [.Net客户端使用指南](zh/系统使用文档/.Net客户端使用指南.md)
+    * [.Net客户端使用指南](zh/系统使用文档/dot-net客户端使用指南.md)
     * [Go、Python、NodeJS、PHP等客户端使用指南](zh/系统使用文档/Go、Python、NodeJS、PHP等客户端使用指南.md)
     * [其它语言客户端接入指南](zh/系统使用文档/其它语言客户端接入指南.md)
     * [Apollo开放平台接入指南](zh/系统使用文档/Apollo开放平台.md)
