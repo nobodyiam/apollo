@@ -27,7 +27,7 @@
 1. 打开apollo-portal主页
 2. 点击“创建项目”
 
-![create-app-entry](https://github.com/ctripcorp/apollo/blob/master/doc/images/create-app-entry.png)
+![create-app-entry](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/create-app-entry.png)
 
 3. 输入项目信息
     * 部门：选择应用所在的部门
@@ -35,13 +35,13 @@
     * 应用名称：应用名，仅用于界面展示
     * 应用负责人：选择的人默认会成为该项目的管理员，具备项目权限管理、集群创建、Namespace创建等权限
 
-![create-app](https://github.com/ctripcorp/apollo/blob/master/doc/images/create-app.png)
+![create-app](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/create-app.png)
 
 4. 点击提交
 
     创建成功后，会自动跳转到项目首页
 
-![app-created](https://github.com/ctripcorp/apollo/blob/master/doc/images/app-created.png)
+![app-created](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/app-created.png)
 
 ## 1.2 项目权限分配
 ### 1.2.1 项目管理员权限
@@ -55,11 +55,11 @@
 创建项目时填写的应用负责人默认会成为项目的管理员之一，如果还需要其他人也成为项目管理员，可以按照下面步骤操作：
 
 1. 点击页面左侧的“管理项目”
-    * ![app-permission-entry](https://github.com/ctripcorp/apollo/blob/master/doc/images/app-permission-entry.png)
+    * ![app-permission-entry](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/app-permission-entry.png)
 
 2. 搜索需要添加的成员并点击添加
-    * ![app-permission-search-user](https://github.com/ctripcorp/apollo/blob/master/doc/images/app-permission-search-user.png)
-    * ![app-permission-user-added](https://github.com/ctripcorp/apollo/blob/master/doc/images/app-permission-user-added.png)
+    * ![app-permission-search-user](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/app-permission-search-user.png)
+    * ![app-permission-user-added](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/app-permission-user-added.png)
 
 ### 1.2.2 配置编辑、发布权限
 配置权限分为编辑和发布：
@@ -73,13 +73,13 @@
 项目创建完，默认没有分配配置的编辑和发布权限，需要项目管理员进行授权。
 
 1. 点击application这个namespace的授权按钮
-    * ![namespace-permission-entry](https://github.com/ctripcorp/apollo/blob/master/doc/images/namespace-permission-entry.png)
+    * ![namespace-permission-entry](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/namespace-permission-entry.png)
 
 2. 分配修改权限
-    * ![namespace-permission-edit](https://github.com/ctripcorp/apollo/blob/master/doc/images/namespace-permission-edit.png)
+    * ![namespace-permission-edit](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/namespace-permission-edit.png)
 
 3. 分配发布权限
-    * ![namespace-publish-permission](https://github.com/ctripcorp/apollo/blob/master/doc/images/namespace-publish-permission.png)
+    * ![namespace-publish-permission](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/namespace-publish-permission.png)
 
 ## 1.3 添加配置项
 编辑配置需要拥有这个Namespace的编辑权限，如果发现没有新增配置按钮，可以找项目管理员授权。
@@ -87,26 +87,26 @@
 ### 1.3.1 通过表格模式添加配置
 
 1. 点击新增配置
-    * ![create-item-entry](https://github.com/ctripcorp/apollo/blob/master/doc/images/create-item-entry.png)
+    * ![create-item-entry](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/create-item-entry.png)
 
 2. 输入配置项
-    * ![create-item-detail](https://github.com/ctripcorp/apollo/blob/master/doc/images/create-item-detail.png)
+    * ![create-item-detail](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/create-item-detail.png)
 
 3. 点击提交
-    * ![item-created](https://github.com/ctripcorp/apollo/blob/master/doc/images/item-created.png)
+    * ![item-created](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/item-created.png)
 
 ### 1.3.2 通过文本模式编辑
 Apollo除了支持表格模式，逐个添加、修改配置外，还提供文本模式批量添加、修改。
 这个对于从已有的properties文件迁移尤其有用。
 
 1. 切换到文本编辑模式
-![text-mode-config-overview](https://github.com/ctripcorp/apollo/blob/master/doc/images/text-mode-config-overview.png)
+![text-mode-config-overview](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/text-mode-config-overview.png)
 
 2. 点击右侧的修改配置按钮
-![text-mode-config-entry](https://github.com/ctripcorp/apollo/blob/master/doc/images/text-mode-config-entry.png)
+![text-mode-config-entry](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/text-mode-config-entry.png)
 
 3. 输入配置项，并点击提交修改
-![text-mode-config-submit](https://github.com/ctripcorp/apollo/blob/master/doc/images/text-mode-config-submit.png)
+![text-mode-config-submit](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/text-mode-config-submit.png)
 
 ## 1.4 发布配置
 配置只有在发布后才会真的被应用使用到，所以在编辑完配置后，需要发布配置。
@@ -114,10 +114,10 @@ Apollo除了支持表格模式，逐个添加、修改配置外，还提供文�
 发布配置需要拥有这个Namespace的发布权限，如果发现没有发布按钮，可以找项目管理员授权。
 
 1. 点击“发布按钮”
-![publish-entry](https://github.com/ctripcorp/apollo/blob/master/doc/images/hermes-portal-publish-entry.png)
+![publish-entry](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/hermes-portal-publish-entry.png)
 
 2. 填写发布相关信息，点击发布
-![publish-detail](https://github.com/ctripcorp/apollo/blob/master/doc/images/hermes-portal-publish-detail.png)
+![publish-detail](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/hermes-portal-publish-detail.png)
 
 ## 1.5 应用读取配置
 配置发布成功后，应用就可以通过Apollo客户端读取到配置了。
@@ -157,26 +157,26 @@ Apollo中的回滚也是类似的机制，点击回滚后是将发布到客户�
 创建Namespace需要项目管理员权限，如果发现没有添加Namespace按钮，可以找项目管理员授权。
 
 1. 点击页面左侧的添加Namespace
-    * ![create-namespace](https://github.com/ctripcorp/apollo/blob/master/doc/images/create-namespace.png)
+    * ![create-namespace](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/create-namespace.png)
 
 2. 点击“创建新的Namespace”
-    * ![create-namespace-select-type](https://github.com/ctripcorp/apollo/blob/master/doc/images/create-namespace-select-type.png)
+    * ![create-namespace-select-type](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/create-namespace-select-type.png)
 
 3. 输入公共组件的Namespace名称，需要注意的是Namespace名称全局唯一
     * Apollo会默认把部门代号添加在最前面
-    * ![create-namespace-detail](https://github.com/ctripcorp/apollo/blob/master/doc/images/create-namespace-detail.png)
+    * ![create-namespace-detail](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/create-namespace-detail.png)
 
 4. 点击提交后，页面会自动跳转到关联Namespace页面
     * 首先，选中所有需要有这个Namespace的环境和集群，一般建议全选
     * 其次，选中刚刚创建的namespace
     * 最后，点击提交
-    * ![link-namespace-detail](https://github.com/ctripcorp/apollo/blob/master/doc/images/link-namespace-detail.png)
+    * ![link-namespace-detail](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/link-namespace-detail.png)
 
 5. 关联成功后，页面会自动跳转到Namespace权限管理页面
     1. 分配修改权限
-        * ![namespace-permission-edit](https://github.com/ctripcorp/apollo/blob/master/doc/images/namespace-permission-edit.png)
+        * ![namespace-permission-edit](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/namespace-permission-edit.png)
     2. 分配发布权限
-        * ![namespace-publish-permission](https://github.com/ctripcorp/apollo/blob/master/doc/images/namespace-publish-permission.png)
+        * ![namespace-publish-permission](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/namespace-publish-permission.png)
 
 6. 点击“返回”回到项目页面
 
@@ -187,13 +187,13 @@ Apollo中的回滚也是类似的机制，点击回滚后是将发布到客户�
 #### 2.2.2.1 通过表格模式添加配置
 
 1. 点击新增配置
-![public-namespace-edit-item-entry](https://github.com/ctripcorp/apollo/blob/master/doc/images/public-namespace-edit-item-entry.png)
+![public-namespace-edit-item-entry](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/public-namespace-edit-item-entry.png)
 
 2. 输入配置项
-![public-namespace-edit-item](https://github.com/ctripcorp/apollo/blob/master/doc/images/public-namespace-edit-item.png)
+![public-namespace-edit-item](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/public-namespace-edit-item.png)
 
 3. 点击提交
-![public-namespace-item-created](https://github.com/ctripcorp/apollo/blob/master/doc/images/public-namespace-item-created.png)
+![public-namespace-item-created](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/public-namespace-item-created.png)
 
 #### 2.2.2.3 通过文本模式编辑
 这部分和普通应用一致，具体步骤请参见[1.3.2 通过文本模式编辑](#132-%E9%80%9A%E8%BF%87%E6%96%87%E6%9C%AC%E6%A8%A1%E5%BC%8F%E7%BC%96%E8%BE%91)。
@@ -205,10 +205,10 @@ Apollo中的回滚也是类似的机制，点击回滚后是将发布到客户�
 发布配置需要拥有这个Namespace的发布权限，如果发现没有发布按钮，可以找项目管理员授权。
 
 1. 点击“发布按钮”
-![public-namespace-publish-items-entry](https://github.com/ctripcorp/apollo/blob/master/doc/images/public-namespace-publish-items-entry.png)
+![public-namespace-publish-items-entry](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/public-namespace-publish-items-entry.png)
 
 2. 填写发布相关信息，点击发布
-![public-namespace-publish-items](https://github.com/ctripcorp/apollo/blob/master/doc/images/public-namespace-publish-items.png)
+![public-namespace-publish-items](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/public-namespace-publish-items.png)
 
 ### 2.2.4 应用读取配置
 
@@ -230,29 +230,29 @@ Apollo目前提供Java客户端，具体信息请点击[Java客户端使用文�
 1. 进入使用公共组件的应用项目首页，点击左侧的添加Namespace按钮
     * 所以，在这个例子中，我们需要进入apollo-portal的首页。
     * （添加Namespace需要项目管理员权限，如果发现没有添加Namespace按钮，可以找项目管理员授权）
-    * ![link-public-namespace-entry](https://github.com/ctripcorp/apollo/blob/master/doc/images/link-public-namespace-entry.png)
+    * ![link-public-namespace-entry](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/link-public-namespace-entry.png)
 
 2. 找到hermes producer的namespace，并选择需要关联到哪些环境和集群
-![link-public-namespace](https://github.com/ctripcorp/apollo/blob/master/doc/images/link-public-namespace.png)
+![link-public-namespace](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/link-public-namespace.png)
 
 3. 关联成功后，页面会自动跳转到Namespace权限管理页面
     1. 分配修改权限
-![namespace-permission-edit](https://github.com/ctripcorp/apollo/blob/master/doc/images/namespace-permission-edit.png)
+![namespace-permission-edit](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/namespace-permission-edit.png)
     2. 分配发布权限
-![namespace-publish-permission](https://github.com/ctripcorp/apollo/blob/master/doc/images/namespace-publish-permission.png)
+![namespace-publish-permission](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/namespace-publish-permission.png)
 
 4. 点击“返回”回到项目页面
 
 ### 2.3.2 覆盖公用组件配置
 
 1. 点击新增配置
-![override-public-namespace-entry](https://github.com/ctripcorp/apollo/blob/master/doc/images/override-public-namespace-entry.png)
+![override-public-namespace-entry](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/override-public-namespace-entry.png)
 
 2. 输入要覆盖的配置项
-![override-public-namespace-item](https://github.com/ctripcorp/apollo/blob/master/doc/images/override-public-namespace-item.png)
+![override-public-namespace-item](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/override-public-namespace-item.png)
 
 3. 点击提交
-![override-public-namespace-item-done](https://github.com/ctripcorp/apollo/blob/master/doc/images/override-public-namespace-item-done.png)
+![override-public-namespace-item-done](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/override-public-namespace-item-done.png)
 
 ### 2.3.3 发布配置
 
@@ -261,10 +261,10 @@ Apollo目前提供Java客户端，具体信息请点击[Java客户端使用文�
 发布配置需要拥有这个Namespace的发布权限，如果发现没有发布按钮，可以找项目管理员授权。
 
 1. 点击“发布按钮”
-![override-public-namespace-item-publish-entry](https://github.com/ctripcorp/apollo/blob/master/doc/images/override-public-namespace-item-publish-entry.png)
+![override-public-namespace-item-publish-entry](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/override-public-namespace-item-publish-entry.png)
 
 2. 填写发布相关信息，点击发布
-![override-public-namespace-item-publish](https://github.com/ctripcorp/apollo/blob/master/doc/images/override-public-namespace-item-publish.png)
+![override-public-namespace-item-publish](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/override-public-namespace-item-publish.png)
 
 3. 配置发布成功后，hermes producer客户端在apollo-portal应用里面运行时读取到的sender.batchSize的值就是1000。
 
@@ -279,13 +279,13 @@ Apollo目前提供Java客户端，具体信息请点击[Java客户端使用文�
 创建集群需要项目管理员权限，如果发现没有添加集群按钮，可以找项目管理员授权。
 
 1. 点击页面左侧的“添加集群”按钮
-    * ![create-cluster](https://github.com/ctripcorp/apollo/blob/master/doc/images/create-cluster.png)
+    * ![create-cluster](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/create-cluster.png)
 
 2. 输入集群名称，选择环境并提交
-    * ![create-cluster-detail](https://github.com/ctripcorp/apollo/blob/master/doc/images/create-cluster-detail.png)
+    * ![create-cluster-detail](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/create-cluster-detail.png)
 
 3. 切换到对应的集群，修改配置并发布即可
-    * ![config-in-cluster-created](https://github.com/ctripcorp/apollo/blob/master/doc/images/cluster-created.png)
+    * ![config-in-cluster-created](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/cluster-created.png)
 
 4. 通过上述配置，部署在SHAJQ机房的应用就会读到SHAJQ集群下的配置
 

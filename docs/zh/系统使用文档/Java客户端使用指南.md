@@ -832,7 +832,7 @@ eureka.client.eurekaServiceUrlPollIntervalSeconds = 60
 eureka.instance.preferIpAddress = true
 ```
 
-![text-mode-spring-boot-config-sample](https://github.com/ctripcorp/apollo/blob/master/doc/images/text-mode-spring-boot-config-sample.png)
+![text-mode-spring-boot-config-sample](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/text-mode-spring-boot-config-sample.png)
 
 ## 3.3 Demo
 项目中有一个样例客户端的项目：`apollo-demo`，具体信息可以参考[Apollo开发指南](https://github.com/ctripcorp/apollo/wiki/Apollo%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97)中的[2.3 Java样例客户端启动](https://github.com/ctripcorp/apollo/wiki/Apollo%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97#23-java%E6%A0%B7%E4%BE%8B%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%90%AF%E5%8A%A8)部分。

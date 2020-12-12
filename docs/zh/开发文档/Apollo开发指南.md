@@ -224,7 +224,7 @@ Apollo客户端针对不同的环境会从不同的服务器获取配置，所�
 
 # 三、开发
 ## 模块依赖图
-![模块依赖图](https://github.com/ctripcorp/apollo/blob/master/doc/images/module-dependency.png)
+![模块依赖图](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/module-dependency.png)
 
 ## 3.1 Portal 实现用户登录功能
 

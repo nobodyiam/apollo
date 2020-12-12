@@ -20,12 +20,12 @@
 2. 配置中心通知Apollo客户端有配置更新
 3. Apollo客户端从配置中心拉取最新的配置、更新本地配置并通知到应用
 
-![basic-architecture](https://github.com/ctripcorp/apollo/blob/master/doc/images/basic-architecture.png)
+![basic-architecture](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/basic-architecture.png)
 
 ## 1.2 架构模块
 
 下图是Apollo架构模块的概览，详细说明可以参考[Apollo配置中心架构剖析](https://mp.weixin.qq.com/s/-hUaQPzfsl9Lm3IqQW3VDQ)。
-![overall-architecture](https://github.com/ctripcorp/apollo/blob/master/doc/images/overall-architecture.png)
+![overall-architecture](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/overall-architecture.png)
 
 上图简要描述了Apollo的总体设计，我们可以从下往上看：
 
@@ -95,7 +95,7 @@
 ## 1.4 E-R Diagram
 
 ### 1.4.1 主体E-R Diagram
-![apollo-erd](https://github.com/ctripcorp/apollo/blob/master/doc/images/apollo-erd.png)
+![apollo-erd](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/apollo-erd.png)
 
 * **App**
     * App信息
@@ -115,7 +115,7 @@
     * 审计信息，记录用户在何时使用何种方式操作了哪个实体。
 
 ### 1.4.2 权限相关E-R Diagram
-![apollo-erd-role-permission](https://github.com/ctripcorp/apollo/blob/master/doc/images/apollo-erd-role-permission.png)
+![apollo-erd-role-permission](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/apollo-erd-role-permission.png)
 
 * **User**
     * Apollo portal用户
@@ -183,7 +183,7 @@ Admin Service在配置发布后，需要通知所有的Config Service有配置�
 4. 如果有该客户端关心的配置发布，NotificationControllerV2会调用DeferredResult的[setResult](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/context/request/async/DeferredResult.html#setResult-T-)方法，传入有配置变化的namespace信息，同时该请求会立即返回。客户端从返回的结果中获取到配置变化的namespace后，会立即请求Config Service获取该namespace的最新配置。
 
 # 三、客户端设计
-![client-architecture](https://github.com/ctripcorp/apollo/blob/master/doc/images/client-architecture.png)
+![client-architecture](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/client-architecture.png)
 
 上图简要描述了Apollo客户端的实现原理：
 
