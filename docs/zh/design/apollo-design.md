@@ -1,3 +1,4 @@
+# &nbsp;
 # 一、总体设计
 
 ## 1.1 基础模型
@@ -140,7 +141,7 @@
 3. Admin Service发布配置后，发送ReleaseMessage给各个Config Service
 4. Config Service收到ReleaseMessage后，通知对应的客户端
 
-## 2.1.1 发送ReleaseMessage的实现方式
+### 2.1.1 发送ReleaseMessage的实现方式
 
 Admin Service在配置发布后，需要通知所有的Config Service有配置发布，从而Config Service可以通知对应的客户端来拉取最新的配置。
 

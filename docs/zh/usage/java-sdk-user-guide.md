@@ -1,5 +1,6 @@
 >注意：本文档适用对象是Apollo系统的使用者，如果你是公司内Apollo系统的开发者/维护人员，建议先参考[Apollo开发指南](zh/development/apollo-development-guide)。
 
+# &nbsp;
 # 一、准备工作
 ## 1.1 环境要求
     
@@ -307,7 +308,7 @@ Apollo的客户端jar包已经上传到中央仓库，应用在实际使用时�
     <dependency>
         <groupId>com.ctrip.framework.apollo</groupId>
         <artifactId>apollo-client</artifactId>
-        <version>1.1.0</version>
+        <version>1.7.0</version>
     </dependency>
 ```
 
@@ -847,7 +848,7 @@ Apollo客户端还支持本地开发模式，这个主要用于当开发环境�
 env=Local
 ```
 
-更多配置环境的方式请参考[1.2.2 Environment](#122-environment)
+更多配置环境的方式请参考[1.2.4.1 Environment](#_1241-environment)
 
 ## 5.2 准备本地配置文件
 在本地开发模式下，Apollo客户端会从本地读取文件，所以我们需要事先准备好配置文件。
@@ -879,7 +880,7 @@ request.timeout=2000
 batch=2000
 ```
 
-### 5.3 修改配置
+## 5.3 修改配置
 在本地开发模式下，Apollo不会实时监测文件内容是否有变化，所以如果修改了配置，需要重启应用生效。
 
 # 六、测试模式
@@ -891,7 +892,7 @@ batch=2000
 <dependency>
     <groupId>com.ctrip.framework.apollo</groupId>
     <artifactId>apollo-mockserver</artifactId>
-    <version>1.1.0</version>
+    <version>1.7.0</version>
 </dependency>
 
 ```

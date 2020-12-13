@@ -1,3 +1,4 @@
+# &nbsp;
 # 名词解释
 * 普通应用
     * 普通应用指的是独立运行的程序，如
@@ -137,8 +138,8 @@ Apollo中的回滚也是类似的机制，点击回滚后是将发布到客户�
 
 所以，首先执行普通应用接入文档中的以下几个步骤，然后再按照本章节后面的步骤操作。
 
-1. [创建项目](#11-%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE)
-2. [项目管理员权限](#121-%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90)
+1. [创建项目](#_11-%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE)
+2. [项目管理员权限](#_121-%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90)
 
 ### 2.2.1 创建Namespace
 
@@ -183,8 +184,8 @@ Apollo中的回滚也是类似的机制，点击回滚后是将发布到客户�
 3. 点击提交
 ![public-namespace-item-created](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/public-namespace-item-created.png)
 
-#### 2.2.2.3 通过文本模式编辑
-这部分和普通应用一致，具体步骤请参见[1.3.2 通过文本模式编辑](#132-%E9%80%9A%E8%BF%87%E6%96%87%E6%9C%AC%E6%A8%A1%E5%BC%8F%E7%BC%96%E8%BE%91)。
+#### 2.2.2.2 通过文本模式编辑
+这部分和普通应用一致，具体步骤请参见[1.3.2 通过文本模式编辑](#_132-%E9%80%9A%E8%BF%87%E6%96%87%E6%9C%AC%E6%A8%A1%E5%BC%8F%E7%BC%96%E8%BE%91)。
 
 ### 2.2.3 发布配置
 
@@ -289,7 +290,7 @@ Apollo目前提供Java客户端，具体信息请点击[Java客户端使用文�
 
 如果某个AppId需要覆盖公共的配置信息，那么在该AppId下关联公共的namespace并写入需要覆盖的配置即可。
 
-具体步骤可以参考[公共组件接入指南](#%E4%BA%8C%E5%85%AC%E5%85%B1%E7%BB%84%E4%BB%B6%E6%8E%A5%E5%85%A5%E6%8C%87%E5%8D%97)。
+具体步骤可以参考[公共组件接入指南](#%e4%ba%8c%e3%80%81%e5%85%ac%e5%85%b1%e7%bb%84%e4%bb%b6%e6%8e%a5%e5%85%a5%e6%8c%87%e5%8d%97)。
 
 # 五、灰度发布使用指南
 通过灰度发布功能，可以实现：
@@ -460,5 +461,5 @@ Apollo 支持细粒度的权限控制，请务必根据实际情况做好权限�
 除了用户权限，在系统访问上也需要加以考虑：
 
 1. `apollo-configservice`和`apollo-adminservice`是基于内网可信网络设计的，所以出于安全考虑，禁止`apollo-configservice`和`apollo-adminservice`直接暴露在公网
-2. 对敏感配置可以考虑开启[访问秘钥](#62-%E9%85%8D%E7%BD%AE%E8%AE%BF%E9%97%AE%E7%A7%98%E9%92%A5)，从而只有经过身份验证的客户端才能访问敏感配置
+2. 对敏感配置可以考虑开启[访问秘钥](#_62-%e9%85%8d%e7%bd%ae%e8%ae%bf%e9%97%ae%e5%af%86%e9%92%a5)，从而只有经过身份验证的客户端才能访问敏感配置
 3. 1.7.1及以上版本可以考虑为`apollo-adminservice`开启[访问控制](zh/deployment/distributed-deployment-guide?id=_6-admin-serviceaccesscontrolenabled-配置apollo-adminservice是否开启访问控制)，从而只有合法的`apollo-portal`才能访问对应接口，增强安全性

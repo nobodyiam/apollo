@@ -151,7 +151,7 @@ k2 = v2
   publicConfig.getProperty("k6", null); // k6 = v6
   publicConfig.getProperty("k7", null); // k7 = v7
 ```
-#### 5.4.4 ChangeListener
+##### 5.4.4 ChangeListener
 
 以上代码例子中可以看到，在客户端Namespace映射成一个Config对象。Namespace配置变更的监听器是注册在Config对象上。
 

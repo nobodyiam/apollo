@@ -2,15 +2,16 @@
 
 > 如果只是需要在本地快速部署试用Apollo的话，可以参考[Quick Start](zh/deployment/quick-start)
 
+# &nbsp;
 # 一、准备工作
 
 ## 1.1 运行时环境
 
-## 1.1.1 OS
+### 1.1.1 OS
 
 服务端基于Spring Boot，启动脚本理论上支持所有Linux发行版，建议[CentOS 7](https://www.centos.org/)。
 
-## 1.1.2 Java
+### 1.1.2 Java
 
 * Apollo服务端：1.8+
 * Apollo客户端：1.7+
@@ -67,7 +68,7 @@ Apollo目前支持以下环境：
 * PRO
     * 生产环境
 
-> 如果希望添加自定义的环境名称，具体步骤可以参考[部署&开发遇到的常见问题#42-添加自定义的环境](zh/faq/common-issues-in-deployment-and-development-phase?id=_4-portal如何增加环境？)
+> 如果希望添加自定义的环境名称，具体步骤可以参考[Portal如何增加环境](zh/faq/common-issues-in-deployment-and-development-phase?id=_4-portal如何增加环境？)
 
 以ctrip为例，我们的部署策略如下：
 ![Deployment](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/apollo-deployment.png)
@@ -208,7 +209,7 @@ select `Id`, `Key`, `Value`, `Comment` from `ApolloConfigDB`.`ServerConfig` limi
 
 > 注：ApolloConfigDB需要在每个环境部署一套，如fat、uat和pro分别部署3套ApolloConfigDB
 
-#### 2.1.2.1 从别的环境导入ApolloConfigDB的项目数据
+#### 2.1.2.4 从别的环境导入ApolloConfigDB的项目数据
 如果是全新部署的Apollo配置中心，请忽略此步。
 
 如果不是全新部署的Apollo配置中心，比如已经使用了一段时间，这时在Apollo配置中心已经创建了不少项目以及namespace等，那么在新环境中的ApolloConfigDB中需要从其它正常运行的环境中导入必要的项目数据。
@@ -249,11 +250,11 @@ DEV,FAT,UAT,PRO
 
 修改完需要重启生效。
 
->注1：一套Portal可以管理多个环境，但是每个环境都需要独立部署一套Config Service、Admin Service和ApolloConfigDB，具体请参考：[2.1.2 创建ApolloConfigDB](#_212-创建apolloconfigdb)，[2.1.3.2 调整ApolloConfigDB配置](#_2132-调整apolloconfigdb配置)，[2.2.1.1.2 配置数据库连接信息](#_22112-配置数据库连接信息)，另外如果是为已经运行了一段时间的Apollo配置中心增加环境，别忘了参考[2.1.2.1 从别的环境导入ApolloConfigDB的项目数据](#_2121-从别的环境导入apolloconfigdb的项目数据)对新的环境做初始化。
+>注1：一套Portal可以管理多个环境，但是每个环境都需要独立部署一套Config Service、Admin Service和ApolloConfigDB，具体请参考：[2.1.2 创建ApolloConfigDB](#_212-创建apolloconfigdb)，[2.1.3.2 调整ApolloConfigDB配置](#_2132-调整apolloconfigdb配置)，[2.2.1.1.2 配置数据库连接信息](#_22112-配置数据库连接信息)，另外如果是为已经运行了一段时间的Apollo配置中心增加环境，别忘了参考[2.1.2.4 从别的环境导入ApolloConfigDB的项目数据](#_2124-从别的环境导入apolloconfigdb的项目数据)对新的环境做初始化。
 
->注2：只在数据库添加环境是不起作用的，还需要为apollo-portal添加新增环境对应的meta server地址，具体参考：[2.2.1.1.2.4 配置apollo-portal的meta service信息](#221124-%E9%85%8D%E7%BD%AEapollo-portal%E7%9A%84meta-service%E4%BF%A1%E6%81%AF)。apollo-client在新的环境下使用时也需要做好相应的配置，具体参考：[1.2.2 Apollo Meta Server](zh/usage/java-sdk-user-guide#_122-apollo-meta-server)。
+>注2：只在数据库添加环境是不起作用的，还需要为apollo-portal添加新增环境对应的meta server地址，具体参考：[2.2.1.1.2.4 配置apollo-portal的meta service信息](#_221124-配置apollo-portal的meta-service信息)。apollo-client在新的环境下使用时也需要做好相应的配置，具体参考：[1.2.2 Apollo Meta Server](zh/usage/java-sdk-user-guide#_122-apollo-meta-server)。
 
->注3：如果希望添加自定义的环境名称，具体步骤可以参考[Portal如何增加环境](zh/%E9%83%A8%E7%BD%B2&%E5%BC%80%E5%8F%91%E9%81%87%E5%88%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98#4-portal%E5%A6%82%E4%BD%95%E5%A2%9E%E5%8A%A0%E7%8E%AF%E5%A2%83)。
+>注3：如果希望添加自定义的环境名称，具体步骤可以参考[Portal如何增加环境](zh/faq/common-issues-in-deployment-and-development-phase?id=_4-portal如何增加环境？)。
 
 >注4：1.1.0版本增加了系统信息页面（`管理员工具` -> `系统信息`），可以通过该页面检查配置是否正确
 
@@ -730,9 +731,7 @@ docker run -p 8070:8070 \
 * APOLLO_PORTAL_ENVS(可选): 对应ApolloPortalDB中的[apollo.portal.envs](#_1-apolloportalenvs-可支持的环境列表)配置项，如果没有在数据库中配置的话，可以通过此环境参数配置
 * DEV_META/PRO_META(可选): 配置对应环境的Meta Service地址，以${ENV}_META命名，需要注意的是如果配置了ApolloPortalDB中的[apollo.portal.meta.servers](#_2-apolloportalmetaservers-各环境meta-service列表)配置，则以apollo.portal.meta.servers中的配置为准
 
-### 2.3.2 
-
-> 1.7.0之前的版本
+### 2.3.2 1.7.0之前的版本
 
 Apollo项目已经自带了Docker file，可以参照[2.2.1 获取安装包](#_221-获取安装包)配置好安装包后通过下面的文件来打Docker镜像：
 
@@ -792,7 +791,7 @@ Get meta service url for current release by running these commands:
   echo http://apollo-service-dev-apollo-configservice:8080
 ```
 
-> 更多配置项说明可以参考[2.4.1.3.3 配置项说明](#_24143-配置项说明)
+> 更多配置项说明可以参考[2.4.1.3.3 配置项说明](#_24133-配置项说明)
 
 ##### 2.4.1.3.2 卸载apollo-configservice和apollo-adminservice
 

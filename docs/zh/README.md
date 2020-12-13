@@ -71,7 +71,7 @@ Java客户端不依赖任何框架，能够运行于所有Java运行时环境，
   5. [Apollo开放平台接入指南](zh/usage/apollo-open-api-platform)
   6. [Apollo使用场景和示例代码](https://github.com/ctripcorp/apollo-use-cases)
   7. [Apollo实践案例](zh/usage/apollo-user-practices)
-  8. [Apollo安全相关最佳实践](zh/usage/apollo-user-guide?id=_71-安全相关)
+  8. [Apollo安全相关最佳实践](zh/usage/apollo-user-guide?id=_71-%e5%ae%89%e5%85%a8%e7%9b%b8%e5%85%b3)
 
 # Design
   - [Apollo配置中心设计](zh/design/apollo-design.md)
@@ -91,7 +91,6 @@ Java客户端不依赖任何框架，能够运行于所有Java运行时环境，
   - [Quick Start](zh/deployment/quick-start.md)
   - [Docker方式部署Quick Start](zh/deployment/quick-start-docker.md)
   - [分布式部署指南](zh/deployment/distributed-deployment-guide.md)
-  - [Apollo源码解析（全）](http://www.iocoder.cn/categories/Apollo/)
 
 # Release Notes
   * [版本发布历史](https://github.com/ctripcorp/apollo/releases)

@@ -35,7 +35,7 @@ Apollo管理员在 http://{portal_address}/open/manage.html 创建第三方应�
 <dependency>
     <groupId>com.ctrip.framework.apollo</groupId>
     <artifactId>apollo-openapi</artifactId>
-    <version>1.1.0</version>
+    <version>1.7.0</version>
 </dependency>
 ```
 
@@ -159,7 +159,7 @@ appIds | false | String | appId列表，以逗号分隔，如果为空则返回�
 }
 ```
 
-#### 3.2.4 创建集群接口
+##### 3.2.4 创建集群接口
 可以通过此接口创建集群，调用此接口需要授予第三方APP对目标APP的管理权限。
 
 * **URL** ：  http://{portal_address}/openapi/v1/envs/{env}/apps/{appId}/clusters
@@ -284,7 +284,7 @@ dataChangeCreatedBy | true | String | namespace的创建人，格式为域账号
     "dataChangeLastModifiedTime": "2016-07-20T14:05:58.000+0800"
   }
 ```
-#### 3.2.7 创建Namespace
+##### 3.2.7 创建Namespace
 可以通过此接口创建Namespace，调用此接口需要授予第三方APP对目标APP的管理权限。
 
 * **URL** ：  http://{portal_address}/openapi/v1/apps/{appId}/appnamespaces
@@ -454,7 +454,7 @@ operator | true | String | 删除配置的操作者，域账号
 
 * **返回值** ： 无
 
-##### 3.2.11 发布配置接口
+##### 3.2.13 发布配置接口
 
 * **URL** ： http://{portal_address}/openapi/v1/envs/{env}/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/releases
 * **Method** ： POST
@@ -496,7 +496,7 @@ releasedBy | true | String | 发布人，域账号，注意：如果`ApolloConfi
 }
 ```
 
-##### 3.2.12 获取某个Namespace当前生效的已发布配置接口 
+##### 3.2.14 获取某个Namespace当前生效的已发布配置接口 
 
 * **URL** ：  http://{portal_address}/openapi/v1/envs/{env}/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/releases/latest
 * **Method** ： GET
@@ -520,7 +520,7 @@ releasedBy | true | String | 发布人，域账号，注意：如果`ApolloConfi
 }
 ```
 
-##### 3.2.13 回滚已发布配置接口 
+##### 3.2.15 回滚已发布配置接口 
 
 * **URL** ：  http://{portal_address}/openapi/v1/envs/{env}/releases/{releaseId}/rollback
 * **Method** ： PUT
@@ -542,11 +542,11 @@ operator | true | String | 删除配置的操作者，域账号
 接口传入的token非法或者已过期，客户端需要检查token是否传入正确。
 ####  4.3 403 - Forbidden
 接口要访问的资源未得到授权，比如只授权了对A应用下Namespace的管理权限，但是却尝试管理B应用下的配置。
-####  4.3 404 - Not Found
+####  4.4 404 - Not Found
 接口要访问的资源不存在，一般是URL或URL的参数错误。
-####  4.4 405 - Method Not Allowed
+####  4.5 405 - Method Not Allowed
 接口访问的Method不正确，比如应该使用POST的接口使用了GET访问等，客户端需要检查接口访问方式是否正确。
-####  4.4 500 - Internal Server Error
+####  4.6 500 - Internal Server Error
 其它类型的错误默认都会返回500，对这类错误如果应用无法根据提示信息找到原因的话，可以找Apollo研发团队一起排查问题。
 
 

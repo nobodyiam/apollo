@@ -1,3 +1,4 @@
+# &nbsp;
 # 1、What is Apollo
 
 ## 1.1 背景
@@ -230,7 +231,7 @@ public class SomeBean {
 
 ### 4.2.2 在Cluster中添加配置并发布
 
-集群添加成功后，就可以为该集群添加配置了，首先需要按照下图所示切换到SHAJQ集群，之后配置添加流程和[3.2添加/修改配置项](#32-%E6%B7%BB%E5%8A%A0%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E9%A1%B9)一样，这里就不再赘述了。
+集群添加成功后，就可以为该集群添加配置了，首先需要按照下图所示切换到SHAJQ集群，之后配置添加流程和[3.3 添加/修改配置项](#_33-添加修改配置项)一样，这里就不再赘述了。
 
 ![cluster-created](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/cluster-created.png)
 

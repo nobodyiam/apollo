@@ -6,6 +6,7 @@
 
 > 注：Quick Start需要有bash环境，Windows用户请安装[Git Bash](https://git-for-windows.github.io/)，建议使用最新版本，老版本可能会遇到未知问题。也可以直接通过IDE环境启动，详见[Apollo开发指南](zh/development/apollo-development-guide)。
 
+# &nbsp;
 # 一、准备工作
 ## 1.1 Java
 

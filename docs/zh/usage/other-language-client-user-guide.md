@@ -11,7 +11,7 @@
 
 该接口会从缓存中获取配置，适合频率较高的配置拉取请求，如简单的每30秒轮询一次配置。
 
-由于缓存最多会有一秒的延时，所以如果需要配合配置推送通知实现实时更新配置的话，请参考[1.3 通过不带缓存的Http接口从Apollo读取配置](#13-%E9%80%9A%E8%BF%87%E4%B8%8D%E5%B8%A6%E7%BC%93%E5%AD%98%E7%9A%84http%E6%8E%A5%E5%8F%A3%E4%BB%8Eapollo%E8%AF%BB%E5%8F%96%E9%85%8D%E7%BD%AE)。
+由于缓存最多会有一秒的延时，所以如果需要配合配置推送通知实现实时更新配置的话，请参考[1.3 通过不带缓存的Http接口从Apollo读取配置](#_13-%E9%80%9A%E8%BF%87%E4%B8%8D%E5%B8%A6%E7%BC%93%E5%AD%98%E7%9A%84http%E6%8E%A5%E5%8F%A3%E4%BB%8Eapollo%E8%AF%BB%E5%8F%96%E9%85%8D%E7%BD%AE)。
 
 ### 1.2.1 Http接口说明
 **URL**: {config_server_url}/configfiles/json/{appId}/{clusterName}/{namespaceName}?ip={clientIp}
@@ -115,7 +115,7 @@ Apollo提供了基于Http long polling的配置更新推送通知，第三方客
 4. 如果传过来的notifications信息中发现有notificationId比服务端老，则直接返回对应namespace的最新notificationId, HttpStatus 200。
 5. 客户端拿到服务端返回后，判断返回的HttpStatus
 6. 如果返回的HttpStatus是304，说明配置没有变化，重新执行第1步
-7. 如果返回的HttpStauts是200，说明配置有变化，针对变化的namespace重新去服务端拉取配置，参见[1.3 通过不带缓存的Http接口从Apollo读取配置](#13-%E9%80%9A%E8%BF%87%E4%B8%8D%E5%B8%A6%E7%BC%93%E5%AD%98%E7%9A%84http%E6%8E%A5%E5%8F%A3%E4%BB%8Eapollo%E8%AF%BB%E5%8F%96%E9%85%8D%E7%BD%AE)。同时更新notifications map中的notificationId。重新执行第1步。
+7. 如果返回的HttpStauts是200，说明配置有变化，针对变化的namespace重新去服务端拉取配置，参见[1.3 通过不带缓存的Http接口从Apollo读取配置](#_13-%E9%80%9A%E8%BF%87%E4%B8%8D%E5%B8%A6%E7%BC%93%E5%AD%98%E7%9A%84http%E6%8E%A5%E5%8F%A3%E4%BB%8Eapollo%E8%AF%BB%E5%8F%96%E9%85%8D%E7%BD%AE)。同时更新notifications map中的notificationId。重新执行第1步。
 
 
 ### 1.4.2 Http接口说明
@@ -161,7 +161,7 @@ Apollo从1.6.0版本开始增加访问密钥机制，从而只有经过身份验
 | Header        | Value                                          | 备注                                                                                                                                                          |
 |---------------|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Authorization | Apollo ${appId}:${signature}                   | appId: 应用的appId，signature：使用访问密钥对当前时间以及所访问的URL加签后的值，具体实现可以参考[Signature.signature](https://github.com/ctripcorp/apollo/blob/aa184a2e11d6e7e3f519d860d69f3cf30ccfcf9c/apollo-core/src/main/java/com/ctrip/framework/apollo/core/signature/Signature.java#L22)  |
-| Timestamp     | 从1970-1-1 00:00:00 UTC+0 到现在所经过的毫秒数 | 可以参考[System.currentTimeMillis](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) |
+| Timestamp     | 从`1970-1-1 00:00:00 UTC+0`到现在所经过的毫秒数 | 可以参考[System.currentTimeMillis](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) |
 
 ## 1.6 错误码说明
 正常情况下，接口返回的Http状态码是200，下面列举了Apollo会返回的非200错误码说明。
@@ -172,11 +172,11 @@ Apollo从1.6.0版本开始增加访问密钥机制，从而只有经过身份验
 ### 1.6.2 401 - Unauthorized
 客户端未授权，如服务端配置了访问密钥，客户端未配置或配置错误。
 
-### 1.6.2 404 - Not Found
+### 1.6.3 404 - Not Found
 接口要访问的资源不存在，一般是URL或URL的参数错误，或者是对应的namespace还没有发布过配置。
 
-### 1.6.3 405 - Method Not Allowed
+### 1.6.4 405 - Method Not Allowed
 接口访问的Method不正确，比如应该使用GET的接口使用了POST访问等，客户端需要检查接口访问方式是否正确。
 
-### 1.6.4 500 - Internal Server Error
+### 1.6.5 500 - Internal Server Error
 其它类型的错误默认都会返回500，对这类错误如果应用无法根据提示信息找到原因的话，可以尝试查看服务端日志来排查问题。
