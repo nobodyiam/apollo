@@ -31,6 +31,8 @@ eureka:
     healthcheck:
       enabled: true
     eurekaServiceUrlPollIntervalSeconds: 60
+    fetchRegistry: false
+    registerWithEureka: false
 
 management:
   health:
