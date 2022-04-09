@@ -17,7 +17,7 @@
 package com.ctrip.framework.apollo.spring.config;
 
 import com.ctrip.framework.apollo.build.ApolloInjector;
-import com.ctrip.framework.apollo.spring.property.AutoUpdateConfigChangeListener;
+import com.ctrip.framework.apollo.spring.spi.SpringConfigChangeListener;
 import com.ctrip.framework.apollo.spring.util.SpringInjector;
 import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.google.common.collect.ImmutableSortedSet;
@@ -28,8 +28,10 @@ import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigService;
 
 import com.google.common.collect.Sets;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -134,17 +136,22 @@ public class PropertySourcesProcessor implements BeanFactoryPostProcessor, Envir
   }
 
   private void initializeAutoUpdatePropertiesFeature(ConfigurableListableBeanFactory beanFactory) {
-    if (!configUtil.isAutoUpdateInjectedSpringPropertiesEnabled() ||
-        !AUTO_UPDATE_INITIALIZED_BEAN_FACTORIES.add(beanFactory)) {
+    if (!AUTO_UPDATE_INITIALIZED_BEAN_FACTORIES.add(beanFactory)) {
       return;
     }
 
-    AutoUpdateConfigChangeListener autoUpdateConfigChangeListener = new AutoUpdateConfigChangeListener(
-        environment, beanFactory);
+    List<SpringConfigChangeListener> listeners = beanFactory.getBeansOfType(
+            SpringConfigChangeListener.class).values().stream()
+        .sorted(Comparator.comparingInt(SpringConfigChangeListener::getOrder)).collect(
+            Collectors.toList());
 
     List<ConfigPropertySource> configPropertySources = configPropertySourceFactory.getAllConfigPropertySources();
     for (ConfigPropertySource configPropertySource : configPropertySources) {
-      configPropertySource.addChangeListener(autoUpdateConfigChangeListener);
+      listeners.forEach(listener -> {
+        if (listener.isInterested(configPropertySource)) {
+          configPropertySource.addChangeListener(listener);
+        }
+      });
     }
   }
 

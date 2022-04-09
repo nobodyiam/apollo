@@ -16,9 +16,12 @@
  */
 package com.ctrip.framework.apollo.spring.property;
 
-import com.ctrip.framework.apollo.ConfigChangeListener;
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import com.ctrip.framework.apollo.spring.config.ConfigPropertySource;
+import com.ctrip.framework.apollo.spring.spi.SpringConfigChangeListener;
 import com.ctrip.framework.apollo.spring.util.SpringInjector;
+import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.google.gson.Gson;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -26,34 +29,35 @@ import java.util.Collection;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.core.env.Environment;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.CollectionUtils;
 
 /**
  * Create by zhangzheng on 2018/3/6
  */
-public class AutoUpdateConfigChangeListener implements ConfigChangeListener{
-  private static final Logger logger = LoggerFactory.getLogger(AutoUpdateConfigChangeListener.class);
+public class SpringAutoUpdateConfigChangeListener implements SpringConfigChangeListener,
+    ApplicationContextAware {
+  private static final Logger logger = LoggerFactory.getLogger(SpringAutoUpdateConfigChangeListener.class);
 
   private final boolean typeConverterHasConvertIfNecessaryWithFieldParameter;
-  private final Environment environment;
-  private final ConfigurableBeanFactory beanFactory;
-  private final TypeConverter typeConverter;
+  private ConfigurableBeanFactory beanFactory;
+  private TypeConverter typeConverter;
   private final PlaceholderHelper placeholderHelper;
   private final SpringValueRegistry springValueRegistry;
   private final Gson gson;
+  private final ConfigUtil configUtil;
 
-  public AutoUpdateConfigChangeListener(Environment environment, ConfigurableListableBeanFactory beanFactory){
+  public SpringAutoUpdateConfigChangeListener(){
     this.typeConverterHasConvertIfNecessaryWithFieldParameter = testTypeConverterHasConvertIfNecessaryWithFieldParameter();
-    this.beanFactory = beanFactory;
-    this.typeConverter = this.beanFactory.getTypeConverter();
-    this.environment = environment;
     this.placeholderHelper = SpringInjector.getInstance(PlaceholderHelper.class);
     this.springValueRegistry = SpringInjector.getInstance(SpringValueRegistry.class);
     this.gson = new Gson();
+    this.configUtil = ApolloInjector.getInstance(ConfigUtil.class);
   }
 
   @Override
@@ -134,5 +138,17 @@ public class AutoUpdateConfigChangeListener implements ConfigChangeListener{
     }
 
     return true;
+  }
+
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    //it is safe enough to cast as all known application context is derived from ConfigurableApplicationContext
+    this.beanFactory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
+    this.typeConverter = this.beanFactory.getTypeConverter();
+  }
+
+  @Override
+  public boolean isInterested(ConfigPropertySource configPropertySource) {
+    return configUtil.isAutoUpdateInjectedSpringPropertiesEnabled();
   }
 }
