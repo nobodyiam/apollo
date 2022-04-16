@@ -71,6 +71,7 @@
 		<javassist.version>3.23.1-GA</javassist.version>
 		<nacos-discovery-api.version>1.4.0</nacos-discovery-api.version>
 		<common-lang3.version>3.12.0</common-lang3.version>
+		<mysql-connector-java.version>8.0.28</mysql-connector-java.version>
 		<!-- Plugins Version -->
 		<maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
 		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
@@ -168,7 +169,7 @@
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>8.0.16</version>
+				<version>${mysql-connector-java.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.inject</groupId>
@@ -692,16 +693,20 @@
 					<plugin>
 						<groupId>org.flywaydb</groupId>
 						<artifactId>flyway-maven-plugin</artifactId>
-						<version>5.2.4</version>
+						<version>8.0.5</version>
 						<dependencies>
 							<dependency>
 								<groupId>mysql</groupId>
 								<artifactId>mysql-connector-java</artifactId>
-								<version>8.0.16</version>
+								<version>${mysql-connector-java.version}</version>
 							</dependency>
 						</dependencies>
 						<configuration>
-							<configFile>scripts/flyway/flyway-configdb.properties</configFile>
+							<configFiles>
+								<configFile>
+									scripts/flyway/flyway-configdb.properties
+								</configFile>
+							</configFiles>
 						</configuration>
 						<inherited>false</inherited>
 					</plugin>
@@ -715,16 +720,20 @@
 					<plugin>
 						<groupId>org.flywaydb</groupId>
 						<artifactId>flyway-maven-plugin</artifactId>
-						<version>5.2.4</version>
+						<version>8.0.5</version>
 						<dependencies>
 							<dependency>
 								<groupId>mysql</groupId>
 								<artifactId>mysql-connector-java</artifactId>
-								<version>8.0.16</version>
+								<version>${mysql-connector-java.version}</version>
 							</dependency>
 						</dependencies>
 						<configuration>
-							<configFile>scripts/flyway/flyway-portaldb.properties</configFile>
+							<configFiles>
+								<configFile>
+									scripts/flyway/flyway-portaldb.properties
+								</configFile>
+							</configFiles>
 						</configuration>
 						<inherited>false</inherited>
 					</plugin>
