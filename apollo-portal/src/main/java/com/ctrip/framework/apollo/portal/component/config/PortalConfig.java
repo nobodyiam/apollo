@@ -317,8 +317,6 @@ public class PortalConfig extends RefreshableConfig {
     }
     return Arrays.asList(value);
   }
-  
-
 
   private int checkInt(int value, int min, int max, int defaultValue) {
     if (value >= min && value <= max) {
