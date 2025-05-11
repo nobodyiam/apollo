@@ -318,9 +318,7 @@ public class PortalConfig extends RefreshableConfig {
     return Arrays.asList(value);
   }
   
-  public int permissionApiRateLimit() {
-    return getIntProperty("permission.api.rate.limit", 60);
-  }
+
 
   private int checkInt(int value, int min, int max, int defaultValue) {
     if (value >= min && value <= max) {

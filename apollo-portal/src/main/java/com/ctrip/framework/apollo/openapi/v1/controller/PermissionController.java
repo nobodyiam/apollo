@@ -14,17 +14,15 @@
  * limitations under the License.
  *
  */
-package com.ctrip.framework.apollo.portal.controller;
+package com.ctrip.framework.apollo.openapi.v1.controller;
 
 import com.ctrip.framework.apollo.audit.annotation.ApolloAuditLog;
 import com.ctrip.framework.apollo.audit.annotation.OpType;
 import com.ctrip.framework.apollo.common.exception.BadRequestException;
-import com.ctrip.framework.apollo.portal.component.RateLimiter;
 import com.ctrip.framework.apollo.portal.component.PermissionValidator;
 import com.ctrip.framework.apollo.portal.constant.RoleType;
 import com.ctrip.framework.apollo.portal.entity.bo.UserInfo;
 import com.ctrip.framework.apollo.portal.entity.dto.BatchUserRequestDTO;
-import com.ctrip.framework.apollo.portal.entity.po.Role;
 import com.ctrip.framework.apollo.portal.service.RolePermissionService;
 import com.ctrip.framework.apollo.portal.spi.UserInfoHolder;
 import com.ctrip.framework.apollo.portal.spi.UserService;
@@ -36,6 +34,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
@@ -43,26 +42,24 @@ import java.util.Set;
 /**
  * Controller for batch permission management operations
  */
-@RestController
-public class BatchPermissionController {
+@RestController("openapiPermissionController")
+@RequestMapping("/openapi/v1")
+public class PermissionController {
 
     private final UserInfoHolder userInfoHolder;
     private final RolePermissionService rolePermissionService;
     private final UserService userService;
     private final PermissionValidator permissionValidator;
-    private final RateLimiter rateLimiter;
 
-    public BatchPermissionController(
+    public PermissionController(
             final UserInfoHolder userInfoHolder,
             final RolePermissionService rolePermissionService,
             final UserService userService,
-            final PermissionValidator permissionValidator,
-            final RateLimiter rateLimiter) {
+            final PermissionValidator permissionValidator) {
         this.userInfoHolder = userInfoHolder;
         this.rolePermissionService = rolePermissionService;
         this.userService = userService;
         this.permissionValidator = permissionValidator;
-        this.rateLimiter = rateLimiter;
     }
 
     @PreAuthorize(value = "@permissionValidator.hasAssignRolePermission(#appId)")
@@ -72,8 +69,6 @@ public class BatchPermissionController {
             @PathVariable String appId,
             @PathVariable String roleType,
             @RequestBody BatchUserRequestDTO batchUserRequest) {
-        
-        rateLimiter.checkRateLimit(userInfoHolder.getUser().getUserId());
         
         if (!RoleType.isValidRoleType(roleType)) {
             throw new BadRequestException("Invalid role type: " + roleType);
@@ -98,8 +93,6 @@ public class BatchPermissionController {
             @PathVariable String appId,
             @PathVariable String roleType,
             @RequestBody BatchUserRequestDTO batchUserRequest) {
-        
-        rateLimiter.checkRateLimit(userInfoHolder.getUser().getUserId());
         
         if (!RoleType.isValidRoleType(roleType)) {
             throw new BadRequestException("Invalid role type: " + roleType);
@@ -126,8 +119,6 @@ public class BatchPermissionController {
             @PathVariable String roleType,
             @RequestBody BatchUserRequestDTO batchUserRequest) {
         
-        rateLimiter.checkRateLimit(userInfoHolder.getUser().getUserId());
-        
         if (!RoleType.isValidRoleType(roleType)) {
             throw new BadRequestException("Invalid role type: " + roleType);
         }
@@ -152,8 +143,6 @@ public class BatchPermissionController {
             @PathVariable String namespaceName,
             @PathVariable String roleType,
             @RequestBody BatchUserRequestDTO batchUserRequest) {
-        
-        rateLimiter.checkRateLimit(userInfoHolder.getUser().getUserId());
         
         if (!RoleType.isValidRoleType(roleType)) {
             throw new BadRequestException("Invalid role type: " + roleType);
@@ -181,8 +170,6 @@ public class BatchPermissionController {
             @PathVariable String roleType,
             @RequestBody BatchUserRequestDTO batchUserRequest) {
         
-        rateLimiter.checkRateLimit(userInfoHolder.getUser().getUserId());
-        
         if (!RoleType.isValidRoleType(roleType)) {
             throw new BadRequestException("Invalid role type: " + roleType);
         }
@@ -208,8 +195,6 @@ public class BatchPermissionController {
             @PathVariable String namespaceName,
             @PathVariable String roleType,
             @RequestBody BatchUserRequestDTO batchUserRequest) {
-        
-        rateLimiter.checkRateLimit(userInfoHolder.getUser().getUserId());
         
         if (!RoleType.isValidRoleType(roleType)) {
             throw new BadRequestException("Invalid role type: " + roleType);
@@ -238,8 +223,6 @@ public class BatchPermissionController {
             @PathVariable String roleType,
             @RequestBody BatchUserRequestDTO batchUserRequest) {
         
-        rateLimiter.checkRateLimit(userInfoHolder.getUser().getUserId());
-        
         if (!RoleType.isValidRoleType(roleType)) {
             throw new BadRequestException("Invalid role type: " + roleType);
         }
@@ -266,8 +249,6 @@ public class BatchPermissionController {
             @PathVariable String namespaceName,
             @PathVariable String roleType,
             @RequestBody BatchUserRequestDTO batchUserRequest) {
-        
-        rateLimiter.checkRateLimit(userInfoHolder.getUser().getUserId());
         
         if (!RoleType.isValidRoleType(roleType)) {
             throw new BadRequestException("Invalid role type: " + roleType);

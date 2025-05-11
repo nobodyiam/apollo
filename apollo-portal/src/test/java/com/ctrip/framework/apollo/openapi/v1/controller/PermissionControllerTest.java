@@ -14,10 +14,9 @@
  * limitations under the License.
  *
  */
-package com.ctrip.framework.apollo.portal.controller;
+package com.ctrip.framework.apollo.openapi.v1.controller;
 
 import com.ctrip.framework.apollo.common.exception.BadRequestException;
-import com.ctrip.framework.apollo.portal.component.RateLimiter;
 import com.ctrip.framework.apollo.portal.component.PermissionValidator;
 import com.ctrip.framework.apollo.portal.entity.bo.UserInfo;
 import com.ctrip.framework.apollo.portal.entity.dto.BatchUserRequestDTO;
@@ -44,15 +43,14 @@ import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BatchPermissionControllerTest {
+public class PermissionControllerTest {
 
-    private BatchPermissionController batchPermissionController;
+    private PermissionController permissionController;
 
     @Mock
     private UserInfoHolder userInfoHolder;
@@ -65,9 +63,6 @@ public class BatchPermissionControllerTest {
 
     @Mock
     private PermissionValidator permissionValidator;
-
-    @Mock
-    private RateLimiter rateLimiter;
 
     private String testUserId = "testUser";
     private String testAppId = "testApp";
@@ -82,10 +77,9 @@ public class BatchPermissionControllerTest {
         userInfo.setUserId(testUserId);
         
         when(userInfoHolder.getUser()).thenReturn(userInfo);
-        doNothing().when(rateLimiter).checkRateLimit(anyString());
         
-        batchPermissionController = new BatchPermissionController(
-                userInfoHolder, rolePermissionService, userService, permissionValidator, rateLimiter);
+        permissionController = new PermissionController(
+                userInfoHolder, rolePermissionService, userService, permissionValidator);
     }
 
     @Test
@@ -105,14 +99,13 @@ public class BatchPermissionControllerTest {
                 eq(testUserId)
         )).thenReturn(userIds);
         
-        ResponseEntity<Set<String>> response = batchPermissionController.batchAssignAppRoleToUsers(
+        ResponseEntity<Set<String>> response = permissionController.batchAssignAppRoleToUsers(
                 testAppId, testRoleType, batchUserRequest);
         
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(userIds, response.getBody());
         
-        verify(rateLimiter, times(1)).checkRateLimit(testUserId);
         verify(userService, times(2)).findByUserId(anyString());
         verify(rolePermissionService, times(1)).assignRoleToUsers(
                 eq(RoleUtils.buildAppRoleName(testAppId, testRoleType)),
@@ -138,13 +131,12 @@ public class BatchPermissionControllerTest {
                 eq(testUserId)
         );
         
-        ResponseEntity<Void> response = batchPermissionController.batchRemoveAppRoleFromUsers(
+        ResponseEntity<Void> response = permissionController.batchRemoveAppRoleFromUsers(
                 testAppId, testRoleType, batchUserRequest);
         
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         
-        verify(rateLimiter, times(1)).checkRateLimit(testUserId);
         verify(userService, times(2)).findByUserId(anyString());
         verify(rolePermissionService, times(1)).removeRoleFromUsers(
                 eq(RoleUtils.buildAppRoleName(testAppId, testRoleType)),
@@ -170,14 +162,13 @@ public class BatchPermissionControllerTest {
                 eq(testUserId)
         )).thenReturn(userIds);
         
-        ResponseEntity<Set<String>> response = batchPermissionController.batchAssignNamespaceRoleToUsers(
+        ResponseEntity<Set<String>> response = permissionController.batchAssignNamespaceRoleToUsers(
                 testAppId, testNamespace, testRoleType, batchUserRequest);
         
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(userIds, response.getBody());
         
-        verify(rateLimiter, times(1)).checkRateLimit(testUserId);
         verify(userService, times(2)).findByUserId(anyString());
         verify(rolePermissionService, times(1)).assignRoleToUsers(
                 eq(RoleUtils.buildNamespaceRoleName(testAppId, testNamespace, testRoleType)),
@@ -203,14 +194,13 @@ public class BatchPermissionControllerTest {
                 eq(testUserId)
         )).thenReturn(userIds);
         
-        ResponseEntity<Set<String>> response = batchPermissionController.batchAssignNamespaceEnvRoleToUsers(
+        ResponseEntity<Set<String>> response = permissionController.batchAssignNamespaceEnvRoleToUsers(
                 testAppId, testEnv, testNamespace, testRoleType, batchUserRequest);
         
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(userIds, response.getBody());
         
-        verify(rateLimiter, times(1)).checkRateLimit(testUserId);
         verify(userService, times(2)).findByUserId(anyString());
         verify(rolePermissionService, times(1)).assignRoleToUsers(
                 eq(RoleUtils.buildNamespaceRoleName(testAppId, testNamespace, testRoleType, testEnv)),
@@ -236,14 +226,13 @@ public class BatchPermissionControllerTest {
                 eq(testUserId)
         )).thenReturn(userIds);
         
-        ResponseEntity<Set<String>> response = batchPermissionController.batchAssignNamespaceClusterEnvRoleToUsers(
+        ResponseEntity<Set<String>> response = permissionController.batchAssignNamespaceClusterEnvRoleToUsers(
                 testAppId, testEnv, testCluster, testNamespace, testRoleType, batchUserRequest);
         
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(userIds, response.getBody());
         
-        verify(rateLimiter, times(1)).checkRateLimit(testUserId);
         verify(userService, times(2)).findByUserId(anyString());
         verify(rolePermissionService, times(1)).assignRoleToUsers(
                 eq(RoleUtils.buildClusterRoleName(testAppId, testEnv, testCluster, testRoleType)),
@@ -260,7 +249,7 @@ public class BatchPermissionControllerTest {
         BatchUserRequestDTO batchUserRequest = new BatchUserRequestDTO();
         batchUserRequest.setUserIds(userIds);
         
-        batchPermissionController.batchAssignAppRoleToUsers(
+        permissionController.batchAssignAppRoleToUsers(
                 testAppId, "InvalidRole", batchUserRequest);
     }
 
@@ -274,21 +263,7 @@ public class BatchPermissionControllerTest {
         
         when(userService.findByUserId("nonExistentUser")).thenReturn(null);
         
-        batchPermissionController.batchAssignAppRoleToUsers(
-                testAppId, testRoleType, batchUserRequest);
-    }
-
-    @Test(expected = BadRequestException.class)
-    public void testRateLimitExceeded() {
-        Set<String> userIds = new HashSet<>();
-        userIds.add("user1");
-        
-        BatchUserRequestDTO batchUserRequest = new BatchUserRequestDTO();
-        batchUserRequest.setUserIds(userIds);
-        
-        doThrow(new BadRequestException("Rate limit exceeded")).when(rateLimiter).checkRateLimit(anyString());
-        
-        batchPermissionController.batchAssignAppRoleToUsers(
+        permissionController.batchAssignAppRoleToUsers(
                 testAppId, testRoleType, batchUserRequest);
     }
 }
