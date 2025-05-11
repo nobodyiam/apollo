@@ -22,7 +22,7 @@ import com.ctrip.framework.apollo.portal.component.PermissionValidator;
 import com.ctrip.framework.apollo.portal.entity.bo.UserInfo;
 import com.ctrip.framework.apollo.portal.entity.dto.BatchUserRequestDTO;
 import com.ctrip.framework.apollo.portal.service.RolePermissionService;
-import com.ctrip.framework.apollo.portal.service.UserService;
+import com.ctrip.framework.apollo.portal.spi.UserService;
 import com.ctrip.framework.apollo.portal.spi.UserInfoHolder;
 import com.ctrip.framework.apollo.portal.util.RoleUtils;
 
