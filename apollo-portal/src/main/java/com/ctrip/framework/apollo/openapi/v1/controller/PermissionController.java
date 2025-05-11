@@ -49,20 +49,20 @@ public class PermissionController {
     private final UserInfoHolder userInfoHolder;
     private final RolePermissionService rolePermissionService;
     private final UserService userService;
-    private final PermissionValidator permissionValidator;
+    private final PermissionValidator userPermissionValidator;
 
     public PermissionController(
             final UserInfoHolder userInfoHolder,
             final RolePermissionService rolePermissionService,
             final UserService userService,
-            final PermissionValidator permissionValidator) {
+            final PermissionValidator userPermissionValidator) {
         this.userInfoHolder = userInfoHolder;
         this.rolePermissionService = rolePermissionService;
         this.userService = userService;
-        this.permissionValidator = permissionValidator;
+        this.userPermissionValidator = userPermissionValidator;
     }
 
-    @PreAuthorize(value = "@permissionValidator.hasAssignRolePermission(#appId)")
+    @PreAuthorize(value = "@userPermissionValidator.hasAssignRolePermission(#appId)")
     @PostMapping("/batch/apps/{appId}/roles/{roleType}")
     @ApolloAuditLog(type = OpType.CREATE, name = "Auth.batchAssignAppRoleToUsers")
     public ResponseEntity<Set<String>> batchAssignAppRoleToUsers(
@@ -86,7 +86,7 @@ public class PermissionController {
         return ResponseEntity.ok(assignedUsers);
     }
     
-    @PreAuthorize(value = "@permissionValidator.hasAssignRolePermission(#appId)")
+    @PreAuthorize(value = "@userPermissionValidator.hasAssignRolePermission(#appId)")
     @DeleteMapping("/batch/apps/{appId}/roles/{roleType}")
     @ApolloAuditLog(type = OpType.DELETE, name = "Auth.batchRemoveAppRoleFromUsers")
     public ResponseEntity<Void> batchRemoveAppRoleFromUsers(
@@ -110,7 +110,7 @@ public class PermissionController {
         return ResponseEntity.ok().build();
     }
     
-    @PreAuthorize(value = "@permissionValidator.hasAssignRolePermission(#appId)")
+    @PreAuthorize(value = "@userPermissionValidator.hasAssignRolePermission(#appId)")
     @PostMapping("/batch/apps/{appId}/namespaces/{namespaceName}/roles/{roleType}")
     @ApolloAuditLog(type = OpType.CREATE, name = "Auth.batchAssignNamespaceRoleToUsers")
     public ResponseEntity<Set<String>> batchAssignNamespaceRoleToUsers(
@@ -135,7 +135,7 @@ public class PermissionController {
         return ResponseEntity.ok(assignedUsers);
     }
     
-    @PreAuthorize(value = "@permissionValidator.hasAssignRolePermission(#appId)")
+    @PreAuthorize(value = "@userPermissionValidator.hasAssignRolePermission(#appId)")
     @DeleteMapping("/batch/apps/{appId}/namespaces/{namespaceName}/roles/{roleType}")
     @ApolloAuditLog(type = OpType.DELETE, name = "Auth.batchRemoveNamespaceRoleFromUsers")
     public ResponseEntity<Void> batchRemoveNamespaceRoleFromUsers(
@@ -160,7 +160,7 @@ public class PermissionController {
         return ResponseEntity.ok().build();
     }
     
-    @PreAuthorize(value = "@permissionValidator.hasAssignRolePermission(#appId)")
+    @PreAuthorize(value = "@userPermissionValidator.hasAssignRolePermission(#appId)")
     @PostMapping("/batch/apps/{appId}/envs/{env}/namespaces/{namespaceName}/roles/{roleType}")
     @ApolloAuditLog(type = OpType.CREATE, name = "Auth.batchAssignNamespaceEnvRoleToUsers")
     public ResponseEntity<Set<String>> batchAssignNamespaceEnvRoleToUsers(
@@ -186,7 +186,7 @@ public class PermissionController {
         return ResponseEntity.ok(assignedUsers);
     }
     
-    @PreAuthorize(value = "@permissionValidator.hasAssignRolePermission(#appId)")
+    @PreAuthorize(value = "@userPermissionValidator.hasAssignRolePermission(#appId)")
     @DeleteMapping("/batch/apps/{appId}/envs/{env}/namespaces/{namespaceName}/roles/{roleType}")
     @ApolloAuditLog(type = OpType.DELETE, name = "Auth.batchRemoveNamespaceEnvRoleFromUsers")
     public ResponseEntity<Void> batchRemoveNamespaceEnvRoleFromUsers(
@@ -212,7 +212,7 @@ public class PermissionController {
         return ResponseEntity.ok().build();
     }
     
-    @PreAuthorize(value = "@permissionValidator.hasAssignRolePermission(#appId)")
+    @PreAuthorize(value = "@userPermissionValidator.hasAssignRolePermission(#appId)")
     @PostMapping("/batch/apps/{appId}/envs/{env}/clusters/{clusterName}/namespaces/{namespaceName}/roles/{roleType}")
     @ApolloAuditLog(type = OpType.CREATE, name = "Auth.batchAssignNamespaceClusterEnvRoleToUsers")
     public ResponseEntity<Set<String>> batchAssignNamespaceClusterEnvRoleToUsers(
@@ -239,7 +239,7 @@ public class PermissionController {
         return ResponseEntity.ok(assignedUsers);
     }
     
-    @PreAuthorize(value = "@permissionValidator.hasAssignRolePermission(#appId)")
+    @PreAuthorize(value = "@userPermissionValidator.hasAssignRolePermission(#appId)")
     @DeleteMapping("/batch/apps/{appId}/envs/{env}/clusters/{clusterName}/namespaces/{namespaceName}/roles/{roleType}")
     @ApolloAuditLog(type = OpType.DELETE, name = "Auth.batchRemoveNamespaceClusterEnvRoleFromUsers")
     public ResponseEntity<Void> batchRemoveNamespaceClusterEnvRoleFromUsers(
