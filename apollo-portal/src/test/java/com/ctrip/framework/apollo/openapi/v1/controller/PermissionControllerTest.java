@@ -62,7 +62,7 @@ public class PermissionControllerTest {
     private UserService userService;
 
     @Mock
-    private PermissionValidator permissionValidator;
+    private PermissionValidator userPermissionValidator;
 
     private String testUserId = "testUser";
     private String testAppId = "testApp";
@@ -79,7 +79,7 @@ public class PermissionControllerTest {
         when(userInfoHolder.getUser()).thenReturn(userInfo);
         
         permissionController = new PermissionController(
-                userInfoHolder, rolePermissionService, userService, permissionValidator);
+                userInfoHolder, rolePermissionService, userService, userPermissionValidator);
     }
 
     @Test
