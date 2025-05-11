@@ -19,7 +19,7 @@ package com.ctrip.framework.apollo.openapi.v1.controller;
 import com.ctrip.framework.apollo.audit.annotation.ApolloAuditLog;
 import com.ctrip.framework.apollo.audit.annotation.OpType;
 import com.ctrip.framework.apollo.common.exception.BadRequestException;
-import com.ctrip.framework.apollo.portal.component.PermissionValidator;
+import com.ctrip.framework.apollo.portal.component.UserPermissionValidator;
 import com.ctrip.framework.apollo.portal.constant.RoleType;
 import com.ctrip.framework.apollo.portal.entity.bo.UserInfo;
 import com.ctrip.framework.apollo.portal.entity.dto.BatchUserRequestDTO;
@@ -49,7 +49,7 @@ public class PermissionController {
     private final UserInfoHolder userInfoHolder;
     private final RolePermissionService rolePermissionService;
     private final UserService userService;
-    private final PermissionValidator userPermissionValidator;
+    private final UserPermissionValidator userPermissionValidator;
 
     public PermissionController(
             final UserInfoHolder userInfoHolder,

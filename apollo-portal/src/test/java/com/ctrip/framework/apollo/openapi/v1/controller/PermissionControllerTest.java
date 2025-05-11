@@ -17,7 +17,7 @@
 package com.ctrip.framework.apollo.openapi.v1.controller;
 
 import com.ctrip.framework.apollo.common.exception.BadRequestException;
-import com.ctrip.framework.apollo.portal.component.PermissionValidator;
+import com.ctrip.framework.apollo.portal.component.UserPermissionValidator;
 import com.ctrip.framework.apollo.portal.entity.bo.UserInfo;
 import com.ctrip.framework.apollo.portal.entity.dto.BatchUserRequestDTO;
 import com.ctrip.framework.apollo.portal.service.RolePermissionService;
@@ -62,7 +62,7 @@ public class PermissionControllerTest {
     private UserService userService;
 
     @Mock
-    private PermissionValidator userPermissionValidator;
+    private UserPermissionValidator userPermissionValidator;
 
     private String testUserId = "testUser";
     private String testAppId = "testApp";
