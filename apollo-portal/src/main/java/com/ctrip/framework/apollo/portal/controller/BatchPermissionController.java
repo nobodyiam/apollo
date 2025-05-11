@@ -248,7 +248,7 @@ public class BatchPermissionController {
         validateUsers(userIds);
         
         Set<String> assignedUsers = rolePermissionService.assignRoleToUsers(
-            RoleUtils.buildNamespaceRoleName(appId, namespaceName, roleType, env, clusterName),
+            RoleUtils.buildClusterRoleName(appId, env, clusterName, roleType),
             userIds,
             userInfoHolder.getUser().getUserId()
         );
@@ -277,7 +277,7 @@ public class BatchPermissionController {
         validateUsers(userIds);
         
         rolePermissionService.removeRoleFromUsers(
-            RoleUtils.buildNamespaceRoleName(appId, namespaceName, roleType, env, clusterName),
+            RoleUtils.buildClusterRoleName(appId, env, clusterName, roleType),
             userIds,
             userInfoHolder.getUser().getUserId()
         );
