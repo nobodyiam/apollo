@@ -231,7 +231,7 @@ public class BatchPermissionControllerTest {
         when(userService.findByUserId(anyString())).thenReturn(new UserInfo());
         
         when(rolePermissionService.assignRoleToUsers(
-                eq(RoleUtils.buildNamespaceRoleName(testAppId, testNamespace, testRoleType, testEnv, testCluster)),
+                eq(RoleUtils.buildClusterRoleName(testAppId, testEnv, testCluster, testRoleType)),
                 anySet(),
                 eq(testUserId)
         )).thenReturn(userIds);
@@ -246,7 +246,7 @@ public class BatchPermissionControllerTest {
         verify(rateLimiter, times(1)).checkRateLimit(testUserId);
         verify(userService, times(2)).findByUserId(anyString());
         verify(rolePermissionService, times(1)).assignRoleToUsers(
-                eq(RoleUtils.buildNamespaceRoleName(testAppId, testNamespace, testRoleType, testEnv, testCluster)),
+                eq(RoleUtils.buildClusterRoleName(testAppId, testEnv, testCluster, testRoleType)),
                 eq(userIds),
                 eq(testUserId)
         );
