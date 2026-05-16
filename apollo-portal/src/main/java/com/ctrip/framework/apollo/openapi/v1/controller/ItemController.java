@@ -20,7 +20,6 @@ import static com.ctrip.framework.apollo.common.utils.RequestPrecondition.checkM
 
 import com.ctrip.framework.apollo.common.exception.BadRequestException;
 import com.ctrip.framework.apollo.common.utils.RequestPrecondition;
-import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.ctrip.framework.apollo.core.utils.StringUtils;
 import com.ctrip.framework.apollo.openapi.api.ItemManagementApi;
 import com.ctrip.framework.apollo.openapi.model.OpenItemDTO;
@@ -38,23 +37,17 @@ import com.ctrip.framework.apollo.portal.entity.bo.UserInfo;
 import com.ctrip.framework.apollo.portal.entity.model.NamespaceTextModel;
 import com.ctrip.framework.apollo.portal.spi.UserInfoHolder;
 import com.ctrip.framework.apollo.portal.spi.UserService;
+import com.ctrip.framework.apollo.portal.util.NamespaceTextSyntaxChecker;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.LoaderOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
-import org.yaml.snakeyaml.representer.Representer;
 
 @Validated
 @RestController("openapiItemController")
@@ -64,7 +57,7 @@ public class ItemController implements ItemManagementApi {
   private static final int DEFAULT_PAGE = 0;
   private static final int DEFAULT_SIZE = 50;
   private static final String HIDDEN_CONFIG_MESSAGE =
-      "You are not this project's administrator, nor you have edit or release permission for the namespace: ";
+      "You are not this project's administrator, nor do you have edit or release permission for the namespace: ";
 
   private final ItemOpenApiService itemOpenApiService;
   private final UserService userService;
@@ -392,34 +385,6 @@ public class ItemController implements ItemManagementApi {
   }
 
   void doSyntaxCheck(NamespaceTextModel model) {
-    if (StringUtils.isBlank(model.getConfigText())) {
-      return;
-    }
-
-    if (model.getFormat() != ConfigFileFormat.YAML && model.getFormat() != ConfigFileFormat.YML) {
-      return;
-    }
-
-    TypeLimitedYamlPropertiesFactoryBean yamlPropertiesFactoryBean =
-        new TypeLimitedYamlPropertiesFactoryBean();
-    yamlPropertiesFactoryBean.setResources(
-        new ByteArrayResource(model.getConfigText().getBytes(StandardCharsets.UTF_8)));
-    try {
-      yamlPropertiesFactoryBean.getObject();
-    } catch (Exception ex) {
-      throw new BadRequestException(ex.getMessage());
-    }
-  }
-
-  private static class TypeLimitedYamlPropertiesFactoryBean extends YamlPropertiesFactoryBean {
-
-    @Override
-    protected Yaml createYaml() {
-      LoaderOptions loaderOptions = new LoaderOptions();
-      loaderOptions.setAllowDuplicateKeys(false);
-      DumperOptions dumperOptions = new DumperOptions();
-      return new Yaml(new SafeConstructor(loaderOptions), new Representer(dumperOptions),
-          dumperOptions, loaderOptions);
-    }
+    NamespaceTextSyntaxChecker.check(model);
   }
 }

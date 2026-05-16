@@ -76,7 +76,20 @@ appService.service("ConfigService", ['$resource', '$q', 'AppUtil', function ($re
     });
 
     function encodeBase64PathSegment(value) {
-        return btoa(unescape(encodeURIComponent(value)))
+        var stringValue = String(value);
+        var binary = '';
+        if (typeof TextEncoder !== 'undefined') {
+            var bytes = new TextEncoder().encode(stringValue);
+            for (var i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+        } else {
+            binary = encodeURIComponent(stringValue)
+                .replace(/%([0-9A-Fa-f]{2})/g, function (match, hex) {
+                    return String.fromCharCode(parseInt(hex, 16));
+                });
+        }
+        return btoa(binary)
             .replace(/\+/g, '-')
             .replace(/\//g, '_')
             .replace(/=+$/, '');
