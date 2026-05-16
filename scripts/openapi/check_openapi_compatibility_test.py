@@ -224,45 +224,6 @@ components:
     )
     self.assertEqual([], issues)
 
-  def test_allows_explicit_response_schema_change_exceptions(self):
-    base_spec = """
-openapi: 3.0.1
-paths:
-  /openapi/v1/apps:
-    post:
-      operationId: createApp
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OpenAppDTO"
-components:
-  schemas:
-    OpenAppDTO:
-      type: object
-"""
-    head_spec = """
-openapi: 3.0.1
-paths:
-  /openapi/v1/apps:
-    post:
-      operationId: createApp
-      responses:
-        "200":
-          description: ok
-components:
-  schemas:
-    OpenAppDTO:
-      type: object
-"""
-    issues = compare_specs(
-        parse_spec(base_spec),
-        parse_spec(head_spec),
-        allowed_response_schema_changes=["POST /openapi/v1/apps"],
-    )
-    self.assertEqual([], issues)
-
 
 if __name__ == "__main__":
   unittest.main()

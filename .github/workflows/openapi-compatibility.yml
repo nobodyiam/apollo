@@ -63,10 +63,4 @@ jobs:
 
           echo "Base spec: $BASE_SPEC"
           echo "Head spec: $HEAD_SPEC"
-
-          CHECK_ARGS=(--base "$BASE_SPEC" --head "$HEAD_SPEC")
-          if [[ "$BASE_SPEC" == *"/refs/tags/v0.2.0/"* && "$HEAD_SPEC" == *"/refs/tags/v0.3.0/"* ]]; then
-            CHECK_ARGS+=(--allow-response-schema-change "POST /openapi/v1/apps")
-          fi
-
-          python3 scripts/openapi/check_openapi_compatibility.py "${CHECK_ARGS[@]}"
+          python3 scripts/openapi/check_openapi_compatibility.py --base "$BASE_SPEC" --head "$HEAD_SPEC"
