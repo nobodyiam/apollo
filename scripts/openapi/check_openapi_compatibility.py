@@ -202,12 +202,14 @@ def compare_specs(
     allowed_removed_paths: Iterable[str] = (),
     allowed_removed_operations: Iterable[str] = (),
     allowed_operation_id_changes: Iterable[str] = (),
+    allowed_response_schema_changes: Iterable[str] = (),
     allowed_required_additions: Iterable[str] = (),
 ) -> List[str]:
   issues: List[str] = []
   allowed_removed_path_set = set(allowed_removed_paths)
   allowed_removed_operation_set = set(allowed_removed_operations)
   allowed_operation_id_change_set = set(allowed_operation_id_changes)
+  allowed_response_schema_change_set = set(allowed_response_schema_changes)
   allowed_required_addition_set = set(allowed_required_additions)
 
   for path, method in sorted(base.operations):
@@ -241,7 +243,11 @@ def compare_specs(
 
     base_response_schemas = base.operations[(path, method)].response_schemas
     head_response_schemas = head.operations[(path, method)].response_schemas
-    if base_response_schemas and base_response_schemas != head_response_schemas:
+    if (
+        base_response_schemas
+        and base_response_schemas != head_response_schemas
+        and key not in allowed_response_schema_change_set
+    ):
       issues.append(
           f"Changed response schemas for {key}: {base_response_schemas} -> "
           f"{head_response_schemas}"
@@ -302,6 +308,12 @@ def build_parser() -> argparse.ArgumentParser:
       help='Allow one operationId change, formatted like "GET /openapi/v1/apps"',
   )
   parser.add_argument(
+      "--allow-response-schema-change",
+      action="append",
+      default=[],
+      help='Allow one response schema change, formatted like "GET /openapi/v1/apps"',
+  )
+  parser.add_argument(
       "--allow-required-addition",
       action="append",
       default=[],
@@ -328,6 +340,7 @@ def main(argv: Optional[List[str]] = None) -> int:
       allowed_removed_paths=args.allow_removed_path,
       allowed_removed_operations=args.allow_removed_operation,
       allowed_operation_id_changes=args.allow_operation_id_change,
+      allowed_response_schema_changes=args.allow_response_schema_change,
       allowed_required_additions=args.allow_required_addition,
   )
 

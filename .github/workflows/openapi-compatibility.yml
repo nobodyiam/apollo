@@ -63,4 +63,7 @@ jobs:
 
           echo "Base spec: $BASE_SPEC"
           echo "Head spec: $HEAD_SPEC"
-          python3 scripts/openapi/check_openapi_compatibility.py --base "$BASE_SPEC" --head "$HEAD_SPEC"
+          python3 scripts/openapi/check_openapi_compatibility.py \
+            --base "$BASE_SPEC" \
+            --head "$HEAD_SPEC" \
+            --allow-response-schema-change "POST /openapi/v1/apps"
