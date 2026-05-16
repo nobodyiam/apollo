@@ -76,7 +76,10 @@ appService.service("ConfigService", ['$resource', '$q', 'AppUtil', function ($re
     });
 
     function encodeBase64PathSegment(value) {
-        return btoa(unescape(encodeURIComponent(value)));
+        return btoa(unescape(encodeURIComponent(value)))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
     }
 
     function sortItems(items, orderBy) {
@@ -161,7 +164,12 @@ appService.service("ConfigService", ['$resource', '$q', 'AppUtil', function ($re
                                              page: page,
                                              size: OPENAPI_ITEM_PAGE_SIZE
                                          }, function (result) {
-                    items = items.concat(result.content || []);
+                    var content = result.content || [];
+                    items = items.concat(content);
+                    if (content.length === 0) {
+                        d.resolve(sortItems(items, orderBy));
+                        return;
+                    }
                     if (items.length < (result.total || 0)) {
                         fetchPage(page + 1);
                         return;

@@ -61,6 +61,8 @@ import org.yaml.snakeyaml.representer.Representer;
 public class ItemController implements ItemManagementApi {
 
   private static final int ITEM_COMMENT_MAX_LENGTH = 256;
+  private static final int DEFAULT_PAGE = 0;
+  private static final int DEFAULT_SIZE = 50;
   private static final String HIDDEN_CONFIG_MESSAGE =
       "You are not this project's administrator, nor you have edit or release permission for the namespace: ";
 
@@ -80,6 +82,9 @@ public class ItemController implements ItemManagementApi {
   @Override
   public ResponseEntity<OpenItemDTO> getItem(String appId, String env, String clusterName,
       String namespaceName, String key) {
+    if (shouldHideConfigToCurrentUser(appId, env, clusterName, namespaceName)) {
+      return ResponseEntity.ok().build();
+    }
     return ResponseEntity
         .ok(this.itemOpenApiService.getItem(appId, env, clusterName, namespaceName, key));
   }
@@ -154,11 +159,13 @@ public class ItemController implements ItemManagementApi {
   @Override
   public ResponseEntity<OpenItemPageDTO> findItemsByNamespace(String appId, String env,
       String clusterName, String namespaceName, Integer page, Integer size) {
+    int resolvedPage = page == null ? DEFAULT_PAGE : page;
+    int resolvedSize = size == null ? DEFAULT_SIZE : size;
     if (shouldHideConfigToCurrentUser(appId, env, clusterName, namespaceName)) {
-      return ResponseEntity.ok(emptyPage(page, size));
+      return ResponseEntity.ok(emptyPage(resolvedPage, resolvedSize));
     }
     return ResponseEntity.ok(this.itemOpenApiService.findItemsByNamespace(appId, env, clusterName,
-        namespaceName, page, size));
+        namespaceName, resolvedPage, resolvedSize));
   }
 
   @Override
@@ -326,8 +333,7 @@ public class ItemController implements ItemManagementApi {
 
   private boolean isInvalid(OpenNamespaceSyncDTO model) {
     if (model == null || model.getSyncToNamespaces() == null
-        || model.getSyncToNamespaces().isEmpty() || model.getSyncItems() == null
-        || model.getSyncItems().isEmpty()) {
+        || model.getSyncToNamespaces().isEmpty() || model.getSyncItems() == null) {
       return true;
     }
     for (OpenNamespaceIdentifier namespaceIdentifier : model.getSyncToNamespaces()) {
@@ -370,8 +376,19 @@ public class ItemController implements ItemManagementApi {
   }
 
   private String decodeBase64(String key) {
-    return new String(Base64.getDecoder().decode(key.getBytes(StandardCharsets.UTF_8)),
-        StandardCharsets.UTF_8);
+    try {
+      return decodeBase64(key, Base64.getDecoder());
+    } catch (IllegalArgumentException standardBase64Exception) {
+      try {
+        return decodeBase64(key, Base64.getUrlDecoder());
+      } catch (IllegalArgumentException urlBase64Exception) {
+        throw new BadRequestException("Invalid encoded key");
+      }
+    }
+  }
+
+  private String decodeBase64(String key, Base64.Decoder decoder) {
+    return new String(decoder.decode(key), StandardCharsets.UTF_8);
   }
 
   void doSyntaxCheck(NamespaceTextModel model) {

@@ -26,11 +26,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ctrip.framework.apollo.openapi.model.OpenItemDTO;
 import com.ctrip.framework.apollo.openapi.model.OpenItemPageDTO;
+import com.ctrip.framework.apollo.openapi.model.OpenNamespaceIdentifier;
+import com.ctrip.framework.apollo.openapi.model.OpenNamespaceSyncDTO;
 import com.ctrip.framework.apollo.openapi.server.service.ItemOpenApiService;
 import com.ctrip.framework.apollo.portal.component.UnifiedPermissionValidator;
 import com.ctrip.framework.apollo.portal.component.UserIdentityContextHolder;
@@ -42,10 +45,10 @@ import com.google.gson.Gson;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -55,10 +58,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-@RunWith(SpringRunner.class)
+/**
+ * Low-level MockMvc tests for ItemController parameter binding and identity handling.
+ */
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 public class ItemControllerParamBindLowLevelTest {
@@ -85,7 +91,7 @@ public class ItemControllerParamBindLowLevelTest {
 
   private final Gson gson = new Gson();
 
-  @Before
+  @BeforeEach
   public void setUp() {
     when(unifiedPermissionValidator.hasModifyNamespacePermission(anyString(), anyString(),
         anyString(), anyString())).thenReturn(true);
@@ -103,7 +109,7 @@ public class ItemControllerParamBindLowLevelTest {
     UserIdentityContextHolder.setAuthType(UserIdentityConstants.CONSUMER);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     SecurityContextHolder.clearContext();
     UserIdentityContextHolder.clear();
@@ -213,6 +219,21 @@ public class ItemControllerParamBindLowLevelTest {
   }
 
   @Test
+  public void getItemShouldReturnEmptyBodyForHiddenPortalUserConfig() throws Exception {
+    UserIdentityContextHolder.setAuthType(UserIdentityConstants.USER);
+    when(unifiedPermissionValidator.shouldHideConfigToCurrentUser(APP_ID, ENV, CLUSTER, NAMESPACE))
+        .thenReturn(true);
+
+    mockMvc.perform(get(
+        "/openapi/v1/envs/{env}/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/items/{key}",
+        ENV, APP_ID, CLUSTER, NAMESPACE, "timeout")).andExpect(status().isOk())
+        .andExpect(content().string(""));
+
+    verify(itemOpenApiService, never()).getItem(anyString(), anyString(), anyString(), anyString(),
+        anyString());
+  }
+
+  @Test
   public void getItemByEncodedKeyShouldDecodeBase64KeyBeforeCallingService() throws Exception {
     String key = "feature.flag";
     String encodedKey = Base64.getEncoder().encodeToString(key.getBytes(StandardCharsets.UTF_8));
@@ -226,6 +247,34 @@ public class ItemControllerParamBindLowLevelTest {
         .andExpect(jsonPath("$.key").value(key));
 
     verify(itemOpenApiService).getItem(APP_ID, ENV, CLUSTER, NAMESPACE, key);
+  }
+
+  @Test
+  public void getItemByEncodedKeyShouldDecodeUrlSafeBase64KeyBeforeCallingService()
+      throws Exception {
+    String key = "k'?";
+    String encodedKey = Base64.getUrlEncoder().withoutPadding()
+        .encodeToString(key.getBytes(StandardCharsets.UTF_8));
+    OpenItemDTO response = new OpenItemDTO();
+    response.setKey(key);
+    when(itemOpenApiService.getItem(APP_ID, ENV, CLUSTER, NAMESPACE, key)).thenReturn(response);
+
+    mockMvc.perform(get(
+        "/openapi/v1/envs/{env}/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/encodedItems/{key}",
+        ENV, APP_ID, CLUSTER, NAMESPACE, encodedKey)).andExpect(status().isOk())
+        .andExpect(jsonPath("$.key").value(key));
+
+    verify(itemOpenApiService).getItem(APP_ID, ENV, CLUSTER, NAMESPACE, key);
+  }
+
+  @Test
+  public void getItemByEncodedKeyShouldRejectMalformedBase64Key() throws Exception {
+    mockMvc.perform(get(
+        "/openapi/v1/envs/{env}/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/encodedItems/{key}",
+        ENV, APP_ID, CLUSTER, NAMESPACE, "not-base64!")).andExpect(status().isBadRequest());
+
+    verify(itemOpenApiService, never()).getItem(anyString(), anyString(), anyString(), anyString(),
+        anyString());
   }
 
   @Test
@@ -247,5 +296,30 @@ public class ItemControllerParamBindLowLevelTest {
         .andExpect(status().isOk());
 
     verify(itemOpenApiService).findItemsByNamespace(APP_ID, ENV, CLUSTER, NAMESPACE, 0, 50);
+  }
+
+  @Test
+  public void compareItemsShouldAcceptEmptySyncItems() throws Exception {
+    OpenNamespaceIdentifier namespaceIdentifier = new OpenNamespaceIdentifier();
+    namespaceIdentifier.setAppId(APP_ID);
+    namespaceIdentifier.setEnv(ENV);
+    namespaceIdentifier.setClusterName(CLUSTER);
+    namespaceIdentifier.setNamespaceName(NAMESPACE);
+    OpenNamespaceSyncDTO request = new OpenNamespaceSyncDTO();
+    request.setSyncToNamespaces(Collections.singletonList(namespaceIdentifier));
+    request.setSyncItems(Collections.emptyList());
+    when(itemOpenApiService.compareItems(anyString(), anyString(), anyString(), anyString(),
+        any(OpenNamespaceSyncDTO.class))).thenReturn(Collections.emptyList());
+
+    mockMvc.perform(post(
+        "/openapi/v1/envs/{env}/apps/{appId}/clusters/{clusterName}/namespaces/{namespaceName}/items/diff",
+        ENV, APP_ID, CLUSTER, NAMESPACE).contentType(MediaType.APPLICATION_JSON)
+        .content(gson.toJson(request))).andExpect(status().isOk());
+
+    ArgumentCaptor<OpenNamespaceSyncDTO> requestCaptor =
+        ArgumentCaptor.forClass(OpenNamespaceSyncDTO.class);
+    verify(itemOpenApiService).compareItems(anyString(), anyString(), anyString(), anyString(),
+        requestCaptor.capture());
+    assertThat(requestCaptor.getValue().getSyncItems()).isEmpty();
   }
 }

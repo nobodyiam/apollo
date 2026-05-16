@@ -19,12 +19,14 @@ package com.ctrip.framework.apollo.openapi.server.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ctrip.framework.apollo.common.dto.ItemChangeSets;
 import com.ctrip.framework.apollo.common.dto.ItemDTO;
 import com.ctrip.framework.apollo.common.dto.PageDTO;
+import com.ctrip.framework.apollo.common.exception.BadRequestException;
 import com.ctrip.framework.apollo.openapi.model.OpenItemDTO;
 import com.ctrip.framework.apollo.openapi.model.OpenItemDiffDTO;
 import com.ctrip.framework.apollo.openapi.model.OpenItemPageDTO;
@@ -46,6 +48,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 
+/**
+ * Unit tests for ServerItemOpenApiService item conversion and delegation behavior.
+ */
 @ExtendWith(MockitoExtension.class)
 class ServerItemOpenApiServiceTest {
 
@@ -194,6 +199,48 @@ class ServerItemOpenApiServiceTest {
 
     verify(itemService).createItem(eq(APP_ID), eq(Env.valueOf(ENV)), eq(CLUSTER), eq(NAMESPACE),
         any(ItemDTO.class));
+  }
+
+  @Test
+  void createOrUpdateItemShouldUpdateExistingItemAndPreserveIdentityFields() {
+    ItemDTO existing = item("timeout", "100");
+    existing.setId(99);
+    existing.setNamespaceId(10);
+    when(itemService.loadItem(Env.valueOf(ENV), APP_ID, CLUSTER, NAMESPACE, "timeout"))
+        .thenReturn(existing);
+    OpenItemDTO request = openItem("timeout", "200");
+
+    service.createOrUpdateItem(APP_ID, ENV, CLUSTER, NAMESPACE, request, "operator");
+
+    verify(itemService, never()).createItem(eq(APP_ID), eq(Env.valueOf(ENV)), eq(CLUSTER),
+        eq(NAMESPACE), any(ItemDTO.class));
+    ArgumentCaptor<ItemDTO> captor = ArgumentCaptor.forClass(ItemDTO.class);
+    verify(itemService).updateItem(eq(APP_ID), eq(Env.valueOf(ENV)), eq(CLUSTER), eq(NAMESPACE),
+        captor.capture());
+    assertThat(captor.getValue().getId()).isEqualTo(99);
+    assertThat(captor.getValue().getNamespaceId()).isEqualTo(10);
+    assertThat(captor.getValue().getValue()).isEqualTo("200");
+  }
+
+  @Test
+  void createOrUpdateItemShouldFallbackToUpdateWhenCreateReportsDuplicate() {
+    ItemDTO existing = item("timeout", "100");
+    existing.setId(99);
+    existing.setNamespaceId(10);
+    when(itemService.loadItem(Env.valueOf(ENV), APP_ID, CLUSTER, NAMESPACE, "timeout"))
+        .thenReturn(null, existing);
+    when(itemService.createItem(eq(APP_ID), eq(Env.valueOf(ENV)), eq(CLUSTER), eq(NAMESPACE),
+        any(ItemDTO.class))).thenThrow(BadRequestException.itemAlreadyExists("timeout"));
+    OpenItemDTO request = openItem("timeout", "200");
+
+    service.createOrUpdateItem(APP_ID, ENV, CLUSTER, NAMESPACE, request, "operator");
+
+    ArgumentCaptor<ItemDTO> captor = ArgumentCaptor.forClass(ItemDTO.class);
+    verify(itemService).updateItem(eq(APP_ID), eq(Env.valueOf(ENV)), eq(CLUSTER), eq(NAMESPACE),
+        captor.capture());
+    assertThat(captor.getValue().getId()).isEqualTo(99);
+    assertThat(captor.getValue().getNamespaceId()).isEqualTo(10);
+    assertThat(captor.getValue().getValue()).isEqualTo("200");
   }
 
   private static ItemDTO item(String key, String value) {

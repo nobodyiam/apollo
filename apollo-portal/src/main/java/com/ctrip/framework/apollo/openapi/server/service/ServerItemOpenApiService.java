@@ -18,6 +18,7 @@ package com.ctrip.framework.apollo.openapi.server.service;
 
 import com.ctrip.framework.apollo.common.dto.ItemDTO;
 import com.ctrip.framework.apollo.common.dto.PageDTO;
+import com.ctrip.framework.apollo.common.exception.BadRequestException;
 import com.ctrip.framework.apollo.common.exception.NotFoundException;
 import com.ctrip.framework.apollo.openapi.model.OpenItemDTO;
 import com.ctrip.framework.apollo.openapi.model.OpenItemDiffDTO;
@@ -31,7 +32,9 @@ import com.ctrip.framework.apollo.portal.entity.vo.NamespaceIdentifier;
 import com.ctrip.framework.apollo.portal.environment.Env;
 import com.ctrip.framework.apollo.portal.service.ItemService;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 
 /**
  * Server-side Item OpenAPI service implementation.
@@ -95,7 +98,14 @@ public class ServerItemOpenApiService implements ItemOpenApiService {
     ItemDTO existing =
         itemService.loadItem(Env.valueOf(env), appId, clusterName, namespaceName, itemDTO.getKey());
     if (existing == null) {
-      this.createItem(appId, env, clusterName, namespaceName, itemDTO, operator);
+      try {
+        this.createItem(appId, env, clusterName, namespaceName, itemDTO, operator);
+      } catch (RuntimeException ex) {
+        if (!isItemAlreadyExists(ex, itemDTO.getKey())) {
+          throw ex;
+        }
+        this.updateItem(appId, env, clusterName, namespaceName, itemDTO, operator);
+      }
       return;
     }
     this.updateItem(appId, env, clusterName, namespaceName, itemDTO, operator);
@@ -161,5 +171,17 @@ public class ServerItemOpenApiService implements ItemOpenApiService {
   public void revertItems(String appId, String env, String clusterName, String namespaceName,
       String operator) {
     itemService.revokeItem(appId, Env.valueOf(env), clusterName, namespaceName, operator);
+  }
+
+  private boolean isItemAlreadyExists(RuntimeException ex, String key) {
+    String expectedMessage = BadRequestException.itemAlreadyExists(key).getMessage();
+    if (ex instanceof BadRequestException) {
+      return expectedMessage.equals(ex.getMessage());
+    }
+    if (ex instanceof HttpStatusCodeException statusException
+        && statusException.getStatusCode() == HttpStatus.BAD_REQUEST) {
+      return statusException.getResponseBodyAsString().contains(expectedMessage);
+    }
+    return false;
   }
 }
